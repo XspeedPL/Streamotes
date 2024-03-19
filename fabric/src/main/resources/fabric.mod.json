@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "streamotes",
+  "version": "${version}",
+  "name": "Streamotes",
+  "description": "Adds popular stream emotes to the Minecraft chat. Supports Twitch, BTTV, FFZ and 7tv emotes.",
+  "authors": [
+    "Xspeed"
+  ],
+  "contact": {
+    "homepage": "https://github.com/XspeedPL/Streamotes",
+    "issues": "https://github.com/XspeedPL/Streamotes/issues"
+  },
+  "icon": "assets/streamotes/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "xeed.mc.streamotes.StreamotesCommon"
+    ],
+    "client": [
+      "xeed.mc.streamotes.Streamotes"
+    ],
+    "modmenu": [
+      "xeed.mc.streamotes.ModConfigScreen"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "streamotes.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.3",
+    "minecraft": "~1.20",
+    "java": ">=17",
+    "fabric-api": "*",
+    "yet_another_config_lib_v3": "*"
+  }
+}

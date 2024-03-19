@@ -1,0 +1,12 @@
+{
+  "text.config.streamotes.title": "Streamotes",
+  "text.config.streamotes.option.emoteChannels": "Emote source channels",
+  "text.config.streamotes.option.twitchGlobalEmotes": "Twitch global emotes",
+  "text.config.streamotes.option.twitchSubscriberEmotes": "Twitch channel emotes",
+  "text.config.streamotes.option.bttvEmotes": "BTTV global emotes",
+  "text.config.streamotes.option.bttvChannelEmotes": "BTTV channel emotes",
+  "text.config.streamotes.option.ffzEmotes": "FrankerFaceZ global emotes",
+  "text.config.streamotes.option.ffzChannelEmotes": "FrankerFaceZ channel emotes",
+  "text.config.streamotes.option.x7tvEmotes": "7tv.app global emotes",
+  "text.config.streamotes.option.x7tvChannelEmotes": "7tv.app channel emotes"
+}

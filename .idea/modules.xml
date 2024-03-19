@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Streamotes.iml" filepath="$PROJECT_DIR$/.idea/modules/Streamotes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/Streamotes.fabric.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/Streamotes.fabric.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/Streamotes.fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/Streamotes.fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/Streamotes.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/Streamotes.fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Streamotes.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Streamotes.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/Streamotes.paper.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/Streamotes.paper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/Streamotes.paper.main.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/Streamotes.paper.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/Streamotes.paper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/Streamotes.paper.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Streamotes.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Streamotes.test.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,14 @@
+name: Streamotes
+version: '${version}'
+main: xeed.mc.paper.streamotes.Streamotes
+api-version: '1.20'
+authors: [ Xspeed ]
+commands:
+  streamotes:
+    description: Streamotes configuration management
+    usage: /<command> [reload]
+    aliases: [ streamotes ]
+permissions:
+  xeed.mc.streamotes:
+    description: Streamotes configuration access
+    default: false

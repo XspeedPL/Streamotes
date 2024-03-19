@@ -1,0 +1,22 @@
+base {
+	archivesName = "${project.archives_base_name}-paper"
+}
+
+version = project.version
+group = "${project.maven_group}.paper"
+
+repositories {
+	maven { url "https://repo.papermc.io/repository/maven-public/" }
+	maven { url "https://oss.sonatype.org/content/groups/public/" }
+}
+
+dependencies {
+	compileOnly libs.paper.api
+	compileOnly libs.netty.buffer
+}
+
+processResources {
+	filesMatching("plugin.yml") {
+		expand "version": version
+	}
+}

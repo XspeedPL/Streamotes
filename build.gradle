@@ -1,0 +1,27 @@
+allprojects {
+	apply plugin: "java"
+
+	repositories {
+		mavenCentral()
+	}
+
+	processResources {
+		inputs.property "version", version
+	}
+
+	tasks.withType(JavaCompile).configureEach {
+		options.release.set(17)
+	}
+
+	java {
+		sourceCompatibility = JavaVersion.VERSION_17
+		targetCompatibility = JavaVersion.VERSION_17
+		if (JavaVersion.current() < JavaVersion.VERSION_17) {
+			toolchain.languageVersion = JavaLanguageVersion.of(17)
+		}
+	}
+
+	jar {
+		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	}
+}
