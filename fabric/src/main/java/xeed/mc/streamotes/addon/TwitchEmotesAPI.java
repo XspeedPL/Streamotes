@@ -40,24 +40,19 @@ public class TwitchEmotesAPI {
 
 	public static String getChannelId(String name) throws IOException {
 		String channelId = channelToIdMap.get(name);
-		var apiURL = new URL("https://www.twitchmetrics.net/search/channel?q=" + name);
+		var apiURL = new URL("https://twitchtracker.com/" + name);
 
 		try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
 			String data = IOUtils.toString(reader);
-			final String prefix = "<a href=\"/c/";
+			final String prefix = name + ":";
 
 			int ixStart = data.indexOf(prefix);
 			if (ixStart == -1) return channelId;
 
-			int ixEnd = data.indexOf("\"", ixStart + prefix.length());
+			int ixEnd = data.indexOf("</div>", ixStart + prefix.length());
 			if (ixEnd == -1) return channelId;
 
-			String idCode = data.substring(ixStart + prefix.length(), ixEnd);
-
-			ixStart = idCode.indexOf('-');
-			if (ixStart == -1) return channelId;
-
-			channelId = idCode.substring(0, ixStart);
+			channelId = data.substring(ixStart + prefix.length(), ixEnd);
 			channelToIdMap.put(name, channelId);
 			return channelId;
 		}
