@@ -44,15 +44,19 @@ public class TwitchEmotesAPI {
 
 		try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
 			String data = IOUtils.toString(reader);
-			final String prefix = "window.channel = {\n\t\t\tid: ";
+			final String prefix = "window.channel = {";
+			final String suffix = "id: ";
 
 			int ixStart = data.indexOf(prefix);
 			if (ixStart == -1) return channelId;
 
-			int ixEnd = data.indexOf(",", ixStart + prefix.length());
-			if (ixEnd == -1) return channelId;
+			int ixId = data.indexOf(suffix , ixStart + prefix.length());
+			if (ixId == -1) return channelId;
 
-			channelId = data.substring(ixStart + prefix.length(), ixEnd);
+			int ixEnd = data.indexOf(",", ixId + suffix.length());
+			if (ixEnd == -1) return channelId;
+			
+			channelId = data.substring(ixId + suffix.length(), ixEnd);
 			channelToIdMap.put(name, channelId);
 			return channelId;
 		}
