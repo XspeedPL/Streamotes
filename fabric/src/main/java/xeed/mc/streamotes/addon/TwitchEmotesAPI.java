@@ -43,8 +43,8 @@ public class TwitchEmotesAPI {
 		var apiURL = new URL("https://twitchtracker.com/" + name);
 
 		try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
-			String data = IOUtils.toString(reader).replaceAll("[\\n\\r\\s]+", ""); // Remove all whitespace characters
-			final String prefix = "window.channel={id:";
+			String data = IOUtils.toString(reader);
+			final String prefix = "window.channel = {\n\t\t\tid: ";
 
 			int ixStart = data.indexOf(prefix);
 			if (ixStart == -1) return channelId;
