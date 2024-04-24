@@ -3,9 +3,13 @@ package xeed.mc.streamotes.addon;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import net.fabricmc.loader.impl.lib.gson.MalformedJsonException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import xeed.mc.streamotes.InternalMethods;
+import xeed.mc.streamotes.StreamotesCommon;
+import xeed.mc.streamotes.api.EmoteLoaderException;
+import xeed.mc.streamotes.emoticon.Emoticon;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,27 +23,28 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import xeed.mc.streamotes.InternalMethods;
-import xeed.mc.streamotes.api.EmoteLoaderException;
-import xeed.mc.streamotes.emoticon.Emoticon;
-
 public class TwitchEmotesAPI {
 	private static final int CACHE_LIFETIME_JSON = 86400000;
 	private static final int CACHE_LIFETIME_IMAGE = 604800000;
 	private static final boolean CACHE_EMOTES = false;
 
-	private static final HashMap<String, String> channelToIdMap = new HashMap<>();
+	private static final HashMap<String, CacheEntry<String>> channelToIdMap = new HashMap<>();
 
 	private static File cacheDir;
 	private static File cachedEmotes;
+
+	private record CacheEntry<T>(T item, long expTime) {
+	}
 
 	public static void initialize(File mcDataDir) {
 		cacheDir = new File(mcDataDir, "emoticons/cache");
 		cachedEmotes = new File(cacheDir, "images/");
 	}
 
-	public static String getChannelId(String name) throws IOException {
-		String channelId = channelToIdMap.get(name);
+	public static synchronized String getChannelId(String name) throws IOException {
+		var entry = channelToIdMap.get(name);
+		if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
+
 		var apiURL = new URL("https://twitchtracker.com/" + name);
 
 		try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
@@ -48,16 +53,16 @@ public class TwitchEmotesAPI {
 			final String suffix = "id: ";
 
 			int ixStart = data.indexOf(prefix);
-			if (ixStart == -1) return channelId;
+			if (ixStart == -1) throw new MalformedJsonException("Prefix not found");
 
-			int ixId = data.indexOf(suffix , ixStart + prefix.length());
-			if (ixId == -1) return channelId;
+			int ixId = data.indexOf(suffix, ixStart + prefix.length());
+			if (ixId == -1) throw new MalformedJsonException("Suffix not found");
 
 			int ixEnd = data.indexOf(",", ixId + suffix.length());
-			if (ixEnd == -1) return channelId;
-			
-			channelId = data.substring(ixId + suffix.length(), ixEnd);
-			channelToIdMap.put(name, channelId);
+			if (ixEnd == -1) throw new MalformedJsonException("Separator after suffix not found");
+
+			String channelId = data.substring(ixId + suffix.length(), ixEnd);
+			channelToIdMap.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + 1000 * 60));
 			return channelId;
 		}
 	}
@@ -80,14 +85,14 @@ public class TwitchEmotesAPI {
 					emote.writeImage(cachedImageFile);
 					if (emote.isAnimated()) {
 						Files.write(new File(cachedImageFile.getParentFile(), cachedImageFile.getName() + ".txt").toPath(),
-								IntStream.concat(IntStream.of(emote.getWidth(), emote.getHeight()), IntStream.of(emote.getFrameTimes()))
-										.mapToObj(Integer::toString).collect(Collectors.toList()),
-								StandardCharsets.US_ASCII);
+							IntStream.concat(IntStream.of(emote.getWidth(), emote.getHeight()), IntStream.of(emote.getFrameTimes()))
+								.mapToObj(Integer::toString).collect(Collectors.toList()),
+							StandardCharsets.US_ASCII);
 					}
 				}
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				StreamotesCommon.loge("Cache writing failed for " + emote.getName(), e);
 			}
 		}
 	}
@@ -95,8 +100,9 @@ public class TwitchEmotesAPI {
 	public static void clearCache() {
 		try {
 			FileUtils.deleteDirectory(cacheDir);
-		} catch (IOException e) {
-			e.printStackTrace();
+		}
+		catch (IOException e) {
+			StreamotesCommon.loge("Cache purge failed", e);
 		}
 	}
 
@@ -116,11 +122,12 @@ public class TwitchEmotesAPI {
 	public static JsonArray getJsonArray(JsonObject object, String name) {
 		try {
 			JsonArray result = object.getAsJsonArray(name);
-			if(result == null) {
+			if (result == null) {
 				throw new EmoteLoaderException("'" + name + "' is null");
 			}
 			return result;
-		} catch (ClassCastException e) {
+		}
+		catch (ClassCastException e) {
 			throw new EmoteLoaderException("name: " + name, e);
 		}
 	}
