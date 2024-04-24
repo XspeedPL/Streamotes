@@ -1,25 +1,18 @@
 package xeed.mc.streamotes.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.text.OrderedText;
-
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.WrapTextHandler;
 
@@ -59,14 +52,17 @@ public abstract class MixinTextRenderer {
 		}
 	}
 
+	@Unique
 	private static void drawTexture(Matrix4f matrix, float x, float y, float width, float height, float u, float v, float regionWidth, float regionHeight, int textureWidth, int textureHeight) {
 		drawTexture2(matrix, x, x + width, y, y + height, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
 	}
 
+	@Unique
 	private static void drawTexture2(Matrix4f matrix, float x0, float x1, float y0, float y1, float regionWidth, float regionHeight, float u, float v, int textureWidth, int textureHeight) {
 		drawTexturedQuad(matrix, x0, x1, y0, y1, (u + 0.0F) / (float)textureWidth, (u + regionWidth) / textureWidth, (v + 0.0F) / textureHeight, (v + regionHeight) / textureHeight);
 	}
 
+	@Unique
 	private static void drawTexturedQuad(Matrix4f matrix, float x0, float x1, float y0, float y1, float u0, float u1, float v0, float v1) {
 		var bufferBuilder = Tessellator.getInstance().getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
