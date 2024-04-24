@@ -1,35 +1,22 @@
 package xeed.mc.streamotes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import xeed.mc.streamotes.addon.TwitchEmotesAPI;
+import xeed.mc.streamotes.addon.pack.*;
+import xeed.mc.streamotes.api.EmoteLoaderException;
+import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
+import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-
-import xeed.mc.streamotes.addon.TwitchEmotesAPI;
-import xeed.mc.streamotes.addon.pack.BTTVChannelPack;
-import xeed.mc.streamotes.addon.pack.BTTVPack;
-import xeed.mc.streamotes.addon.pack.FFZChannelPack;
-import xeed.mc.streamotes.addon.pack.FFZPack;
-import xeed.mc.streamotes.addon.pack.TwitchGlobalPack;
-import xeed.mc.streamotes.addon.pack.TwitchSubscriberPack;
-import xeed.mc.streamotes.addon.pack.X7tvChannelPack;
-import xeed.mc.streamotes.addon.pack.X7tvPack;
-import xeed.mc.streamotes.api.EmoteLoaderException;
-import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 public class Streamotes implements ClientModInitializer {
 	public static final Pattern VALID_EMOTE_PATTERN = Pattern.compile("\\w{2,}");
@@ -74,11 +61,11 @@ public class Streamotes implements ClientModInitializer {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> reloadEmoticons());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ovConfig = null);
 
-		ClientPlayNetworking.registerGlobalReceiver(StreamotesCommon.IDENT, this::onReceivePacket);
+		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, this::onReceivePacket);
 	}
 
-	private void onReceivePacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-		var json = buf.readString();
+	private void onReceivePacket(JsonPayload packet, ClientPlayNetworking.Context context) {
+		var json = packet.json();
 		var cfg = StreamotesCommon.configFromJson(json);
 		if (cfg == null) {
 			log("Receinved invalid config JSON: " + json);

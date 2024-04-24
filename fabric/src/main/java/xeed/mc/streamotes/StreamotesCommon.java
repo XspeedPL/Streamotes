@@ -3,12 +3,11 @@ package xeed.mc.streamotes;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.CommandDispatcher;
-
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.CommandRegistryAccess;
@@ -19,7 +18,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.Identifier;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,12 +65,12 @@ public class StreamotesCommon implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register(this::registerCommands);
 		ServerPlayConnectionEvents.JOIN.register(this::onPlayerJoin);
 		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(this::onReload);
+		PayloadTypeRegistry.playS2C().register(JsonPayload.PACKET_ID, JsonPayload.PACKET_CODEC);
 	}
 
 	private static Packet<?> createConfigPacket() {
-		var buf = PacketByteBufs.create();
-		buf.writeString(configToJson(getOwnConfig()));
-		return ServerPlayNetworking.createS2CPacket(IDENT, buf);
+		var buf = new JsonPayload(configToJson(getOwnConfig()));
+		return ServerPlayNetworking.createS2CPacket(buf);
 	}
 
 	private void onReload(MinecraftServer server, LifecycledResourceManager resourceManager, boolean success) {
