@@ -10,8 +10,6 @@ version = "${project.version}+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
 repositories {
-	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-	maven { url "https://maven.wispforest.io" }
 	maven { url "https://maven.isxander.dev/releases" }
 	maven { url "https://maven.terraformersmc.com/" }
 }
@@ -24,20 +22,10 @@ dependencies {
 	modImplementation libs.fabric.api
 	modImplementation libs.modmenu
 	modImplementation libs.yacl
-
-	implementation libs.imageio.webp
 }
 
 processResources {
 	filesMatching("fabric.mod.json") {
 		expand "version": version
-	}
-}
-
-jar {
-	from {
-		configurations.runtimeClasspath.findAll {
-			(it.name.startsWith("imageio-") || it.name.startsWith("common-")) && it.name.contains("-3.11.0")
-		}.collect { zipTree(it) }
 	}
 }

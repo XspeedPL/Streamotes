@@ -1,11 +1,10 @@
 [versions]
 minecraft = "1.20.4"
 fabric_mappings = "1.20.4+build.3"
-fabric_loader = "0.15.3"
-fabric_api = "0.92.0+1.20.4"
+fabric_loader = "0.15.10"
+fabric_api = "0.97.0+1.20.4"
 modmenu = "9.0.0"
-yacl = "3.3.1+1.20.4"
-imageio_webp = "3.11.0-SNAPSHOT"
+yacl = "3.3.2+1.20.4"
 
 paper_api = "1.20-R0.1-SNAPSHOT"
 netty_buffer = "4.1.91.Final"
@@ -17,10 +16,9 @@ fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_l
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 yacl = { module = "dev.isxander.yacl:yet-another-config-lib-fabric", version.ref = "yacl" }
-imageio_webp = { module = "com.twelvemonkeys.imageio:imageio-webp", version.ref = "imageio_webp" }
 
 paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
 
 [plugins]
-fabric_loom = { id = "fabric-loom", version = "1.4-SNAPSHOT" }
+fabric_loom = { id = "fabric-loom", version = "1.6.5" }
