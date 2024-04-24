@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class Streamotes implements ClientModInitializer {
@@ -104,6 +105,19 @@ public class Streamotes implements ClientModInitializer {
 		}
 	}
 
+	public static EmoteLoaderException tryFewTimes(Runnable func, int maxTries) {
+		while (true) {
+			try {
+				func.run();
+				return null;
+			}
+			catch (EmoteLoaderException t) {
+				if (--maxTries <= 0) return t;
+				sleepSweetPrince(33);
+			}
+		}
+	}
+
 	private void reloadEmoticons() {
 		final int loadId = LOAD_COUNTER.incrementAndGet();
 
@@ -117,109 +131,55 @@ public class Streamotes implements ClientModInitializer {
 			final var channelList = new ArrayList<>(cfg.emoteChannels);
 
 			if (cfg.x7tvEmotes || cfg.x7tvChannelEmotes) {
-				startLoadingDaemon("7TV Emote Loader", () -> {
-					if (cfg.x7tvEmotes) {
-						try {
-							if (LOAD_COUNTER.get() != loadId) return;
-							X7tvPack.loadMetadata();
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load 7tv.app emotes", e);
-						}
-					}
-
-					if (cfg.x7tvChannelEmotes) {
-						try {
-							for (String channel : channelList) {
-								if (LOAD_COUNTER.get() != loadId) return;
-								X7tvChannelPack.loadMetadata(channel);
-							}
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load 7tv.app channel emotes", e);
-						}
-					}
-				});
+				processPacks("7TV", loadId, channelList,
+					cfg.x7tvEmotes ? X7tvPack::loadMetadata : null,
+					cfg.x7tvChannelEmotes ? X7tvChannelPack::loadMetadata : null);
 			}
 
 			if (cfg.ffzEmotes || cfg.ffzChannelEmotes) {
-				startLoadingDaemon("FFZ Emote Loader", () -> {
-					if (cfg.ffzEmotes) {
-						try {
-							if (LOAD_COUNTER.get() != loadId) return;
-							FFZPack.loadMetadata();
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load FrankerFaceZ emotes", e);
-						}
-					}
-
-					if (cfg.ffzChannelEmotes) {
-						try {
-							for (String channel : channelList) {
-								if (LOAD_COUNTER.get() != loadId) return;
-								FFZChannelPack.loadMetadata(channel);
-							}
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load FrankerFaceZ channel emotes", e);
-						}
-					}
-				});
+				processPacks("FFZ", loadId, channelList,
+					cfg.ffzEmotes ? FFZPack::loadMetadata : null,
+					cfg.ffzChannelEmotes ? FFZChannelPack::loadMetadata : null);
 			}
 
 			if (cfg.bttvEmotes || cfg.bttvChannelEmotes) {
-				startLoadingDaemon("BTTV Emote Loader", () -> {
-					if (cfg.bttvEmotes) {
-						try {
-							if (LOAD_COUNTER.get() != loadId) return;
-							BTTVPack.loadMetadata();
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load BTTV emotes", e);
-						}
-					}
-
-					if (cfg.bttvChannelEmotes) {
-						try {
-							for (String channel : channelList) {
-								if (LOAD_COUNTER.get() != loadId) return;
-								BTTVChannelPack.loadMetadata(channel);
-							}
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load BTTV channel emotes", e);
-						}
-					}
-				});
+				processPacks("BTTV", loadId, channelList,
+					cfg.bttvEmotes ? BTTVPack::loadMetadata : null,
+					cfg.bttvChannelEmotes ? BTTVChannelPack::loadMetadata : null);
 			}
 
 			if (cfg.twitchGlobalEmotes || cfg.twitchSubscriberEmotes) {
-				startLoadingDaemon("Twitch Emote Loader", () -> {
-					if (cfg.twitchGlobalEmotes) {
-						try {
-							if (LOAD_COUNTER.get() != loadId) return;
-							TwitchGlobalPack.loadMetadata();
-							sleepSweetPrince(33);
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load Twitch global emotes", e);
-						}
-					}
+				processPacks("Twitch", loadId, channelList,
+					cfg.twitchGlobalEmotes ? TwitchGlobalPack::loadMetadata : null,
+					cfg.twitchSubscriberEmotes ? TwitchSubscriberPack::loadMetadata : null);
+			}
+		});
+	}
 
-					if (cfg.twitchSubscriberEmotes) {
-						try {
-							for (String channel : channelList) {
-								if (LOAD_COUNTER.get() != loadId) return;
-								TwitchSubscriberPack.loadMetadata(channel);
-								sleepSweetPrince(33);
-							}
-						}
-						catch (EmoteLoaderException e) {
-							loge("Failed to load Twitch subscriber emotes", e);
-						}
+	public static void processPacks(String sourceName, int loadId, ArrayList<String> channelList, Runnable globLoader, Consumer<String> subLoader) {
+		startLoadingDaemon(sourceName + " Emote Loader", () -> {
+			if (globLoader != null) {
+				try {
+					if (LOAD_COUNTER.get() != loadId) return;
+					var ex = tryFewTimes(globLoader, 3);
+					if (ex != null) throw ex;
+				}
+				catch (EmoteLoaderException e) {
+					loge("Failed to load " + sourceName + " global emotes", e);
+				}
+			}
+
+			if (subLoader != null) {
+				try {
+					for (String channel : channelList) {
+						if (LOAD_COUNTER.get() != loadId) return;
+						var ex = tryFewTimes(() -> subLoader.accept(channel), 3);
+						if (ex != null) throw ex;
 					}
-				});
+				}
+				catch (EmoteLoaderException e) {
+					loge("Failed to load " + sourceName + " subscriber emotes", e);
+				}
 			}
 		});
 	}
