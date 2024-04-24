@@ -1,117 +1,18 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
-    <codeStyleSettings language="XML">
-      <option name="FORCE_REARRANGE_MODE" value="1" />
-      <indentOptions>
-        <option name="CONTINUATION_INDENT_SIZE" value="4" />
-      </indentOptions>
-      <arrangement>
-        <rules>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>xmlns:android</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>^$</XML_NAMESPACE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>xmlns:.*</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>^$</XML_NAMESPACE>
-                </AND>
-              </match>
-              <order>BY_NAME</order>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>.*:id</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>.*:name</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>name</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>^$</XML_NAMESPACE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>style</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>^$</XML_NAMESPACE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>.*</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>^$</XML_NAMESPACE>
-                </AND>
-              </match>
-              <order>BY_NAME</order>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>.*</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
-                </AND>
-              </match>
-              <order>ANDROID_ATTRIBUTE_ORDER</order>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <NAME>.*</NAME>
-                  <XML_ATTRIBUTE />
-                  <XML_NAMESPACE>.*</XML_NAMESPACE>
-                </AND>
-              </match>
-              <order>BY_NAME</order>
-            </rule>
-          </section>
-        </rules>
-      </arrangement>
+    <option name="LINE_SEPARATOR" value="&#10;" />
+    <JavaCodeStyleSettings>
+      <option name="SPACE_INSIDE_ONE_LINE_ENUM_BRACES" value="true" />
+    </JavaCodeStyleSettings>
+    <codeStyleSettings language="JAVA">
+      <option name="ELSE_ON_NEW_LINE" value="true" />
+      <option name="WHILE_ON_NEW_LINE" value="true" />
+      <option name="CATCH_ON_NEW_LINE" value="true" />
+      <option name="FINALLY_ON_NEW_LINE" value="true" />
+      <option name="SPACE_WITHIN_ARRAY_INITIALIZER_BRACES" value="true" />
+      <option name="SPACE_WITHIN_EMPTY_ARRAY_INITIALIZER_BRACES" value="true" />
+      <option name="SPACE_AFTER_TYPE_CAST" value="false" />
+      <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
     </codeStyleSettings>
   </code_scheme>
 </component>
