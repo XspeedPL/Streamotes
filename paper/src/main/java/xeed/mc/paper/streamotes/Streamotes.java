@@ -9,10 +9,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -36,17 +36,23 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
-		getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-			event.getPlayer().sendPluginMessage(this, CHANNEL, createConfigPacket());
-			getLogger().info("Sent config packet to " + event.getPlayer().getName());
-		}, 5);
+	public void onPlayerRegisterChannel(PlayerRegisterChannelEvent event) {
+		if (event.getChannel().equals(CHANNEL)) {
+			getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
+				event.getPlayer().sendPluginMessage(this, CHANNEL, createConfigPacket());
+				getLogger().info("Sent config packet to " + event.getPlayer().getName());
+			}, 5);
+		}
+	}
+
+	private void onReload() {
+		reloadModConfig();
+		getServer().sendPluginMessage(this, CHANNEL, createConfigPacket());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onReload(ServerResourcesReloadedEvent event) {
-		reloadModConfig();
-		getServer().sendPluginMessage(this, CHANNEL, createConfigPacket());
+		onReload();
 	}
 
 	private void reloadModConfig() {
@@ -119,8 +125,7 @@ public final class Streamotes extends JavaPlugin implements Listener {
 					return true;
 				}
 
-				reloadModConfig();
-				getServer().sendPluginMessage(this, CHANNEL, createConfigPacket());
+				onReload();
 				return true;
 			}
 		}
