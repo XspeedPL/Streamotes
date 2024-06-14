@@ -64,12 +64,11 @@ public abstract class MixinTextRenderer {
 
 	@Unique
 	private static void drawTexturedQuad(Matrix4f matrix, float x0, float x1, float y0, float y1, float u0, float u1, float v0, float v1) {
-		var bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(matrix, x0, y1, 666).texture(u0, v1).next();
-		bufferBuilder.vertex(matrix, x1, y1, 666).texture(u1, v1).next();
-		bufferBuilder.vertex(matrix, x1, y0, 666).texture(u1, v0).next();
-		bufferBuilder.vertex(matrix, x0, y0, 666).texture(u0, v0).next();
+		var bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.vertex(matrix, x0, y1, 666).texture(u0, v1);
+		bufferBuilder.vertex(matrix, x1, y1, 666).texture(u1, v1);
+		bufferBuilder.vertex(matrix, x1, y0, 666).texture(u1, v0);
+		bufferBuilder.vertex(matrix, x0, y0, 666).texture(u0, v0);
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 }

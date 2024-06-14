@@ -1,10 +1,10 @@
 [versions]
-minecraft = "1.20.5"
-fabric_mappings = "1.20.5+build.1"
+minecraft = "1.21"
+fabric_mappings = "1.21+build.2"
 fabric_loader = "0.15.11"
-fabric_api = "0.97.8+1.20.5"
+fabric_api = "0.100.1+1.21"
 modmenu = "9.0.0"
-yacl = "3.4.2+1.20.5-fabric"
+yacl = "3.5.0+1.21-fabric"
 
 paper_api = "1.20.6-R0.1-SNAPSHOT"
 netty_buffer = "4.1.111.Final"
