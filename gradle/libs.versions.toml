@@ -1,13 +1,13 @@
 [versions]
 minecraft = "1.20.5"
 fabric_mappings = "1.20.5+build.1"
-fabric_loader = "0.15.10"
-fabric_api = "0.97.6+1.20.5"
+fabric_loader = "0.15.11"
+fabric_api = "0.97.8+1.20.5"
 modmenu = "9.0.0"
-yacl = "3.3.2+1.20.4"
+yacl = "3.4.2+1.20.5-fabric"
 
-paper_api = "1.20-R0.1-SNAPSHOT"
-netty_buffer = "4.1.91.Final"
+paper_api = "1.20.6-R0.1-SNAPSHOT"
+netty_buffer = "4.1.111.Final"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -15,10 +15,10 @@ fabric_mappings = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-yacl = { module = "dev.isxander.yacl:yet-another-config-lib-fabric", version.ref = "yacl" }
+yacl = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl" }
 
 paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
 
 [plugins]
-fabric_loom = { id = "fabric-loom", version = "1.6.5" }
+fabric_loom = { id = "fabric-loom", version = "1.6.12" }

@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class StreamotesCommon implements ModInitializer {
 	public static final String NAME = "streamotes";
 
-	public static final Identifier IDENT = new Identifier("xeed", NAME);
+	public static final Identifier IDENT = Identifier.of("xeed", NAME);
 
 	public static final Pattern VALID_CHANNEL_PATTERN = Pattern.compile("[_a-zA-Z]\\w+");
 
