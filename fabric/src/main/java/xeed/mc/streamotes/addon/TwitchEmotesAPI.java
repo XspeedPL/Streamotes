@@ -1,5 +1,6 @@
 package xeed.mc.streamotes.addon;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +30,7 @@ public class TwitchEmotesAPI {
 	private static final boolean CACHE_EMOTES = false;
 
 	private static final HashMap<String, CacheEntry<String>> channelToIdMap = new HashMap<>();
+	private static final Gson gson = new Gson();
 
 	private static File cacheDir;
 	private static File cachedEmotes;
@@ -39,6 +41,27 @@ public class TwitchEmotesAPI {
 	public static void initialize(File mcDataDir) {
 		cacheDir = new File(mcDataDir, "emoticons/cache");
 		cachedEmotes = new File(cacheDir, "images/");
+	}
+
+	public static URL getURL(String url) {
+		try {
+			return new URI(url).toURL();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static JsonObject getJsonObj(InputStream stream) throws IOException {
+		try (var reader = new InputStreamReader(stream)) {
+			return gson.fromJson(reader, JsonObject.class);
+		}
+	}
+
+	public static JsonArray getJsonArr(InputStream stream) throws IOException {
+		try (var reader = new InputStreamReader(stream)) {
+			return gson.fromJson(reader, JsonArray.class);
+		}
 	}
 
 	public static synchronized String getChannelId(String name) throws IOException {

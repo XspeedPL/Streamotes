@@ -1,16 +1,15 @@
 package xeed.mc.streamotes.addon.pack;
 
+import xeed.mc.streamotes.addon.TwitchEmotesAPI;
+import xeed.mc.streamotes.api.EmoteLoaderException;
+import xeed.mc.streamotes.emoticon.Emoticon;
+import xeed.mc.streamotes.emoticon.EmoticonRegistry;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-
-import xeed.mc.streamotes.addon.TwitchEmotesAPI;
-import xeed.mc.streamotes.api.EmoteLoaderException;
-import xeed.mc.streamotes.emoticon.Emoticon;
-import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 public class TwitchGlobalPack {
 	private static final String EMOTE_URL_TEMPLATE = "https://static-cdn.jtvnw.net/emoticons/v2/{{id}}/default/dark/2.0";
@@ -18,7 +17,8 @@ public class TwitchGlobalPack {
 
 	public static void loadMetadata() {
 		try {
-			var apiURL = new URL("https://www.twitchmetrics.net/emotes/");
+			var apiURL = TwitchEmotesAPI.getURL("https://www.twitchmetrics.net/emotes/");
+
 			try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
 				String line;
 				while ((line = reader.readLine()) != null) {
