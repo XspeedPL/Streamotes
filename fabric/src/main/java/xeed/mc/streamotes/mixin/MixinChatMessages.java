@@ -13,12 +13,13 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 public class MixinChatMessages {
 	@Inject(method = "getRenderedChatMessage", at = @At("RETURN"), cancellable = true)
 	private static void maybeGetRenderedChatMessage(String input, CallbackInfoReturnable<String> cir) {
-		var pattern = Streamotes.INSTANCE.getConfig().processColons ? Streamotes.EMOTE_PATTERN_ALT : Streamotes.EMOTE_PATTERN;
-		
-		cir.setReturnValue(pattern.matcher(cir.getReturnValue()).replaceAll(x -> {
+		cir.setReturnValue(Streamotes.EMOTE_PATTERN.matcher(cir.getReturnValue()).replaceAll(x -> {
 			String name = x.group();
-			if (name.length() > 2 && name.startsWith(":")) name = name.substring(1, name.length() - 1);
 			var emoticon = EmoticonRegistry.fromName(name);
+			if (emoticon == null && Streamotes.INSTANCE.getConfig().processColons && name.length() > 2 && name.startsWith(":") && name.endsWith(":")) {
+				name = name.substring(1, name.length() - 1);
+				emoticon = EmoticonRegistry.fromName(name);
+			}
 			if (emoticon != null) Streamotes.log("Emote found: " + emoticon.getName());
 			return emoticon != null ? Streamotes.CHAT_TRIGGER + emoticon.code + Streamotes.CHAT_SEPARATOR : name;
 		}));
