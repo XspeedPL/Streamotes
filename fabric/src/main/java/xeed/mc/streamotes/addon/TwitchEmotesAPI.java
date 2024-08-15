@@ -98,7 +98,9 @@ public class TwitchEmotesAPI {
 		if (struct.isEmpty())
 			throw new IOException("7tv profile " + name + " has no associated Twitch channel");
 
-		return struct.get().get("id").getAsString();
+		var channelId = struct.get().get("id").getAsString();
+		channelToIdMap.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + (1000 * 60 * 5)));
+		return channelId;
 	}
 
 	private static boolean shouldUseCacheFileImage(File file) {
