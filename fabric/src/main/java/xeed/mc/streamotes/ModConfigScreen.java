@@ -2,15 +2,13 @@ package xeed.mc.streamotes;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-
-import net.minecraft.text.Text;
-
 import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.ListOption;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
+import net.minecraft.text.Text;
 
 @SuppressWarnings("unused")
 public class ModConfigScreen implements ModMenuApi {
@@ -69,6 +67,11 @@ public class ModConfigScreen implements ModMenuApi {
 					.option(Option.<Boolean>createBuilder()
 						.name(Text.translatable("text.config.streamotes.option.x7tvChannelEmotes"))
 						.binding(def.x7tvChannelEmotes, () -> config.x7tvChannelEmotes, val -> config.x7tvChannelEmotes = val)
+						.controller(BooleanControllerBuilder::create)
+						.build())
+					.option(Option.<Boolean>createBuilder()
+						.name(Text.translatable("text.config.streamotes.option.processColons"))
+						.binding(def.processColons, () -> config.processColons, val -> config.processColons = val)
 						.controller(BooleanControllerBuilder::create)
 						.build())
 					.build())

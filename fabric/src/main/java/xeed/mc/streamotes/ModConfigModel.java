@@ -1,14 +1,13 @@
 package xeed.mc.streamotes;
 
+import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
+import dev.isxander.yacl3.config.v2.api.SerialEntry;
+import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
-import dev.isxander.yacl3.config.v2.api.SerialEntry;
-import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 
 public class ModConfigModel {
 	private static final ConfigClassHandler<ModConfigModel> HANDLER = ConfigClassHandler.createBuilder(ModConfigModel.class)
@@ -76,4 +75,7 @@ public class ModConfigModel {
 	public boolean x7tvEmotes = true;
 	@SerialEntry
 	public boolean x7tvChannelEmotes = true;
+
+	@SerialEntry
+	public boolean processColons = true;
 }
