@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.fabricmc.loader.impl.lib.gson.MalformedJsonException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import xeed.mc.streamotes.InternalMethods;
@@ -12,10 +11,8 @@ import xeed.mc.streamotes.StreamotesCommon;
 import xeed.mc.streamotes.api.EmoteLoaderException;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -68,26 +65,40 @@ public class TwitchEmotesAPI {
 		var entry = channelToIdMap.get(name);
 		if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
 
-		var apiURL = new URL("https://twitchtracker.com/" + name);
+		var apiURL = getURL("https://7tv.io/v3/gql");
 
-		try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
-			String data = IOUtils.toString(reader);
-			final String prefix = "window.channel = {";
-			final String suffix = "id: ";
+		var conn = (HttpURLConnection)apiURL.openConnection();
+		conn.setRequestMethod("POST");
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setRequestProperty("User-Agent", "insomnia/9.3.3");
+		conn.setDoOutput(true);
 
-			int ixStart = data.indexOf(prefix);
-			if (ixStart == -1) throw new MalformedJsonException("Prefix not found");
+		var query = "query FindUser($name: String!) { users(query: $name) { id username connections { id platform display_name } } }";
+		var vars = "{ \"name\": \"" + name + "\" }";
+		var body = "{\"query\": \"" + query + "\",\"operationName\": \"FindUser\",\"variables\": " + vars + "}";
 
-			int ixId = data.indexOf(suffix, ixStart + prefix.length());
-			if (ixId == -1) throw new MalformedJsonException("Suffix not found");
-
-			int ixEnd = data.indexOf(",", ixId + suffix.length());
-			if (ixEnd == -1) throw new MalformedJsonException("Separator after suffix not found");
-
-			String channelId = data.substring(ixId + suffix.length(), ixEnd);
-			channelToIdMap.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + 1000 * 60));
-			return channelId;
+		try (var writer = new DataOutputStream(conn.getOutputStream())) {
+			writer.writeBytes(body);
+			writer.flush();
 		}
+
+		int code = conn.getResponseCode();
+		if (code / 100 != 2) {
+			String info = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
+			throw new IOException("Channel ID request for name " + name + " returned " + code + ": " + info);
+		}
+
+		var data = getJsonObj(conn.getInputStream());
+		data = data.getAsJsonObject("data").getAsJsonArray("users").get(0).getAsJsonObject();
+
+		if (data.get("username").getAsString().equals("*deleted_user"))
+			throw new IOException("Channel " + name + " has no valid 7tv profile");
+
+		var struct = data.getAsJsonArray("connections").asList().stream().map(JsonElement::getAsJsonObject).filter(x -> x.get("platform").getAsString().equals("TWITCH")).findFirst();
+		if (struct.isEmpty())
+			throw new IOException("7tv profile " + name + " has no associated Twitch channel");
+
+		return struct.get().get("id").getAsString();
 	}
 
 	private static boolean shouldUseCacheFileImage(File file) {

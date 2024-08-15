@@ -113,7 +113,7 @@ public class Streamotes implements ClientModInitializer {
 			}
 			catch (EmoteLoaderException t) {
 				if (--maxTries <= 0) return t;
-				sleepSweetPrince(33);
+				sleepSweetPrince(50);
 			}
 		}
 	}
@@ -161,7 +161,7 @@ public class Streamotes implements ClientModInitializer {
 			if (globLoader != null) {
 				try {
 					if (LOAD_COUNTER.get() != loadId) return;
-					var ex = tryFewTimes(globLoader, 3);
+					var ex = tryFewTimes(globLoader, 5);
 					if (ex != null) throw ex;
 				}
 				catch (EmoteLoaderException e) {
@@ -173,7 +173,7 @@ public class Streamotes implements ClientModInitializer {
 				try {
 					for (String channel : channelList) {
 						if (LOAD_COUNTER.get() != loadId) return;
-						var ex = tryFewTimes(() -> subLoader.accept(channel), 3);
+						var ex = tryFewTimes(() -> subLoader.accept(channel), 5);
 						if (ex != null) throw ex;
 					}
 				}
