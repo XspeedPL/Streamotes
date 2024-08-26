@@ -18,7 +18,7 @@ public class BTTVPack {
 		try {
 			var apiURL = TwitchEmotesAPI.getURL("https://api.betterttv.net/3/cached/emotes/global");
 
-			var emotes = TwitchEmotesAPI.getJsonArr(apiURL.openStream());
+			var emotes = TwitchEmotesAPI.getJsonArr(apiURL);
 			for (int i = 0; i < emotes.size(); i++) {
 				var entry = emotes.get(i).getAsJsonObject();
 				String code = TwitchEmotesAPI.getJsonString(entry, "code");

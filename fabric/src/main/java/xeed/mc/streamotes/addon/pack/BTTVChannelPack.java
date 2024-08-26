@@ -18,7 +18,7 @@ public class BTTVChannelPack {
 		try {
 			var apiURL = TwitchEmotesAPI.getURL("https://api.betterttv.net/3/cached/users/twitch/" + TwitchEmotesAPI.getChannelId(channelName));
 
-			var root = TwitchEmotesAPI.getJsonObj(apiURL.openStream());
+			var root = TwitchEmotesAPI.getJsonObj(apiURL);
 			if (root == null || !root.has("channelEmotes")) {
 				throw new EmoteLoaderException("Failed to grab BTTV channel emotes (unexpected status)");
 			}

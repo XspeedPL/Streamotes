@@ -17,7 +17,7 @@ public class FFZPack {
 		try {
 			var apiURL = TwitchEmotesAPI.getURL("https://api.frankerfacez.com/v1/set/global");
 
-			var root = TwitchEmotesAPI.getJsonObj(apiURL.openStream());
+			var root = TwitchEmotesAPI.getJsonObj(apiURL);
 			if (root == null) {
 				throw new EmoteLoaderException("Failed to grab FrankerFaceZ emotes");
 			}

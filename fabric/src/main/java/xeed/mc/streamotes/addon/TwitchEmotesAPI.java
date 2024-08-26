@@ -25,7 +25,8 @@ public class TwitchEmotesAPI {
 	private static final int CACHE_LIFETIME_IMAGE = 604800000;
 	private static final boolean CACHE_EMOTES = false;
 
-	private static final HashMap<String, CacheEntry<String>> channelToIdMap = new HashMap<>();
+	private static final HashMap<String, CacheEntry<JsonElement>> jsonCache = new HashMap<>();
+	private static final HashMap<String, CacheEntry<String>> channelIdCache = new HashMap<>();
 	private static final Gson gson = new Gson();
 
 	private static File cacheDir;
@@ -48,22 +49,32 @@ public class TwitchEmotesAPI {
 		}
 	}
 
-	public static JsonObject getJsonObj(InputStream stream) throws IOException {
+	private static <T> T getJson(InputStream stream, Class<T> cls) throws IOException {
 		try (var reader = new InputStreamReader(stream)) {
-			return gson.fromJson(reader, JsonObject.class);
+			return gson.fromJson(reader, cls);
 		}
 	}
 
-	public static JsonArray getJsonArr(InputStream stream) throws IOException {
-		try (var reader = new InputStreamReader(stream)) {
-			return gson.fromJson(reader, JsonArray.class);
+	public static <T extends JsonElement> JsonElement getJson(URL url, Class<T> cls) throws IOException {
+		synchronized (jsonCache) {
+			var entry = jsonCache.get(url.toString());
+			if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
+
+			var json = getJson(url.openStream(), cls);
+			jsonCache.put(url.toString(), new CacheEntry<>(json, System.currentTimeMillis() + (1000 * 60)));
+			return json;
 		}
 	}
 
-	public static synchronized String getChannelId(String name) throws IOException {
-		var entry = channelToIdMap.get(name);
-		if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
+	public static JsonObject getJsonObj(URL url) throws IOException {
+		return getJson(url, JsonObject.class).getAsJsonObject();
+	}
 
+	public static JsonArray getJsonArr(URL url) throws IOException {
+		return getJson(url, JsonArray.class).getAsJsonArray();
+	}
+
+	private static HttpURLConnection makeGQL(String name) throws IOException {
 		var apiURL = getURL("https://7tv.io/v3/gql");
 
 		var conn = (HttpURLConnection)apiURL.openConnection();
@@ -81,25 +92,40 @@ public class TwitchEmotesAPI {
 			writer.flush();
 		}
 
-		int code = conn.getResponseCode();
-		if (code / 100 != 2) {
-			String info = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
-			throw new IOException("Channel ID request for name " + name + " returned " + code + ": " + info);
+		return conn;
+	}
+
+	public static String getChannelId(String name) throws IOException {
+		synchronized (channelIdCache) {
+			var entry = channelIdCache.get(name);
+			if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
+
+			var conn = makeGQL(name);
+			int code = conn.getResponseCode();
+			if (code / 100 != 2) {
+				String info = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
+				throw new IOException("Channel ID request for name " + name + " returned " + code + ": " + info);
+			}
+
+			var data = getJson(conn.getInputStream(), JsonObject.class);
+			try {
+				var user = data.getAsJsonObject("data").getAsJsonArray("users").get(0).getAsJsonObject();
+
+				if (user.get("username").getAsString().equals("*deleted_user"))
+					throw new IOException("Channel " + name + " has no valid 7tv profile");
+
+				var struct = user.getAsJsonArray("connections").asList().stream().map(JsonElement::getAsJsonObject).filter(x -> x.get("platform").getAsString().equals("TWITCH")).findFirst();
+				if (struct.isEmpty())
+					throw new IOException("7tv profile " + name + " has no associated Twitch channel");
+
+				var channelId = struct.get().get("id").getAsString();
+				channelIdCache.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + (1000 * 60 * 5)));
+				return channelId;
+			}
+			catch (NullPointerException | IndexOutOfBoundsException e) {
+				throw new IOException("Invalid json trying to get channel ID of " + name + ": " + data.toString(), e);
+			}
 		}
-
-		var data = getJsonObj(conn.getInputStream());
-		data = data.getAsJsonObject("data").getAsJsonArray("users").get(0).getAsJsonObject();
-
-		if (data.get("username").getAsString().equals("*deleted_user"))
-			throw new IOException("Channel " + name + " has no valid 7tv profile");
-
-		var struct = data.getAsJsonArray("connections").asList().stream().map(JsonElement::getAsJsonObject).filter(x -> x.get("platform").getAsString().equals("TWITCH")).findFirst();
-		if (struct.isEmpty())
-			throw new IOException("7tv profile " + name + " has no associated Twitch channel");
-
-		var channelId = struct.get().get("id").getAsString();
-		channelToIdMap.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + (1000 * 60 * 5)));
-		return channelId;
 	}
 
 	private static boolean shouldUseCacheFileImage(File file) {
@@ -122,7 +148,7 @@ public class TwitchEmotesAPI {
 						Files.write(new File(cachedImageFile.getParentFile(), cachedImageFile.getName() + ".txt").toPath(),
 							IntStream.concat(IntStream.of(emote.getWidth(), emote.getHeight()), IntStream.of(emote.getFrameTimes()))
 								.mapToObj(Integer::toString).collect(Collectors.toList()),
-							StandardCharsets.US_ASCII);
+							StandardCharsets.UTF_8);
 					}
 				}
 			}

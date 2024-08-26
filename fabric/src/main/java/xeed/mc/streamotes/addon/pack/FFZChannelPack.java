@@ -17,7 +17,7 @@ public class FFZChannelPack {
 		try {
 			var apiURL = TwitchEmotesAPI.getURL("https://api.frankerfacez.com/v1/room/" + channelName.toLowerCase());
 
-			var root = TwitchEmotesAPI.getJsonObj(apiURL.openStream());
+			var root = TwitchEmotesAPI.getJsonObj(apiURL);
 			if (root == null) {
 				throw new EmoteLoaderException("Failed to grab FrankerFaceZ channel emotes for " + channelName);
 			}

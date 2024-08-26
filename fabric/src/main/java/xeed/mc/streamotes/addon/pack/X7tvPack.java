@@ -17,7 +17,7 @@ public class X7tvPack {
 		try {
 			var apiURL = TwitchEmotesAPI.getURL("https://7tv.io/v3/emote-sets/global");
 
-			var emotes = TwitchEmotesAPI.getJsonObj(apiURL.openStream()).get("emotes").getAsJsonArray();
+			var emotes = TwitchEmotesAPI.getJsonObj(apiURL).get("emotes").getAsJsonArray();
 			for (int i = 0; i < emotes.size(); i++) {
 				var entry = emotes.get(i).getAsJsonObject();
 				var code = TwitchEmotesAPI.getJsonString(entry, "name");
