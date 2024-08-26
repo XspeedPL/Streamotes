@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.addon.pack.*;
@@ -24,7 +25,9 @@ public class Streamotes implements ClientModInitializer {
 	public static final String CHAT_TRIGGER = "\u2060";
 	public static final String CHAT_SEPARATOR = "\u2061";
 	public static final ThreadLocal<LinkedList<EmoteRenderInfo>> RENDER_QUEUE = ThreadLocal.withInitial(LinkedList::new);
+
 	private static final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);
+	private static final SystemToast.Type STREAMOTES_TOAST = new SystemToast.Type(4000);
 
 	public static Streamotes INSTANCE;
 	public static int MAX_TEXTURE_SIZE = 256;
@@ -37,13 +40,16 @@ public class Streamotes implements ClientModInitializer {
 
 	public static void loge(String text, Throwable t) {
 		StreamotesCommon.loge(text, t);
+		msg(text);
 	}
 
 	public static void msg(String text) {
+		var title = Text.literal("Streamotes");
+		var msg = Text.literal(text);
+
 		var mc = MinecraftClient.getInstance();
-		if (mc != null) {
-			mc.inGameHud.getChatHud().addMessage(Text.literal("Streamotes: " + text));
-		}
+		var toast = SystemToast.create(mc, STREAMOTES_TOAST, title, msg);
+		mc.getToastManager().add(toast);
 	}
 
 	public ModConfigModel getConfig() {
@@ -82,17 +88,16 @@ public class Streamotes implements ClientModInitializer {
 		}
 	}
 
-	private static void startLoadingDaemon(String name, Runnable action) {
+	private void startLoadingDaemon(String name, Runnable action) {
+		EmoticonRegistry.startLoading();
 		var thread = new Thread(() -> {
-			EmoticonRegistry.startLoading();
 			try {
 				action.run();
 			}
 			finally {
 				if (EmoticonRegistry.endLoading()) {
 					var emotes = EmoticonRegistry.getEmoteNames();
-					log("Loaded emote metadata: " + String.join(", ", emotes));
-					msg("Finished loading, " + emotes.size() + " emotes");
+					msg("Finished loading, " + emotes.size() + " emotes from " + getConfig().emoteChannels.size() + " channels");
 				}
 			}
 		}, name);
@@ -109,6 +114,7 @@ public class Streamotes implements ClientModInitializer {
 	}
 
 	public static EmoteLoaderException tryFewTimes(Runnable func, int maxTries) {
+		int nr = 0;
 		while (true) {
 			try {
 				func.run();
@@ -116,7 +122,7 @@ public class Streamotes implements ClientModInitializer {
 			}
 			catch (EmoteLoaderException t) {
 				if (--maxTries <= 0) return t;
-				sleepSweetPrince(50);
+				sleepSweetPrince((++nr) * 50);
 			}
 		}
 	}
@@ -159,12 +165,12 @@ public class Streamotes implements ClientModInitializer {
 		});
 	}
 
-	public static void processPacks(String sourceName, int loadId, ArrayList<String> channelList, Runnable globLoader, Consumer<String> subLoader) {
+	public void processPacks(String sourceName, int loadId, ArrayList<String> channelList, Runnable globLoader, Consumer<String> subLoader) {
 		startLoadingDaemon(sourceName + " Emote Loader", () -> {
 			if (globLoader != null) {
 				try {
 					if (LOAD_COUNTER.get() != loadId) return;
-					var ex = tryFewTimes(globLoader, 5);
+					var ex = tryFewTimes(globLoader, 10);
 					if (ex != null) throw ex;
 				}
 				catch (EmoteLoaderException e) {
@@ -173,15 +179,15 @@ public class Streamotes implements ClientModInitializer {
 			}
 
 			if (subLoader != null) {
-				try {
-					for (String channel : channelList) {
+				for (String channel : channelList) {
+					try {
 						if (LOAD_COUNTER.get() != loadId) return;
-						var ex = tryFewTimes(() -> subLoader.accept(channel), 5);
+						var ex = tryFewTimes(() -> subLoader.accept(channel), 10);
 						if (ex != null) throw ex;
 					}
-				}
-				catch (EmoteLoaderException e) {
-					loge("Failed to load " + sourceName + " subscriber emotes", e);
+					catch (EmoteLoaderException e) {
+						loge("Failed to load " + sourceName + " " + channel + " emotes", e);
+					}
 				}
 			}
 		});
