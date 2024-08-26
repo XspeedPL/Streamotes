@@ -1,23 +1,15 @@
 package xeed.mc.streamotes;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.texture.NativeImage;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
+import xeed.mc.streamotes.emoticon.Emoticon;
 
 import javax.imageio.ImageIO;
-
-import xeed.mc.streamotes.emoticon.Emoticon;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class InternalMethods {
 	public static boolean loadImage(Emoticon emoticon, URI uri) {
@@ -31,10 +23,15 @@ public class InternalMethods {
 		}
 	}
 
-	private static int[] loadInts(Path path) throws IOException {
-		try (var lines = Files.lines(path, StandardCharsets.US_ASCII)) {
-			return lines.mapToInt(Integer::parseInt).toArray();
+	private static int[] loadInts(File file) throws IOException {
+		var result = new IntArrayList();
+		try (var reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				result.add(Integer.parseInt(line));
+			}
 		}
+		return result.toIntArray();
 	}
 
 	public static boolean loadImage(Emoticon emoticon, File file) {
@@ -43,7 +40,7 @@ public class InternalMethods {
 			if (loadImage(emoticon, in)) {
 				var meta = new File(file.getParentFile(), file.getName() + ".txt");
 				if (meta.exists()) {
-					int[] data = loadInts(file.toPath());
+					int[] data = loadInts(meta);
 					if (data.length < 3) return false;
 
 					int width = data[0];

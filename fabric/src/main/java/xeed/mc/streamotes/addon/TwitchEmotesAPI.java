@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class TwitchEmotesAPI {
-	private static final int CACHE_LIFETIME_IMAGE = 604800000;
-	private static final boolean CACHE_EMOTES = false;
+	private static final int CACHE_LIFETIME_IMAGE = 604800000; // 7 days
+	private static final boolean CACHE_EMOTES = true;
 
 	private static final HashMap<String, CacheEntry<JsonElement>> jsonCache = new HashMap<>();
 	private static final HashMap<String, CacheEntry<String>> channelIdCache = new HashMap<>();
