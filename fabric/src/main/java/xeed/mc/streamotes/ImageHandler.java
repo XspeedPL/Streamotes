@@ -1,15 +1,12 @@
 package xeed.mc.streamotes;
 
 import com.madgag.gif.fmsware.GifDecoder;
-
 import net.minecraft.util.Pair;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadataNode;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,10 +16,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOMetadataNode;
 
 public class ImageHandler {
 	public static final Color TRANSPARENT = new Color(255, 255, 255, 0);
@@ -193,7 +186,7 @@ public class ImageHandler {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			StreamotesCommon.loge("Display metadata extraction failed", e);
 		}
 		return null;
 	}
@@ -228,7 +221,7 @@ public class ImageHandler {
 			return new FrameMetadata(x, y, delay, DisposalType.fromKey(disposal), true);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			StreamotesCommon.loge("GIF metadata extraction failed", e);
 			return null;
 		}
 	}
@@ -253,7 +246,7 @@ public class ImageHandler {
 			return new FrameMetadata(bounds.x, bounds.y, duration, dispose ? DisposalType.BACKGROUND : DisposalType.NONE, blend);
 		}
 		catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+			StreamotesCommon.loge("WebP metadata extraction failed", e);
 			return null;
 		}
 	}

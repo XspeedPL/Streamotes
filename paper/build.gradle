@@ -7,8 +7,8 @@ group = "${project.maven_group}.paper"
 
 repositories {
 	mavenCentral()
-	maven { url "https://repo.papermc.io/repository/maven-public/" }
-	maven { url "https://oss.sonatype.org/content/groups/public/" }
+	maven { url "https://repo.papermc.io/repository/maven-public" }
+	maven { url "https://oss.sonatype.org/content/groups/public" }
 }
 
 dependencies {

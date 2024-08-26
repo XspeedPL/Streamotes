@@ -1,8 +1,9 @@
 package xeed.mc.streamotes.emoticon;
 
-import java.util.LinkedList;
-
 import xeed.mc.streamotes.Streamotes;
+import xeed.mc.streamotes.StreamotesCommon;
+
+import java.util.LinkedList;
 
 public class AsyncEmoticonLoader implements Runnable {
 	public static final AsyncEmoticonLoader instance = new AsyncEmoticonLoader();
@@ -39,12 +40,14 @@ public class AsyncEmoticonLoader implements Runnable {
 							Streamotes.log("Loaded emote " + emoticon.getName() + ": W" + emoticon.getWidth() + ", H" + emoticon.getHeight());
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							StreamotesCommon.loge("Emote " + emoticon.getName() + " load failed", e);
 						}
 					}
 					sync.wait();
 				}
-			} catch (InterruptedException ignored) {}
+			}
+			catch (InterruptedException ignored) {
+			}
 		}
 	}
 }

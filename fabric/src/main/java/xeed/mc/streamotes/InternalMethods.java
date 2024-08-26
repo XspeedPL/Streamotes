@@ -26,7 +26,7 @@ public class InternalMethods {
 			return loadImage(emoticon, in);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			Streamotes.loge("Emote " + emoticon.getName() + " load failed", e);
 			return false;
 		}
 	}
@@ -55,7 +55,7 @@ public class InternalMethods {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			Streamotes.loge("Emote " + emoticon.getName() + " cache load failed", e);
 		}
 		return false;
 	}
@@ -68,7 +68,7 @@ public class InternalMethods {
 				return false;
 			}
 			else if (frames.size() == 1) {
-				emoticon.setImage(awtToNative(frames.get(0).getLeft()));
+				emoticon.setImage(awtToNative(frames.getFirst().getLeft()));
 			}
 			else {
 				var images = new BufferedImage[frames.size()];
@@ -85,7 +85,7 @@ public class InternalMethods {
 			return true;
 		}
 		catch (IOException | IllegalArgumentException e) {
-			e.printStackTrace();
+			Streamotes.loge("Emote " + emoticon.getName() + " data load failed", e);
 			return false;
 		}
 	}
