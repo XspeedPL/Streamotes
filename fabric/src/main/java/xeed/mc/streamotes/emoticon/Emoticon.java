@@ -159,7 +159,7 @@ public class Emoticon {
 		if (loadBuffer != null) {
 			textureId = TextureUtil.generateTextureId();
 			TextureUtil.prepareImage(textureId, 0, loadBuffer.getWidth(), loadBuffer.getHeight());
-			loadBuffer.upload(0, 0, 0, 0, 0, loadBuffer.getWidth(), loadBuffer.getHeight(), false, false, false, true);
+			loadBuffer.upload(0, 0, 0, 0, 0, loadBuffer.getWidth(), loadBuffer.getHeight(), false, false, true, true);
 			loadBuffer = null;
 		}
 		return textureId;
