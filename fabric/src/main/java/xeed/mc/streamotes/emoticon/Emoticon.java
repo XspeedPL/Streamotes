@@ -1,23 +1,22 @@
 package xeed.mc.streamotes.emoticon;
 
 import com.mojang.blaze3d.platform.TextureUtil;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.io.File;
-import java.io.IOException;
-
 import xeed.mc.streamotes.ImageHandler;
 import xeed.mc.streamotes.InternalMethods;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.api.IEmoticonLoader;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.io.File;
+import java.io.IOException;
 
 public class Emoticon {
 	private static class DrawImageCallback implements ImageObserver {
@@ -55,12 +54,13 @@ public class Emoticon {
 	private int width;
 	private int height;
 	private NativeImage loadBuffer;
+	private BufferedImage tempBuffer;
 
 	private int[] frameTimes;
 	private int spriteSheetWidth;
 	private int spriteSheetHeight;
 
-	private int animationTime;
+	private long animationTime;
 	private int currentFrameTime;
 	private int currentFrame;
 	private int currentFrameTexCoordX;
@@ -103,10 +103,10 @@ public class Emoticon {
 	}
 
 	public void writeImage(File destination) throws IOException {
-		loadBuffer.writeTo(destination);
+		ImageIO.write(tempBuffer, "png", destination);
 	}
 
-	public void setImage(NativeImage image) {
+	public void setImage(BufferedImage image) throws IOException {
 		currentFrameTexCoordX = 0;
 		currentFrameTexCoordY = 0;
 		this.frameTimes = null;
@@ -114,7 +114,8 @@ public class Emoticon {
 		spriteSheetHeight = image.getHeight();
 		width = spriteSheetWidth;
 		height = spriteSheetHeight;
-		loadBuffer = image;
+		tempBuffer = image;
+		loadBuffer = InternalMethods.awtToNative(image);
 	}
 
 	public void setFrameData(int[] frameTimes, int spriteWidth, int spriteHeight) {
@@ -135,9 +136,9 @@ public class Emoticon {
 		int framesPerY = MathHelper.ceil(images.length / (float)framesPerX);
 		spriteSheetWidth = width * framesPerX;
 		spriteSheetHeight = height * framesPerY;
-		var awtLoadBuffer = new BufferedImage(spriteSheetWidth, spriteSheetHeight, BufferedImage.TYPE_INT_ARGB);
+		tempBuffer = new BufferedImage(spriteSheetWidth, spriteSheetHeight, BufferedImage.TYPE_INT_ARGB);
 		var callback = new DrawImageCallback();
-		var g = awtLoadBuffer.createGraphics();
+		var g = tempBuffer.createGraphics();
 		for (int y = 0; y < framesPerY; y++) {
 			for (int x = 0; x < framesPerX; x++) {
 				int frameIdx = x + y * framesPerX;
@@ -151,7 +152,7 @@ public class Emoticon {
 				}
 			}
 		}
-		loadBuffer = InternalMethods.awtToNative(awtLoadBuffer);
+		loadBuffer = InternalMethods.awtToNative(tempBuffer);
 	}
 
 	public int getTextureId() {
@@ -206,6 +207,10 @@ public class Emoticon {
 
 	public boolean isAnimated() {
 		return frameTimes != null;
+	}
+
+	public void discardBitmap() {
+		tempBuffer = null;
 	}
 
 	public void updateAnimation() {

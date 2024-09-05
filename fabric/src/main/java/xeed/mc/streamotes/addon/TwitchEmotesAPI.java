@@ -155,6 +155,9 @@ public class TwitchEmotesAPI {
 			catch (IOException e) {
 				StreamotesCommon.loge("Cache writing failed for " + emote.getName(), e);
 			}
+			finally {
+				emote.discardBitmap();
+			}
 		}
 	}
 
