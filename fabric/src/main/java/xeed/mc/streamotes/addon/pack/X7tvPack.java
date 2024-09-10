@@ -13,6 +13,11 @@ public class X7tvPack {
 	private static final String URL_TEMPLATE = "https://cdn.7tv.app/emote/{{id}}/2x.webp";
 	private static final int PRIO = 7;
 
+	static final int FLAG_ZERO_WIDTH = 1 << 8;
+	static final int FLAG_NSFW = 1 << 16;
+	static final int FLAG_EPILEPSY = 1 << 17;
+	static final int FLAG_EDGY = 1 << 18;
+
 	public static void loadMetadata() {
 		try {
 			var apiURL = TwitchEmotesAPI.getURL("https://7tv.io/v3/emote-sets/global");
@@ -22,7 +27,10 @@ public class X7tvPack {
 				var entry = emotes.get(i).getAsJsonObject();
 				var code = TwitchEmotesAPI.getJsonString(entry, "name");
 
-				var emoticon = EmoticonRegistry.registerEmoticon(".7tv", code, PRIO, X7tvPack::loadEmoticonImage);
+				int flags = entry.getAsJsonObject("data").get("flags").getAsInt();
+				var zeroWidth = (flags & FLAG_ZERO_WIDTH) != 0;
+
+				var emoticon = EmoticonRegistry.registerEmoticon(".7tv", code, zeroWidth, PRIO, X7tvPack::loadEmoticonImage);
 				if (emoticon != null) {
 					emoticon.setLoadData(TwitchEmotesAPI.getJsonString(entry, "id"));
 					emoticon.setTooltip("7tv");

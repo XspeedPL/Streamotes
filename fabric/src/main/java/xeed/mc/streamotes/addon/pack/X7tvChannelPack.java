@@ -30,9 +30,12 @@ public class X7tvChannelPack {
 			var emotes = elem.getAsJsonArray();
 			for (int i = 0; i < emotes.size(); ++i) {
 				var entry = emotes.get(i).getAsJsonObject();
-				String code = TwitchEmotesAPI.getJsonString(entry, "name");
+				var code = TwitchEmotesAPI.getJsonString(entry, "name");
 
-				var emoticon = EmoticonRegistry.registerEmoticon(channelName, code, PRIO, X7tvChannelPack::loadEmoticonImage);
+				int flags = entry.getAsJsonObject("data").get("flags").getAsInt();
+				var zeroWidth = (flags & X7tvPack.FLAG_ZERO_WIDTH) != 0;
+
+				var emoticon = EmoticonRegistry.registerEmoticon(channelName, code, zeroWidth, PRIO, X7tvChannelPack::loadEmoticonImage);
 				if (emoticon != null) {
 					emoticon.setLoadData(TwitchEmotesAPI.getJsonString(entry, "id"));
 					emoticon.setTooltip(channelName + " (7tv)");

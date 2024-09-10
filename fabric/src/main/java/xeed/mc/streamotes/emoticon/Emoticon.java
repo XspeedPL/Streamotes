@@ -45,6 +45,7 @@ public class Emoticon {
 	public final IEmoticonLoader loader;
 	public final int priority;
 	public final String code, source;
+	public final boolean zeroWidth;
 
 	private Object identifier;
 	private Text tooltip;
@@ -67,10 +68,11 @@ public class Emoticon {
 	private int currentFrameTexCoordY;
 	private long lastRenderTime;
 
-	public Emoticon(String source, String code, int priority, IEmoticonLoader loader) {
-		this.priority = priority;
-		this.code = code;
+	public Emoticon(String source, String code, boolean zeroWidth, int priority, IEmoticonLoader loader) {
 		this.source = source;
+		this.code = code;
+		this.zeroWidth = zeroWidth;
+		this.priority = priority;
 		this.loader = loader;
 
 		tooltip = Text.literal(code);
@@ -178,6 +180,7 @@ public class Emoticon {
 	}
 
 	public float getChatRenderWidth() {
+		if (zeroWidth) return 0;
 		var client = MinecraftClient.getInstance();
 		float height = (float)(client.textRenderer.fontHeight + client.options.getChatLineSpacing().getValue() * 8);
 		return getRenderWidth(height);

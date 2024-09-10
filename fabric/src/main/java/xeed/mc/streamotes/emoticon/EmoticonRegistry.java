@@ -33,13 +33,17 @@ public class EmoticonRegistry {
 	}
 
 	public static Emoticon registerEmoticon(String source, String name, int priority, IEmoticonLoader loader) {
+		return registerEmoticon(source, name, false, priority, loader);
+	}
+
+	public static Emoticon registerEmoticon(String source, String name, boolean zeroWidth, int priority, IEmoticonLoader loader) {
 		if (!Streamotes.EMOTE_PATTERN.matcher(name).matches()) return null;
 
 		synchronized (loadingLock) {
 			var emoticon = namedMap.get(name);
 			if (emoticon != null && emoticon.priority < priority) return null;
 
-			emoticon = new Emoticon(source, name, priority, loader);
+			emoticon = new Emoticon(source, name, zeroWidth, priority, loader);
 			namedMap.put(emoticon.code, emoticon);
 			return emoticon;
 		}
