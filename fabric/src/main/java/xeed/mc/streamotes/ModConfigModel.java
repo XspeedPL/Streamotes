@@ -25,7 +25,7 @@ public class ModConfigModel {
 
 		for (int i = list.size() - 1; i >= 0; --i) {
 			var item = list.get(i);
-			if (item == null || item.length() < 4 || item.length() > 25 || !StreamotesCommon.VALID_CHANNEL_PATTERN.matcher(item).find() || !set.add(item)) {
+			if (item == null || item.length() < 3 || item.length() > 25 || !StreamotesCommon.VALID_CHANNEL_PATTERN.matcher(item).find() || !set.add(item)) {
 				list.remove(i);
 			}
 		}
