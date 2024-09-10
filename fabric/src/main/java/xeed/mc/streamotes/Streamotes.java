@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class Streamotes implements ClientModInitializer {
-	public static final Pattern EMOTE_PATTERN = Pattern.compile("[\\w-:]{2,}");
+	public static final Pattern EMOTE_PATTERN = Pattern.compile("[\\w-]{2,}|:?[\\w-]+:?");
 	public static final String CHAT_TRIGGER = "\u2060";
 	public static final String CHAT_SEPARATOR = "\u2061";
 	public static final ThreadLocal<LinkedList<EmoteRenderInfo>> RENDER_QUEUE = ThreadLocal.withInitial(LinkedList::new);
