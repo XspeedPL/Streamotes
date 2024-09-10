@@ -7,6 +7,7 @@ import dev.isxander.yacl3.api.ListOption;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
+import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import net.minecraft.text.Text;
 
@@ -73,6 +74,11 @@ public class ModConfigScreen implements ModMenuApi {
 						.name(Text.translatable("text.config.streamotes.option.processColons"))
 						.binding(def.processColons, () -> config.processColons, val -> config.processColons = val)
 						.controller(BooleanControllerBuilder::create)
+						.build())
+					.option(Option.<ReportOption>createBuilder()
+						.name(Text.translatable("text.config.streamotes.option.errorReporting"))
+						.binding(def.errorReporting, () -> config.errorReporting, val -> config.errorReporting = val)
+						.controller(opt -> EnumControllerBuilder.create(opt).enumClass(ReportOption.class))
 						.build())
 					.build())
 				.build().generateScreen(parent);

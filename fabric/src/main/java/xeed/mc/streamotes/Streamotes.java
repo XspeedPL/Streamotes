@@ -44,12 +44,18 @@ public class Streamotes implements ClientModInitializer {
 	}
 
 	public static void msg(String text) {
-		var title = Text.literal("Streamotes");
-		var msg = Text.literal(text);
-
 		var mc = MinecraftClient.getInstance();
-		var toast = SystemToast.create(mc, STREAMOTES_TOAST, title, msg);
-		mc.getToastManager().add(toast);
+
+		var mode = StreamotesCommon.getOwnConfig().errorReporting;
+		if (mode == ReportOption.Toast) {
+			var title = Text.literal("Streamotes");
+			var msg = Text.literal(text);
+
+			mc.getToastManager().add(SystemToast.create(mc, STREAMOTES_TOAST, title, msg));
+		}
+		else if (mode == ReportOption.Chat) {
+			mc.inGameHud.getChatHud().addMessage(Text.literal("Streamotes: " + text));
+		}
 	}
 
 	public ModConfigModel getConfig() {

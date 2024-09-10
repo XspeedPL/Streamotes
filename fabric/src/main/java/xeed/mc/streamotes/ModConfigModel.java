@@ -78,4 +78,7 @@ public class ModConfigModel {
 
 	@SerialEntry
 	public boolean processColons = true;
+
+	@SerialEntry
+	public ReportOption errorReporting = ReportOption.Toast;
 }

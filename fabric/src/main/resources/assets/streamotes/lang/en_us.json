@@ -9,5 +9,9 @@
   "text.config.streamotes.option.ffzChannelEmotes": "FrankerFaceZ channel emotes",
   "text.config.streamotes.option.x7tvEmotes": "7tv.app global emotes",
   "text.config.streamotes.option.x7tvChannelEmotes": "7tv.app channel emotes",
-  "text.config.streamotes.option.processColons": "Process colons surrounding emotes"
+  "text.config.streamotes.option.processColons": "Process colons surrounding emotes",
+  "text.config.streamotes.option.errorReporting": "Mod status reporting method",
+  "text.config.streamotes.value.report.toast": "Toast",
+  "text.config.streamotes.value.report.chat": "Chat",
+  "text.config.streamotes.value.report.none": "None"
 }
