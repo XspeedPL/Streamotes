@@ -9,7 +9,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;
 import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,6 +24,10 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 public abstract class MixinTextRendererDrawer implements CharacterVisitor {
 	@Unique
 	private final StringBuilder currentString = new StringBuilder(7);
+
+	@Final
+	@Shadow
+	private final boolean shadow = false;
 
 	@SuppressWarnings("unused")
 	@Inject(method = "accept", at = @At("HEAD"))
@@ -49,7 +55,7 @@ public abstract class MixinTextRendererDrawer implements CharacterVisitor {
 		if (startIx == -1) {
 			original.call(renderer, glyphRenderer, bold, italic, weight, x, y, matrix, vertexConsumer, red, green, blue, alpha, light);
 		}
-		else {
+		else if (!shadow) {
 			int endIx = sb.indexOf(Streamotes.CHAT_SEPARATOR, startIx + Streamotes.CHAT_TRIGGER.length());
 			if (endIx == -1) return;
 
