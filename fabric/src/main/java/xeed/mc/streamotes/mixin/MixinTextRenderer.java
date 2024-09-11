@@ -18,6 +18,9 @@ import xeed.mc.streamotes.WrapTextHandler;
 
 @Mixin(TextRenderer.class)
 public abstract class MixinTextRenderer {
+	@Unique
+	private static final float Z_OFFSET = 50f;
+
 	@SuppressWarnings("unused")
 	@Redirect(method = "<init>", at = @At(value = "NEW", target = "(Lnet/minecraft/client/font/TextHandler$WidthRetriever;)Lnet/minecraft/client/font/TextHandler;"))
 	private TextHandler maybeTextHandler(TextHandler.WidthRetriever widthRetriever) {
@@ -47,28 +50,28 @@ public abstract class MixinTextRenderer {
 				drawTexture(matrix, info.x(), info.y() - lineSpacing - 1,
 					icon.getRenderWidth(height), height,
 					icon.getCurrentFrameTexCoordX(), icon.getCurrentFrameTexCoordY(),
-					icon.getWidth(), icon.getHeight(), icon.getSheetWidth(), icon.getSheetHeight());
+					icon.getWidth(), icon.getHeight(), icon.getSheetWidth(), icon.getSheetHeight(),
+					info.alpha(), info.light());
 			}
 		}
 	}
 
 	@Unique
-	private static void drawTexture(Matrix4f matrix, float x, float y, float width, float height, float u, float v, float regionWidth, float regionHeight, int textureWidth, int textureHeight) {
-		drawTexture2(matrix, x, x + width, y, y + height, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
-	}
+	private static void drawTexture(Matrix4f matrix, float x0, float y0, float w, float h, float u, float v, float regionW, float regionH, int texW, int texH, float a, int l) {
+		final float x1 = x0 + w;
+		final float y1 = y0 + h;
 
-	@Unique
-	private static void drawTexture2(Matrix4f matrix, float x0, float x1, float y0, float y1, float regionWidth, float regionHeight, float u, float v, int textureWidth, int textureHeight) {
-		drawTexturedQuad(matrix, x0, x1, y0, y1, (u + 0.0F) / (float)textureWidth, (u + regionWidth) / textureWidth, (v + 0.0F) / textureHeight, (v + regionHeight) / textureHeight);
-	}
+		final float u0 = u / texW;
+		final float u1 = (u + regionW) / texW;
 
-	@Unique
-	private static void drawTexturedQuad(Matrix4f matrix, float x0, float x1, float y0, float y1, float u0, float u1, float v0, float v1) {
+		final float v0 = v / texH;
+		final float v1 = (v + regionH) / texH;
+
 		var bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(matrix, x0, y1, 666).texture(u0, v1);
-		bufferBuilder.vertex(matrix, x1, y1, 666).texture(u1, v1);
-		bufferBuilder.vertex(matrix, x1, y0, 666).texture(u1, v0);
-		bufferBuilder.vertex(matrix, x0, y0, 666).texture(u0, v0);
+		bufferBuilder.vertex(matrix, x0, y1, Z_OFFSET).color(1f, 1f, 1f, a).texture(u0, v1).light(l);
+		bufferBuilder.vertex(matrix, x1, y1, Z_OFFSET).color(1f, 1f, 1f, a).texture(u1, v1).light(l);
+		bufferBuilder.vertex(matrix, x1, y0, Z_OFFSET).color(1f, 1f, 1f, a).texture(u1, v0).light(l);
+		bufferBuilder.vertex(matrix, x0, y0, Z_OFFSET).color(1f, 1f, 1f, a).texture(u0, v0).light(l);
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 }
