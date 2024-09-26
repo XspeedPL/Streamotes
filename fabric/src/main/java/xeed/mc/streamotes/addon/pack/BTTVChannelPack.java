@@ -1,5 +1,7 @@
 package xeed.mc.streamotes.addon.pack;
 
+import com.google.common.collect.Iterables;
+import com.google.gson.JsonElement;
 import net.minecraft.util.Pair;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.api.EmoteLoaderException;
@@ -23,9 +25,11 @@ public class BTTVChannelPack {
 				throw new EmoteLoaderException("Failed to grab BTTV channel emotes (unexpected status)");
 			}
 
-			var emotes = TwitchEmotesAPI.getJsonArray(root, "channelEmotes");
-			for (int i = 0; i < emotes.size(); ++i) {
-				var entry = emotes.get(i).getAsJsonObject();
+			var chEmotes = TwitchEmotesAPI.getJsonArray(root, "channelEmotes");
+			var shEmotes = TwitchEmotesAPI.getJsonArray(root, "sharedEmotes");
+
+			for (JsonElement emote : Iterables.concat(chEmotes, shEmotes)) {
+				var entry = emote.getAsJsonObject();
 				String code = TwitchEmotesAPI.getJsonString(entry, "code");
 				var emoticon = EmoticonRegistry.registerEmoticon(channelName, code, PRIO, BTTVChannelPack::loadEmoticonImage);
 				if (emoticon != null) {
