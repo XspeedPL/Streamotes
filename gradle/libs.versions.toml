@@ -6,7 +6,7 @@ fabric_api = "0.100.1+1.21"
 modmenu = "9.0.0"
 yacl = "3.5.0+1.21-fabric"
 
-paper_api = "1.20.6-R0.1-SNAPSHOT"
+paper_api = "1.21.1-R0.1-SNAPSHOT"
 netty_buffer = "4.1.112.Final"
 
 [libraries]
