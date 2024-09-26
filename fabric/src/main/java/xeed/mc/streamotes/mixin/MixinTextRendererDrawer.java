@@ -27,7 +27,7 @@ public abstract class MixinTextRendererDrawer implements CharacterVisitor {
 
 	@Final
 	@Shadow
-	private final boolean shadow = false;
+	private boolean shadow;
 
 	@SuppressWarnings("unused")
 	@Inject(method = "accept", at = @At("HEAD"))
