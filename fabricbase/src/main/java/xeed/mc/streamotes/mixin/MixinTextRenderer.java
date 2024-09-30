@@ -4,7 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.OrderedText;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import xeed.mc.streamotes.Compat;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.WrapTextHandler;
 
@@ -37,6 +40,9 @@ public abstract class MixinTextRenderer {
 			float lineSpacing = (float)(client.options.getChatLineSpacing().getValue() * 4);
 			float height = client.textRenderer.fontHeight + lineSpacing * 2;
 
+			int oldTexture = RenderSystem.getShaderTexture(0);
+			var oldShader = RenderSystem.getShader();
+
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 
 			while (!queue.isEmpty()) {
@@ -53,6 +59,9 @@ public abstract class MixinTextRenderer {
 					icon.getWidth(), icon.getHeight(), icon.getSheetWidth(), icon.getSheetHeight(),
 					info.alpha(), info.light());
 			}
+
+			RenderSystem.setShader(() -> oldShader);
+			RenderSystem.setShaderTexture(0, oldTexture);
 		}
 	}
 
@@ -67,11 +76,11 @@ public abstract class MixinTextRenderer {
 		final float v0 = v / texH;
 		final float v1 = (v + regionH) / texH;
 
-		var bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(matrix, x0, y1, Z_OFFSET).color(1f, 1f, 1f, a).texture(u0, v1).light(l);
-		bufferBuilder.vertex(matrix, x1, y1, Z_OFFSET).color(1f, 1f, 1f, a).texture(u1, v1).light(l);
-		bufferBuilder.vertex(matrix, x1, y0, Z_OFFSET).color(1f, 1f, 1f, a).texture(u1, v0).light(l);
-		bufferBuilder.vertex(matrix, x0, y0, Z_OFFSET).color(1f, 1f, 1f, a).texture(u0, v0).light(l);
+		var bufferBuilder = Compat.makeBufferBuilder();
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y1, Z_OFFSET).texture(u0, v1).color(1f, 1f, 1f, a).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y1, Z_OFFSET).texture(u1, v1).color(1f, 1f, 1f, a).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y0, Z_OFFSET).texture(u1, v0).color(1f, 1f, 1f, a).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y0, Z_OFFSET).texture(u0, v0).color(1f, 1f, 1f, a).light(l));
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 }

@@ -26,6 +26,30 @@ dependencies {
 
 processResources {
 	filesMatching("fabric.mod.json") {
-		expand "version": version
+		expand "mod_version": version,
+			"minecraft_version": ">=1.21",
+			"loader_version": ">=" + libs.versions.fabric.loader.get()
 	}
+	filesMatching("streamotes.mixins.json") {
+		expand "java_version": "JAVA_21"
+	}
+}
+
+sourceSets.main {
+	java {
+		srcDirs "src/main/java", "../fabricbase/src/main/java"
+	}
+	resources {
+		srcDir "../fabricbase/src/main/resources"
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release.set(21)
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+	toolchain.languageVersion = JavaLanguageVersion.of(21)
 }

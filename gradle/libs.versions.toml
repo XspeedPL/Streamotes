@@ -1,21 +1,47 @@
 [versions]
+fabric_loader = "0.16.5"
+
 minecraft = "1.21"
 fabric_mappings = "1.21+build.2"
-fabric_loader = "0.16.2"
 fabric_api = "0.100.1+1.21"
-modmenu = "9.0.0"
+modmenu = "11.0.1"
 yacl = "3.5.0+1.21-fabric"
 
-paper_api = "1.21.1-R0.1-SNAPSHOT"
+minecraft1206 = "1.20.6"
+fabric_mappings1206 = "1.20.6+build.3"
+fabric_api1206 = "0.100.8+1.20.6"
+modmenu1206 = "10.0.0"
+yacl1206 = "3.5.0+1.20.6-fabric"
+
+minecraft120 = "1.20.1"
+fabric_mappings120 = "1.20.1+build.10"
+fabric_api120 = "0.92.2+1.20.1"
+modmenu120 = "7.2.2"
+yacl120 = "3.5.0+1.20.1-fabric"
+
+paper_api = "1.20.1-R0.1-SNAPSHOT"
 netty_buffer = "4.1.112.Final"
 
 [libraries]
+fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric_mappings = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings" }
-fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 yacl = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl" }
+
+minecraft1206 = { module = "com.mojang:minecraft", version.ref = "minecraft1206" }
+fabric_mappings1206 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1206" }
+fabric_api1206 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1206" }
+modmenu1206 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1206" }
+yacl1206 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1206" }
+
+minecraft120 = { module = "com.mojang:minecraft", version.ref = "minecraft120" }
+fabric_mappings120 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings120" }
+fabric_api120 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api120" }
+modmenu120 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu120" }
+yacl120 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl120" }
 
 paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }

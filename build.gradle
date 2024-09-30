@@ -5,17 +5,17 @@ allprojects {
 		inputs.property "version", version
 	}
 
-	tasks.withType(JavaCompile).configureEach {
-		options.release.set(21)
-	}
-
-	java {
-		sourceCompatibility = JavaVersion.VERSION_21
-		targetCompatibility = JavaVersion.VERSION_21
-		toolchain.languageVersion = JavaLanguageVersion.of(21)
-	}
-
 	jar {
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	}
+}
+
+tasks.register("assembleAll", Copy) {
+	from "fabric121/build/libs",
+		"fabric1206/build/libs",
+		"fabric120/build/libs",
+		"paper/build/libs"
+	into "build/libs"
+	include "*.jar"
+	dependsOn ":fabric121:assemble", ":fabric1206:assemble", ":fabric120:assemble", ":paper:assemble"
 }

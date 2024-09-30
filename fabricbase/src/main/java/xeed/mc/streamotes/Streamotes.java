@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
@@ -27,7 +26,7 @@ public class Streamotes implements ClientModInitializer {
 	public static final ThreadLocal<LinkedList<EmoteRenderInfo>> RENDER_QUEUE = ThreadLocal.withInitial(LinkedList::new);
 
 	private static final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);
-	private static final SystemToast.Type STREAMOTES_TOAST = new SystemToast.Type(4000);
+	private static final SystemToast.Type STREAMOTES_TOAST = Compat.makeToastType();
 
 	public static Streamotes INSTANCE;
 	public static int MAX_TEXTURE_SIZE = 256;
@@ -77,11 +76,10 @@ public class Streamotes implements ClientModInitializer {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> reloadEmoticons());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ovConfig = null);
 
-		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, this::onReceivePacket);
+		Compat.onInitializeClient(this::onReceiveJsonPacket);
 	}
 
-	private void onReceivePacket(JsonPayload packet, ClientPlayNetworking.Context context) {
-		var json = packet.json();
+	private void onReceiveJsonPacket(String json) {
 		var cfg = StreamotesCommon.configFromJson(json);
 		if (cfg == null) {
 			log("Receinved invalid config JSON: " + json);
@@ -197,5 +195,10 @@ public class Streamotes implements ClientModInitializer {
 				}
 			}
 		});
+	}
+
+	@FunctionalInterface
+	public interface StringAction {
+		void apply(String str);
 	}
 }

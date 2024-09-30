@@ -7,9 +7,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.resource.LifecycledResourceManager;
@@ -65,12 +63,11 @@ public class StreamotesCommon implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register(this::registerCommands);
 		ServerPlayConnectionEvents.JOIN.register(this::onPlayerJoin);
 		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(this::onReload);
-		PayloadTypeRegistry.playS2C().register(JsonPayload.PACKET_ID, JsonPayload.PACKET_CODEC);
+		Compat.onInitializeServer();
 	}
 
 	private static Packet<?> createConfigPacket() {
-		var buf = new JsonPayload(configToJson(getOwnConfig()));
-		return ServerPlayNetworking.createS2CPacket(buf);
+		return Compat.createConfigPacket(configToJson(getOwnConfig()));
 	}
 
 	private void onReload(MinecraftServer server, LifecycledResourceManager resourceManager, boolean success) {

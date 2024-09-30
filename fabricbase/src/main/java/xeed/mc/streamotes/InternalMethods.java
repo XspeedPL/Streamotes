@@ -65,7 +65,7 @@ public class InternalMethods {
 				return false;
 			}
 			else if (frames.size() == 1) {
-				emoticon.setImage(frames.getFirst().getLeft());
+				emoticon.setImage(frames.get(0).getLeft());
 			}
 			else {
 				var images = new BufferedImage[frames.size()];
