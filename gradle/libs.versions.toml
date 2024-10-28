@@ -1,11 +1,17 @@
 [versions]
-fabric_loader = "0.16.5"
+fabric_loader = "0.16.7"
 
-minecraft = "1.21"
-fabric_mappings = "1.21+build.2"
-fabric_api = "0.100.1+1.21"
-modmenu = "11.0.1"
-yacl = "3.5.0+1.21-fabric"
+minecraft1213 = "1.21.3"
+fabric_mappings1213 = "1.21.3+build.2"
+fabric_api1213 = "0.107.0+1.21.3"
+modmenu1213 = "11.0.1"
+yacl1213 = "3.6.1+1.21.2-fabric"
+
+minecraft121 = "1.21"
+fabric_mappings121 = "1.21+build.9"
+fabric_api121 = "0.102.0+1.21"
+modmenu121 = "11.0.1"
+yacl121 = "3.5.0+1.21-fabric"
 
 minecraft1206 = "1.20.6"
 fabric_mappings1206 = "1.20.6+build.3"
@@ -25,11 +31,17 @@ netty_buffer = "4.1.112.Final"
 [libraries]
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
 
-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-fabric_mappings = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings" }
-fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
-modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-yacl = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl" }
+minecraft1213 = { module = "com.mojang:minecraft", version.ref = "minecraft1213" }
+fabric_mappings1213 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1213" }
+fabric_api1213 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1213" }
+modmenu1213 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1213" }
+yacl1213 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1213" }
+
+minecraft121 = { module = "com.mojang:minecraft", version.ref = "minecraft121" }
+fabric_mappings121 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings121" }
+fabric_api121 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api121" }
+modmenu121 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu121" }
+yacl121 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl121" }
 
 minecraft1206 = { module = "com.mojang:minecraft", version.ref = "minecraft1206" }
 fabric_mappings1206 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1206" }
@@ -47,4 +59,4 @@ paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
 
 [plugins]
-fabric_loom = { id = "fabric-loom", version = "1.7.2" }
+fabric_loom = { id = "fabric-loom", version = "1.8.9" }
