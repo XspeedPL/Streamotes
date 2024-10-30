@@ -3,10 +3,7 @@ package xeed.mc.streamotes.emoticon;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.api.IEmoticonLoader;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -30,6 +27,10 @@ public class EmoticonRegistry {
 
 	public static List<String> getEmoteNames() {
 		return namedMap.keySet().stream().sorted().collect(Collectors.toList());
+	}
+
+	public static Collection<Emoticon> getEmotes() {
+		return namedMap.values();
 	}
 
 	public static Emoticon registerEmoticon(String source, String name, int priority, IEmoticonLoader loader) {

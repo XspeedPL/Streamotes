@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 public class Emoticon {
 	private static class DrawImageCallback implements ImageObserver {
@@ -44,11 +45,11 @@ public class Emoticon {
 
 	public final IEmoticonLoader loader;
 	public final int priority;
-	public final String code, source;
+	public final String code, codeLower, source;
 	public final boolean zeroWidth;
 
 	private Object identifier;
-	private Text tooltip;
+	private Text tooltip, preview;
 
 	private boolean loadRequested;
 	private int textureId = -1;
@@ -75,6 +76,7 @@ public class Emoticon {
 		this.priority = priority;
 		this.loader = loader;
 
+		codeLower = code.toLowerCase(Locale.ROOT);
 		tooltip = Text.literal(code);
 	}
 
@@ -86,6 +88,14 @@ public class Emoticon {
 		return code;
 	}
 
+	public Text getPreview() {
+		return preview;
+	}
+
+	public String getNameLower() {
+		return codeLower;
+	}
+
 	public Object getLoadData() {
 		return identifier;
 	}
@@ -95,9 +105,10 @@ public class Emoticon {
 	}
 
 	public void setTooltip(String extraInfo) {
-		var text = Text.literal(code + "\n");
-		text.append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
-		tooltip = text;
+		tooltip = Text.literal(code + "\n")
+			.append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
+		preview = Text.literal(Streamotes.CHAT_TRIGGER + code + Streamotes.CHAT_SEPARATOR + " ")
+			.append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
 	}
 
 	public IEmoticonLoader getLoader() {

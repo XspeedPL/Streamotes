@@ -19,9 +19,9 @@ public abstract class MixinCommandSuggestor {
 	private CompletableFuture<Suggestions> atRefreshSuggestMatching(Iterable<String> iterable, SuggestionsBuilder builder) {
 		String text = builder.getRemaining().toLowerCase(Locale.ROOT);
 
-		for (var emote : EmoticonRegistry.getEmoteNames()) {
-			if (emote.toLowerCase(Locale.ROOT).contains(text))
-				builder.suggest(emote);
+		for (var emote : EmoticonRegistry.getEmotes()) {
+			if (emote.getNameLower().contains(text))
+				builder.suggest(emote.getName(), emote.getPreview());
 		}
 
 		return CommandSource.suggestMatching(iterable, builder);
