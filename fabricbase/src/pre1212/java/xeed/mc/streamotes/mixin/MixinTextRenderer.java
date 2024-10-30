@@ -77,7 +77,7 @@ public abstract class MixinTextRenderer {
 		final float v1 = (v + regionH) / texH;
 
 		var bufferBuilder = Compat.makeBufferBuilder();
-		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y1, Z_OFFSET).texture(u0, v1).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y1, Z_OFFSET).texture(u0, v1).color(1f, 1f, 1f, a).light(l));
 		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y1, Z_OFFSET).texture(u1, v1).color(1f, 1f, 1f, a).light(l));
 		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y0, Z_OFFSET).texture(u1, v0).color(1f, 1f, 1f, a).light(l));
 		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y0, Z_OFFSET).texture(u0, v0).color(1f, 1f, 1f, a).light(l));
