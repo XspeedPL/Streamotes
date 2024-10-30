@@ -21,9 +21,6 @@ import xeed.mc.streamotes.WrapTextHandler;
 
 @Mixin(TextRenderer.class)
 public abstract class MixinTextRenderer {
-	@Unique
-	private static final float Z_OFFSET = 50f;
-
 	@SuppressWarnings("unused")
 	@Redirect(method = "<init>", at = @At(value = "NEW", target = "(Lnet/minecraft/client/font/TextHandler$WidthRetriever;)Lnet/minecraft/client/font/TextHandler;"))
 	private TextHandler maybeTextHandler(TextHandler.WidthRetriever widthRetriever) {
@@ -53,7 +50,7 @@ public abstract class MixinTextRenderer {
 
 				RenderSystem.setShaderTexture(0, icon.getTextureId());
 
-				drawTexture(matrix, info.x(), info.y() - lineSpacing - 1,
+				drawTexture(matrix, info.x(), info.y() - lineSpacing - 1F, info.z() + 1F,
 					icon.getRenderWidth(height), height,
 					icon.getCurrentFrameTexCoordX(), icon.getCurrentFrameTexCoordY(),
 					icon.getWidth(), icon.getHeight(), icon.getSheetWidth(), icon.getSheetHeight(),
@@ -66,7 +63,7 @@ public abstract class MixinTextRenderer {
 	}
 
 	@Unique
-	private static void drawTexture(Matrix4f matrix, float x0, float y0, float w, float h, float u, float v, float regionW, float regionH, int texW, int texH, float a, int l) {
+	private static void drawTexture(Matrix4f matrix, float x0, float y0, float z, float w, float h, float u, float v, float regionW, float regionH, int texW, int texH, float a, int l) {
 		final float x1 = x0 + w;
 		final float y1 = y0 + h;
 
@@ -77,10 +74,10 @@ public abstract class MixinTextRenderer {
 		final float v1 = (v + regionH) / texH;
 
 		var bufferBuilder = Compat.makeBufferBuilder();
-		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y1, Z_OFFSET).texture(u0, v1).color(1f, 1f, 1f, a).light(l));
-		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y1, Z_OFFSET).texture(u1, v1).color(1f, 1f, 1f, a).light(l));
-		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y0, Z_OFFSET).texture(u1, v0).color(1f, 1f, 1f, a).light(l));
-		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y0, Z_OFFSET).texture(u0, v0).color(1f, 1f, 1f, a).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y1, z).texture(u0, v1).color(1f, 1f, 1f, a).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y1, z).texture(u1, v1).color(1f, 1f, 1f, a).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x1, y0, z).texture(u1, v0).color(1f, 1f, 1f, a).light(l));
+		Compat.nextVertex(bufferBuilder.vertex(matrix, x0, y0, z).texture(u0, v0).color(1f, 1f, 1f, a).light(l));
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 }

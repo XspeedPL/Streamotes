@@ -6,6 +6,7 @@ import net.minecraft.client.font.BakedGlyph;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.Style;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,6 +32,10 @@ public abstract class MixinTextRendererDrawer implements CharacterVisitor {
 	@Final
 	@Shadow
 	private int light;
+
+	@Final
+	@Shadow
+	private Matrix4f matrix;
 
 	@SuppressWarnings("unused")
 	@Inject(method = "accept", at = @At("HEAD"))
@@ -75,7 +80,7 @@ public abstract class MixinTextRendererDrawer implements CharacterVisitor {
 				int red = (c >> 16) & 255;
 				int green = (c >> 8) & 255;
 				int blue = c & 255;
-				Streamotes.RENDER_QUEUE.get().addLast(new EmoteRenderInfo(icon, glyph.x(), glyph.y(), red, green, blue, alpha, light));
+				Streamotes.RENDER_QUEUE.get().addLast(new EmoteRenderInfo(icon, glyph.x(), glyph.y(), matrix.m33(), red, green, blue, alpha, light));
 			}
 		}
 		return true;
