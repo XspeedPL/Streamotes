@@ -37,7 +37,8 @@ processResources {
 
 sourceSets.main {
 	java {
-		srcDirs "src/main/java", "../fabricbase/src/main/java", "../fabricbase/src/pre1212/java"
+		srcDirs "src/main/java", "../fabricbase/src/main/java",
+			"../fabricbase/src/pre1212/java", "../fabricbase/src/post1200/java"
 		exclude "**/JsonPayload.java"
 	}
 	resources {
