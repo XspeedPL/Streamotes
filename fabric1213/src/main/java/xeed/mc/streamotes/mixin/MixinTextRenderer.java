@@ -33,6 +33,10 @@ public abstract class MixinTextRenderer {
 		var queue = Streamotes.RENDER_QUEUE.get();
 
 		if (!queue.isEmpty()) {
+			if (vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
+				immediate.draw();
+			}
+
 			var client = MinecraftClient.getInstance();
 			float lineSpacing = (float)(client.options.getChatLineSpacing().getValue() * 4);
 			float height = client.textRenderer.fontHeight + lineSpacing * 2;
