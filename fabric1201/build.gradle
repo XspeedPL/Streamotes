@@ -6,7 +6,7 @@ base {
 	archivesName = project.archives_base_name
 }
 
-version = "${project.version}+${libs.versions.minecraft120.get()}"
+version = "${project.version}+${libs.versions.minecraft1201.get()}"
 group = project.maven_group
 
 repositories {
@@ -15,13 +15,13 @@ repositories {
 }
 
 dependencies {
-	minecraft libs.minecraft120
-	mappings variantOf(libs.fabric.mappings120) { classifier 'v2' }
+	minecraft libs.minecraft1201
+	mappings variantOf(libs.fabric.mappings1201) { classifier 'v2' }
 
 	modImplementation libs.fabric.loader
-	modImplementation libs.fabric.api120
-	modImplementation libs.modmenu120
-	modImplementation libs.yacl120
+	modImplementation libs.fabric.api1201
+	modImplementation libs.modmenu1201
+	modImplementation libs.yacl1201
 }
 
 processResources {
