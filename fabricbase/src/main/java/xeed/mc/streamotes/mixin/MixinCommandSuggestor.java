@@ -7,6 +7,8 @@ import net.minecraft.command.CommandSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import xeed.mc.streamotes.ActivationOption;
+import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 import java.util.Locale;
@@ -17,11 +19,18 @@ public abstract class MixinCommandSuggestor {
 	@SuppressWarnings("unused")
 	@Redirect(method = "refresh", at = @At(value = "INVOKE", target = "Lnet/minecraft/command/CommandSource;suggestMatching(Ljava/lang/Iterable;Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;)Ljava/util/concurrent/CompletableFuture;"))
 	private CompletableFuture<Suggestions> atRefreshSuggestMatching(Iterable<String> iterable, SuggestionsBuilder builder) {
-		String text = builder.getRemaining().toLowerCase(Locale.ROOT);
+		var text = builder.getRemaining().toLowerCase(Locale.ROOT);
+		var mode = Streamotes.INSTANCE.getConfig().activationMode;
 
 		for (var emote : EmoticonRegistry.getEmotes()) {
-			if (emote.getNameLower().contains(text))
-				builder.suggest(emote.getName(), emote.getPreview());
+			var nameLower = emote.getNameLower();
+			var hasFix = nameLower.length() > 1 && nameLower.charAt(0) == ':' && nameLower.charAt(nameLower.length() - 1) == ':';
+			if (mode != ActivationOption.Disabled && !hasFix) nameLower = ":" + nameLower + ":";
+			if (nameLower.contains(text)) {
+				var name = emote.getName();
+				if (mode != ActivationOption.Disabled && !hasFix) name = ":" + name + ":";
+				builder.suggest(name, emote.getPreview());
+			}
 		}
 
 		return CommandSource.suggestMatching(iterable, builder);

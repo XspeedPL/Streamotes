@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import xeed.mc.streamotes.ActivationOption;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
@@ -23,10 +24,16 @@ import java.util.Optional;
 public class MixinChatMessages {
 	@Inject(method = "getRenderedChatMessage", at = @At("RETURN"), cancellable = true)
 	private static void maybeGetRenderedChatMessage(String input, CallbackInfoReturnable<String> cir) {
+		var mode = Streamotes.INSTANCE.getConfig().activationMode;
 		cir.setReturnValue(Streamotes.EMOTE_PATTERN.matcher(cir.getReturnValue()).replaceAll(x -> {
-			String name = x.group();
-			var emoticon = EmoticonRegistry.fromName(name);
-			if (emoticon == null && Streamotes.INSTANCE.getConfig().processColons && name.length() > 2 && name.startsWith(":") && name.endsWith(":")) {
+			var name = x.group();
+			var hasFix = name.length() > 1 && name.charAt(0) == ':' && name.charAt(name.length() - 1) == ':';
+
+			var emoticon = mode != ActivationOption.Required || hasFix
+				? EmoticonRegistry.fromName(name)
+				: null;
+
+			if (emoticon == null && mode != ActivationOption.Disabled && hasFix) {
 				name = name.substring(1, name.length() - 1);
 				emoticon = EmoticonRegistry.fromName(name);
 			}

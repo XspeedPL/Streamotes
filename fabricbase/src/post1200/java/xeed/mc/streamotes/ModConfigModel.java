@@ -77,7 +77,7 @@ public class ModConfigModel {
 	public boolean x7tvChannelEmotes = true;
 
 	@SerialEntry
-	public boolean processColons = true;
+	public ActivationOption activationMode = ActivationOption.Optional;
 
 	@SerialEntry
 	public ReportOption errorReporting = ReportOption.Toast;
