@@ -6,6 +6,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import xeed.mc.streamotes.Compat;
 import xeed.mc.streamotes.ImageHandler;
 import xeed.mc.streamotes.InternalMethods;
 import xeed.mc.streamotes.Streamotes;
@@ -172,7 +173,7 @@ public class Emoticon {
 		if (loadBuffer != null) {
 			textureId = TextureUtil.generateTextureId();
 			TextureUtil.prepareImage(textureId, 0, loadBuffer.getWidth(), loadBuffer.getHeight());
-			loadBuffer.upload(0, 0, 0, 0, 0, loadBuffer.getWidth(), loadBuffer.getHeight(), false, false, true, true);
+			Compat.uploadImage(loadBuffer);
 			loadBuffer = null;
 		}
 		return textureId;

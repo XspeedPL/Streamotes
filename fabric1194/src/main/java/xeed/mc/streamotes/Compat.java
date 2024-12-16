@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.render.*;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.network.packet.Packet;
 
@@ -37,5 +38,9 @@ public class Compat {
 
 	public static void nextVertex(VertexConsumer builder) {
 		builder.next();
+	}
+
+	public static void uploadImage(NativeImage loadBuffer) {
+		loadBuffer.upload(0, 0, 0, 0, 0, loadBuffer.getWidth(), loadBuffer.getHeight(), false, false, true, true);
 	}
 }
