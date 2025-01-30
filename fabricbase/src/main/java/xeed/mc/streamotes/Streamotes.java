@@ -82,7 +82,7 @@ public class Streamotes implements ClientModInitializer {
 	private void onReceiveJsonPacket(String json) {
 		var cfg = StreamotesCommon.configFromJson(json);
 		if (cfg == null) {
-			log("Receinved invalid config JSON: " + json);
+			log("Received invalid config JSON: " + json);
 			msg("Received invalid emote config! Contact server admin.");
 		}
 		else {
