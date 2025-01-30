@@ -1,12 +1,12 @@
 package xeed.mc.streamotes.addon.pack;
 
-import xeed.mc.streamotes.StreamotesCommon;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.api.EmoteLoaderException;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -20,66 +20,72 @@ public class TwitchSubscriberPack {
 	private static void loadSource1(String channel, String channelId) throws IOException {
 		var apiURL = TwitchEmotesAPI.getURL("https://twitchemotes.com/channels/" + channelId);
 		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURL)))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				StreamotesCommon.logi(channel + " LINE: " + line);
+			TwitchEmotesAPI.concentrateLines(reader, line -> {
+				int beginAt = 0;
+				while (beginAt < line.length()) {
+					int ixStart = line.indexOf(" class=\"emote expandable-emote\" ", beginAt);
+					if (ixStart == -1) return;
 
-				int ixStart = line.indexOf(" class=\"emote expandable-emote\" ");
-				if (ixStart == -1) continue;
+					String prefix = "data-image-id=\"";
+					ixStart = line.indexOf(prefix);
+					if (ixStart == -1) return;
 
-				String prefix = "data-image-id=\"";
-				ixStart = line.indexOf(prefix);
-				if (ixStart == -1) continue;
+					int ixEnd = line.indexOf("\"", ixStart + prefix.length());
+					if (ixEnd == -1) return;
 
-				int ixEnd = line.indexOf("\"", ixStart + prefix.length());
-				if (ixEnd == -1) continue;
+					String id = line.substring(ixStart + prefix.length(), ixEnd);
 
-				String id = line.substring(ixStart + prefix.length(), ixEnd);
+					prefix = "data-regex=\"";
+					ixStart = line.indexOf(prefix);
+					if (ixStart == -1) return;
 
-				prefix = "data-regex=\"";
-				ixStart = line.indexOf(prefix);
-				if (ixStart == -1) continue;
+					ixEnd = line.indexOf("\"", ixStart + prefix.length());
+					if (ixEnd == -1) return;
 
-				ixEnd = line.indexOf("\"", ixStart + prefix.length());
-				if (ixEnd == -1) continue;
+					String code = line.substring(ixStart + prefix.length(), ixEnd);
 
-				String code = line.substring(ixStart + prefix.length(), ixEnd);
+					var emoticon = EmoticonRegistry.registerEmoticon(channel, code, PRIO, TwitchSubscriberPack::loadEmoticonImage);
+					if (emoticon != null) {
+						emoticon.setLoadData(id);
+						emoticon.setTooltip(channel);
+					}
 
-				var emoticon = EmoticonRegistry.registerEmoticon(channel, code, PRIO, TwitchSubscriberPack::loadEmoticonImage);
-				if (emoticon != null) {
-					emoticon.setLoadData(id);
-					emoticon.setTooltip(channel);
+					beginAt = ixEnd + 1;
 				}
-			}
+			});
 		}
 	}
 
 	private static void loadSource2(String channel, String channelId) throws IOException {
 		var apiURL = TwitchEmotesAPI.getURL("https://www.twitchmetrics.net/c/" + channelId + "-" + channel.toLowerCase(Locale.ROOT) + "/emotes/");
 		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURL)))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String prefix = "<a href=\"/e/";
-				int ixStart = line.indexOf(prefix);
-				if (ixStart == -1) continue;
+			TwitchEmotesAPI.concentrateLines(reader, line -> {
+				int beginAt = 0;
+				while (beginAt < line.length()) {
+					final String prefix = "<a href=\"/e/";
+					int ixStart = line.indexOf(prefix, beginAt);
+					if (ixStart == -1) return;
 
-				int ixEnd = line.indexOf("\"", ixStart + prefix.length());
-				if (ixEnd == -1) continue;
+					int ixEnd = line.indexOf("\"", ixStart + prefix.length());
+					if (ixEnd == -1) return;
 
-				String idCode = line.substring(ixStart + prefix.length(), ixEnd);
+					String idCode = line.substring(ixStart + prefix.length(), ixEnd);
 
-				ixStart = idCode.indexOf('-');
-				if (ixStart == -1) continue;
+					ixStart = idCode.indexOf('-');
+					if (ixStart == -1) return;
 
-				String id = idCode.substring(0, ixStart);
-				String code = idCode.substring(ixStart + 1);
+					String id = idCode.substring(0, ixStart);
+					String code = idCode.substring(ixStart + 1);
 
-				var emoticon = EmoticonRegistry.registerEmoticon(channel, code, PRIO, TwitchSubscriberPack::loadEmoticonImage);
-				if (emoticon != null) {
-					emoticon.setLoadData(id);
-					emoticon.setTooltip(channel);
+					var emoticon = EmoticonRegistry.registerEmoticon(channel, code, PRIO, TwitchSubscriberPack::loadEmoticonImage);
+					if (emoticon != null) {
+						emoticon.setLoadData(id);
+						emoticon.setTooltip(channel);
+					}
+
+					beginAt = ixEnd + 1;
 				}
-			}
+			});
 		}
 	}
 
@@ -90,13 +96,12 @@ public class TwitchSubscriberPack {
 			try {
 				loadSource1(channel, channelId);
 			}
-			catch (IOException ee) {
-				StreamotesCommon.loge("loadSource1 failed for " + channel + " (" + channelId + ")", ee);
+			catch (IOException ignored) {
 				loadSource2(channel, channelId);
 			}
 		}
-		//catch (FileNotFoundException ignored) {
-		//}
+		catch (FileNotFoundException ignored) {
+		}
 		catch (Exception e) {
 			throw new EmoteLoaderException("Unhandled exception", e);
 		}

@@ -17,64 +17,70 @@ public class TwitchGlobalPack {
 
 	private static void loadSource1() throws IOException {
 		var apiURL = TwitchEmotesAPI.getURL("https://twitchemotes.com/");
-
 		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURL)))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String prefix = "data-regex=\"";
-				int ixStart = line.indexOf(prefix);
-				if (ixStart == -1) continue;
+			TwitchEmotesAPI.concentrateLines(reader, line -> {
+				int beginAt = 0;
+				while (beginAt < line.length()) {
+					String prefix = "data-regex=\"";
+					int ixStart = line.indexOf(prefix, beginAt);
+					if (ixStart == -1) return;
 
-				int ixEnd = line.indexOf("\"", ixStart + prefix.length());
-				if (ixEnd == -1) continue;
+					int ixEnd = line.indexOf("\"", ixStart + prefix.length());
+					if (ixEnd == -1) return;
 
-				String code = line.substring(ixStart + prefix.length(), ixEnd);
+					String code = line.substring(ixStart + prefix.length(), ixEnd);
 
-				prefix = "data-image-id=\"";
-				ixStart = line.indexOf(prefix);
-				if (ixStart == -1) continue;
+					prefix = "data-image-id=\"";
+					ixStart = line.indexOf(prefix);
+					if (ixStart == -1) return;
 
-				ixEnd = line.indexOf("\"", ixStart + prefix.length());
-				if (ixEnd == -1) continue;
+					ixEnd = line.indexOf("\"", ixStart + prefix.length());
+					if (ixEnd == -1) return;
 
-				String id = line.substring(ixStart + prefix.length(), ixEnd);
+					String id = line.substring(ixStart + prefix.length(), ixEnd);
 
-				var emoticon = EmoticonRegistry.registerEmoticon(".Twitch", code, PRIO, TwitchGlobalPack::loadEmoticonImage);
-				if (emoticon != null) {
-					emoticon.setLoadData(id);
-					emoticon.setTooltip("Twitch");
+					var emoticon = EmoticonRegistry.registerEmoticon(".Twitch", code, PRIO, TwitchGlobalPack::loadEmoticonImage);
+					if (emoticon != null) {
+						emoticon.setLoadData(id);
+						emoticon.setTooltip("Twitch");
+					}
+
+					beginAt = ixEnd + 1;
 				}
-			}
+			});
 		}
 	}
 
 	private static void loadSource2() throws IOException {
 		var apiURL = TwitchEmotesAPI.getURL("https://www.twitchmetrics.net/emotes/");
-
 		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURL)))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String prefix = "<a href=\"/e/";
-				int ixStart = line.indexOf(prefix);
-				if (ixStart == -1) continue;
+			TwitchEmotesAPI.concentrateLines(reader, line -> {
+				int beginAt = 0;
+				while (beginAt < line.length()) {
+					final String prefix = "<a href=\"/e/";
+					int ixStart = line.indexOf(prefix, beginAt);
+					if (ixStart == -1) return;
 
-				int ixEnd = line.indexOf("\"", ixStart + prefix.length());
-				if (ixEnd == -1) continue;
+					int ixEnd = line.indexOf("\"", ixStart + prefix.length());
+					if (ixEnd == -1) return;
 
-				String idCode = line.substring(ixStart + prefix.length(), ixEnd);
+					String idCode = line.substring(ixStart + prefix.length(), ixEnd);
 
-				ixStart = idCode.indexOf('-');
-				if (ixStart == -1) continue;
+					ixStart = idCode.indexOf('-');
+					if (ixStart == -1) return;
 
-				String id = idCode.substring(0, ixStart);
-				String code = idCode.substring(ixStart + 1);
+					String id = idCode.substring(0, ixStart);
+					String code = idCode.substring(ixStart + 1);
 
-				var emoticon = EmoticonRegistry.registerEmoticon(".Twitch", code, PRIO, TwitchGlobalPack::loadEmoticonImage);
-				if (emoticon != null) {
-					emoticon.setLoadData(id);
-					emoticon.setTooltip("Twitch");
+					var emoticon = EmoticonRegistry.registerEmoticon(".Twitch", code, PRIO, TwitchGlobalPack::loadEmoticonImage);
+					if (emoticon != null) {
+						emoticon.setLoadData(id);
+						emoticon.setTooltip("Twitch");
+					}
+
+					beginAt = ixEnd + 1;
 				}
-			}
+			});
 		}
 	}
 

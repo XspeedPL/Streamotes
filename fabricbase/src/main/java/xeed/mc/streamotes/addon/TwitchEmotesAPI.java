@@ -18,6 +18,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,6 +39,21 @@ public class TwitchEmotesAPI {
 	public static void initialize(File mcDataDir) {
 		cacheDir = new File(mcDataDir, "emoticons/cache");
 		cachedEmotes = new File(cacheDir, "images/");
+	}
+
+	public static void concentrateLines(BufferedReader reader, Consumer<String> action) throws IOException {
+		var buffer = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			if (line.isBlank() && !buffer.isEmpty()) {
+				line = buffer.toString();
+				buffer.setLength(0);
+				action.accept(line);
+			}
+			else if (!line.isBlank()) {
+				buffer.append(line);
+			}
+		}
 	}
 
 	public static URL getURL(String url) {
