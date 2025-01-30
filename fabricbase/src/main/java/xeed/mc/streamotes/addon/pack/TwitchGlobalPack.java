@@ -18,7 +18,7 @@ public class TwitchGlobalPack {
 	private static void loadSource1() throws IOException {
 		var apiURL = TwitchEmotesAPI.getURL("https://twitchemotes.com/");
 
-		try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
+		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURL)))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String prefix = "data-regex=\"";
@@ -51,7 +51,7 @@ public class TwitchGlobalPack {
 	private static void loadSource2() throws IOException {
 		var apiURL = TwitchEmotesAPI.getURL("https://www.twitchmetrics.net/emotes/");
 
-		try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
+		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURL)))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String prefix = "<a href=\"/e/";

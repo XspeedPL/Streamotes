@@ -2,6 +2,7 @@ package xeed.mc.streamotes;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.texture.NativeImage;
+import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
 import javax.imageio.ImageIO;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 
 public class InternalMethods {
 	public static boolean loadImage(Emoticon emoticon, URI uri) {
-		try (var in = uri.toURL().openStream()) {
+		try (var in = TwitchEmotesAPI.openStream(uri.toURL())) {
 			Streamotes.log("Loading from " + uri);
 			return loadImage(emoticon, in);
 		}

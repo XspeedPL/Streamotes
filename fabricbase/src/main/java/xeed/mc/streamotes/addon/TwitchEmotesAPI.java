@@ -49,6 +49,12 @@ public class TwitchEmotesAPI {
 		}
 	}
 
+	public static InputStream openStream(URL url) throws IOException {
+		var conn = url.openConnection();
+		conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0");
+		return conn.getInputStream();
+	}
+
 	private static <T> T getJson(InputStream stream, Class<T> cls) throws IOException {
 		try (var reader = new InputStreamReader(stream)) {
 			return gson.fromJson(reader, cls);
@@ -60,7 +66,7 @@ public class TwitchEmotesAPI {
 			var entry = jsonCache.get(url.toString());
 			if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
 
-			var json = getJson(url.openStream(), cls);
+			var json = getJson(openStream(url), cls);
 			jsonCache.put(url.toString(), new CacheEntry<>(json, System.currentTimeMillis() + (1000 * 60)));
 			return json;
 		}

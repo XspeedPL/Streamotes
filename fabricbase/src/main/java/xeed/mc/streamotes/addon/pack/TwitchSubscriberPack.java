@@ -20,7 +20,7 @@ public class TwitchSubscriberPack {
 			String channelId = TwitchEmotesAPI.getChannelId(channel);
 
 			var apiURL = TwitchEmotesAPI.getURL("https://twitchemotes.com/channels/" + channelId);
-			try (var reader = new BufferedReader(new InputStreamReader(apiURL.openStream()))) {
+			try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURL)))) {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					int ixStart = line.indexOf(" class=\"emote expandable-emote\" ");
