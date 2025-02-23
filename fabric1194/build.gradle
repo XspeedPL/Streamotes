@@ -16,12 +16,12 @@ repositories {
 
 configurations.configureEach {
 	resolutionStrategy {
-		force 'com.twelvemonkeys.common:common-lang:3.10.0'
-		force 'com.twelvemonkeys.common:common-image:3.10.0'
-		force 'com.twelvemonkeys.common:common-io:3.10.0'
-		force 'com.twelvemonkeys.imageio:imageio-core:3.10.0'
-		force 'com.twelvemonkeys.imageio:imageio-metadata:3.10.0'
-		force 'com.twelvemonkeys.imageio:imageio-webp:3.10.0'
+		force 'com.twelvemonkeys.common:common-lang:3.12.0'
+		force 'com.twelvemonkeys.common:common-image:3.12.0'
+		force 'com.twelvemonkeys.common:common-io:3.12.0'
+		force 'com.twelvemonkeys.imageio:imageio-core:3.12.0'
+		force 'com.twelvemonkeys.imageio:imageio-metadata:3.12.0'
+		force 'com.twelvemonkeys.imageio:imageio-webp:3.12.0'
 	}
 }
 
