@@ -7,6 +7,8 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 
 public class Compat {
 	public static void onInitializeServer() {
@@ -17,6 +19,10 @@ public class Compat {
 		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, (packet, context) -> {
 			handler.apply(packet.json());
 		});
+	}
+
+	public static void sendFeedback(ServerCommandSource source, Text message, boolean broadcastToOps) {
+		source.sendFeedback(() -> message, broadcastToOps);
 	}
 
 	public static Packet<?> createConfigPacket(String json) {

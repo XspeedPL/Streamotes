@@ -79,6 +79,25 @@ public class StreamotesCommon implements ModInitializer {
 	}
 
 	private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess buildContext, CommandManager.RegistrationEnvironment environment) {
-		// TODO: Add/remove channels live with commands?
+		dispatcher.register(CommandManager.literal(NAME)
+			.requires(source -> source.hasPermissionLevel(3))
+			.then(CommandManager.literal(RELOAD)
+				.executes(context -> {
+					ModConfigModel.reload();
+					context.getSource().getServer().getPlayerManager().sendToAll(createConfigPacket(false));
+					return Command.SINGLE_SUCCESS;
+				})
+			)
+			.then(CommandManager.literal(FORCE_RELOAD)
+				.executes(context -> {
+					ModConfigModel.reload();
+					context.getSource().getServer().getPlayerManager().sendToAll(createConfigPacket(true));
+					return Command.SINGLE_SUCCESS;
+				}))
+			.executes(context -> {
+				Compat.sendFeedback(context.getSource(), Text.literal("Usage: /" + NAME + " [" + RELOAD + "|" + FORCE_RELOAD + "]"), false);
+				return Command.SINGLE_SUCCESS;
+			})
+		);
 	}
 }
