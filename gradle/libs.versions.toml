@@ -1,10 +1,11 @@
 [versions]
-fabric_loader = "0.16.9"
+fabric_loom = "1.9.2"
+fabric_loader = "0.16.10"
 
 minecraft1214 = "1.21.4"
-fabric_mappings1214 = "1.21.4+build.2"
-fabric_api1214 = "0.112.0+1.21.4"
-modmenu1214 = "13.0.0-beta.1"
+fabric_mappings1214 = "1.21.4+build.8"
+fabric_api1214 = "0.117.0+1.21.4"
+modmenu1214 = "13.0.2"
 yacl1214 = "3.6.2+1.21.4-fabric"
 
 minecraft1213 = "1.21.3"
@@ -83,4 +84,4 @@ paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
 
 [plugins]
-fabric_loom = { id = "fabric-loom", version = "1.8.9" }
+fabric_loom = { id = "fabric-loom", version.ref = "fabric_loom" }
