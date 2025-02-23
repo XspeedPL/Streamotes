@@ -76,6 +76,8 @@ public class ModConfigModel {
 	@SerialEntry
 	public boolean x7tvChannelEmotes = true;
 
+	public boolean forceClearCache = false;
+
 	@SerialEntry
 	public ActivationOption activationMode = ActivationOption.Optional;
 

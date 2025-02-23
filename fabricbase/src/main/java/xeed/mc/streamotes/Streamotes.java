@@ -88,6 +88,11 @@ public class Streamotes implements ClientModInitializer {
 		else {
 			ovConfig = cfg;
 			msg("Received emote config, starting loading");
+			if (cfg.forceClearCache) {
+				msg("Force cache clear requested, clearing cache");
+				TwitchEmotesAPI.clearFileCache();
+				TwitchEmotesAPI.clearJsonCache();
+			}
 			reloadEmoticons();
 		}
 	}

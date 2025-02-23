@@ -37,5 +37,7 @@ public class ModConfigModel {
 	public boolean x7tvEmotes = true;
 	public boolean x7tvChannelEmotes = true;
 
+	public boolean forceClearCache = false;
+
 	public ActivationOption activationMode = ActivationOption.Optional;
 }

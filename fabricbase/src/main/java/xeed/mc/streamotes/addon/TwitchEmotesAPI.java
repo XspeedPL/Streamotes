@@ -158,7 +158,7 @@ public class TwitchEmotesAPI {
 		var cachedImageFile = new File(cachedEmotes, cacheId + "-" + imageId + ".png");
 		if (CACHE_EMOTES && shouldUseCacheFileImage(cachedImageFile)) {
 			if (InternalMethods.loadImage(emote, cachedImageFile)) return;
-			else clearCache();
+			else clearFileCache();
 		}
 
 		if (InternalMethods.loadImage(emote, source)) {
@@ -183,12 +183,18 @@ public class TwitchEmotesAPI {
 		}
 	}
 
-	public static void clearCache() {
+	public static void clearFileCache() {
 		try {
 			FileUtils.deleteDirectory(cacheDir);
 		}
 		catch (IOException e) {
 			StreamotesCommon.loge("Cache purge failed", e);
+		}
+	}
+
+	public static void clearJsonCache() {
+		synchronized (jsonCache) {
+			jsonCache.clear();
 		}
 	}
 

@@ -28,6 +28,7 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	private static final String CHANNEL = "xeed:streamotes";
 	private static final String COMMAND = "streamotes";
 	private static final String RELOAD = "reload";
+	private static final String FORCE_RELOAD = "force-reload";
 
 	private ModConfigModel config = new ModConfigModel();
 
@@ -39,20 +40,20 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	public void onPlayerRegisterChannel(PlayerRegisterChannelEvent event) {
 		if (event.getChannel().equals(CHANNEL)) {
 			getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-				event.getPlayer().sendPluginMessage(this, CHANNEL, createConfigPacket());
+				event.getPlayer().sendPluginMessage(this, CHANNEL, createConfigPacket(false));
 				getLogger().info("Sent config packet to " + event.getPlayer().getName());
 			}, 5);
 		}
 	}
 
-	private void onReload() {
+	private void onReload(boolean forceClear) {
 		reloadModConfig();
-		getServer().sendPluginMessage(this, CHANNEL, createConfigPacket());
+		getServer().sendPluginMessage(this, CHANNEL, createConfigPacket(forceClear));
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onReload(ServerResourcesReloadedEvent event) {
-		onReload();
+		onReload(false);
 	}
 
 	private void reloadModConfig() {
@@ -85,7 +86,7 @@ public final class Streamotes extends JavaPlugin implements Listener {
 		}
 
 		var cmd = Objects.requireNonNull(getCommand(COMMAND));
-		cmd.setUsage("Usage: /streamotes [reload]");
+		cmd.setUsage("Usage: /" + COMMAND + " [" + RELOAD + "|" + FORCE_RELOAD + "]");
 		cmd.setTabCompleter(this);
 		cmd.setExecutor(this);
 
@@ -99,16 +100,23 @@ public final class Streamotes extends JavaPlugin implements Listener {
 		getServer().getMessenger().unregisterOutgoingPluginChannel(this, CHANNEL);
 	}
 
-	private byte[] createConfigPacket() {
+	private byte[] createConfigPacket(boolean forceClear) {
 		var buf = Unpooled.buffer();
+		config.forceClearCache = forceClear;
 		var json = new Gson().toJson(config, ModConfigModel.class);
 		return json.getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		if (command.getName().equals(COMMAND)) {
-			if (args.length > 0 && RELOAD.startsWith(args[0])) {
+		if (command.getName().equals(COMMAND) && args.length > 0) {
+			if (args[0].isEmpty()) {
+				return List.of(FORCE_RELOAD, RELOAD);
+			}
+			if (FORCE_RELOAD.startsWith(args[0])) {
+				return List.of(FORCE_RELOAD);
+			}
+			if (RELOAD.startsWith(args[0])) {
 				return List.of(RELOAD);
 			}
 		}
@@ -119,13 +127,13 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 		if (command.getName().equals(COMMAND)) {
-			if (args.length > 0 && args[0].equals(RELOAD)) {
+			if (args.length > 0 && (args[0].equals(RELOAD) || args[0].equals(FORCE_RELOAD))) {
 				if (!sender.hasPermission("xeed.mc.streamotes") && !sender.isOp()) {
 					sender.sendMessage("Insufficient permissions to execute command!");
 					return true;
 				}
 
-				onReload();
+				onReload(args[0].equals(FORCE_RELOAD));
 				return true;
 			}
 		}
