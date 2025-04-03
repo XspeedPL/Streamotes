@@ -69,7 +69,7 @@ public class EmoticonRegistry {
 		synchronized (disposalList) {
 			if (!disposalList.isEmpty()) {
 				for (Emoticon emoticon : disposalList) {
-					emoticon.disposeTexture();
+					emoticon.close();
 				}
 				disposalList.clear();
 			}

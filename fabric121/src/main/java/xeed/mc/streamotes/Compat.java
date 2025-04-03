@@ -1,5 +1,7 @@
 package xeed.mc.streamotes;
 
+import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -40,7 +42,29 @@ public class Compat {
 	public static void nextVertex(VertexConsumer builder) {
 	}
 
-	public static void uploadImage(NativeImage loadBuffer) {
-		loadBuffer.upload(0, 0, 0, 0, 0, loadBuffer.getWidth(), loadBuffer.getHeight(), false, false, true, true);
+	public static class Texture implements AutoCloseable {
+		private int glId;
+
+		public boolean isLoaded() {
+			return glId != -1;
+		}
+
+		public void setShaderTexture(int index) {
+			RenderSystem.setShaderTexture(index, glId);
+		}
+
+		public void upload(String label, NativeImage buffer) {
+			if (glId == -1) glId = TextureUtil.generateTextureId();
+			TextureUtil.prepareImage(glId, 0, buffer.getWidth(), buffer.getHeight());
+
+			buffer.upload(0, 0, 0, 0, 0, buffer.getWidth(), buffer.getHeight(), false, false, true, true);
+		}
+
+		public void close() {
+			if (glId != -1) {
+				TextureUtil.releaseTextureId(glId);
+				glId = -1;
+			}
+		}
 	}
 }

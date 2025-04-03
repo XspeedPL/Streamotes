@@ -1,6 +1,8 @@
 package xeed.mc.streamotes;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -42,12 +44,34 @@ public class Compat {
 	public static void nextVertex(VertexConsumer builder) {
 	}
 
-	public static void uploadImage(NativeImage loadBuffer) {
-		// enable mipmap
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
-		// disable blur
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+	public static class Texture implements AutoCloseable {
+		private int glId;
 
-		loadBuffer.upload(0, 0, 0, 0, 0, loadBuffer.getWidth(), loadBuffer.getHeight(), true);
+		public boolean isLoaded() {
+			return glId != -1;
+		}
+
+		public void setShaderTexture(int index) {
+			RenderSystem.setShaderTexture(index, glId);
+		}
+
+		public void upload(String label, NativeImage buffer) {
+			if (glId == -1) glId = TextureUtil.generateTextureId();
+			TextureUtil.prepareImage(glId, 0, buffer.getWidth(), buffer.getHeight());
+
+			// enable mipmap
+			GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+			// disable blur
+			GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+			buffer.upload(0, 0, 0, 0, 0, buffer.getWidth(), buffer.getHeight(), true);
+		}
+
+		public void close() {
+			if (glId != -1) {
+				TextureUtil.releaseTextureId(glId);
+				glId = -1;
+			}
+		}
 	}
 }

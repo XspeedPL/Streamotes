@@ -73,15 +73,16 @@ public abstract class MixinTextRendererDrawer implements CharacterVisitor {
 			var icon = EmoticonRegistry.fromName(code);
 			if (icon == null) return;
 
-			if (icon.getTextureId() == -1) {
+			if (icon.getTexture().isLoaded()) {
+				int alpha = (color >> 24) & 255;
+				int red = (color >> 16) & 255;
+				int green = (color >> 8) & 255;
+				int blue = color & 255;
+				Streamotes.RENDER_QUEUE.get().addLast(new EmoteRenderInfo(icon, x, y, matrix.m33(), red, green, blue, alpha, light));
+			}
+			else {
 				icon.requestTexture();
 			}
-
-			int alpha = (color >> 24) & 255;
-			int red = (color >> 16) & 255;
-			int green = (color >> 8) & 255;
-			int blue = color & 255;
-			Streamotes.RENDER_QUEUE.get().addLast(new EmoteRenderInfo(icon, x, y, matrix.m33(), red, green, blue, alpha, light));
 		}
 	}
 

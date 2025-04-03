@@ -1,6 +1,5 @@
 package xeed.mc.streamotes.emoticon;
 
-import com.mojang.blaze3d.platform.TextureUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.text.Style;
@@ -16,11 +15,12 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-public class Emoticon {
+public class Emoticon implements Closeable {
 	private static class DrawImageCallback implements ImageObserver {
 		private boolean isReady;
 
@@ -48,12 +48,12 @@ public class Emoticon {
 	public final int priority;
 	public final String code, codeLower, source;
 	public final boolean zeroWidth;
+	private final Compat.Texture texture;
 
 	private Object identifier;
 	private Text tooltip, preview;
 
 	private boolean loadRequested;
-	private int textureId = -1;
 	private int width;
 	private int height;
 	private NativeImage loadBuffer;
@@ -79,6 +79,7 @@ public class Emoticon {
 
 		codeLower = code.toLowerCase(Locale.ROOT);
 		tooltip = Text.literal(code);
+		texture = new Compat.Texture();
 	}
 
 	public String getSource() {
@@ -169,14 +170,13 @@ public class Emoticon {
 		loadBuffer = InternalMethods.awtToNative(tempBuffer);
 	}
 
-	public int getTextureId() {
+	public Compat.Texture getTexture() {
 		if (loadBuffer != null) {
-			textureId = TextureUtil.generateTextureId();
-			TextureUtil.prepareImage(textureId, 0, loadBuffer.getWidth(), loadBuffer.getHeight());
-			Compat.uploadImage(loadBuffer);
+			texture.upload("Emote " + code, loadBuffer);
+			loadBuffer.close();
 			loadBuffer = null;
 		}
-		return textureId;
+		return texture;
 	}
 
 	public int getWidth() {
@@ -210,10 +210,12 @@ public class Emoticon {
 		}
 	}
 
-	public void disposeTexture() {
-		if (textureId != -1) {
-			TextureUtil.releaseTextureId(textureId);
+	public void close() {
+		if (loadBuffer != null) {
+			loadBuffer.close();
+			loadBuffer = null;
 		}
+		texture.close();
 	}
 
 	public Text getTooltip() {

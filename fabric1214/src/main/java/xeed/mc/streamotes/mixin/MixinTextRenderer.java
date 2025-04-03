@@ -52,7 +52,7 @@ public abstract class MixinTextRenderer {
 
 				if (icon.isAnimated()) icon.updateAnimation();
 
-				RenderSystem.setShaderTexture(0, icon.getTextureId());
+				icon.getTexture().setShaderTexture(0);
 
 				drawTexture(matrix, info.x(), info.y() - lineSpacing - 1F, info.z() + 1F,
 					icon.getRenderWidth(height), height,

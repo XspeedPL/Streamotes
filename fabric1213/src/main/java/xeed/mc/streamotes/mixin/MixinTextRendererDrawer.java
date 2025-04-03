@@ -71,7 +71,7 @@ public abstract class MixinTextRendererDrawer implements CharacterVisitor {
 			var icon = EmoticonRegistry.fromName(code);
 			if (icon == null) return true;
 
-			if (icon.getTextureId() == -1) {
+			if (!icon.getTexture().isLoaded()) {
 				icon.requestTexture();
 			}
 			else if (obj instanceof BakedGlyph.DrawnGlyph glyph) {
