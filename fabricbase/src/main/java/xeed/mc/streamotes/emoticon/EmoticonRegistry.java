@@ -3,13 +3,17 @@ package xeed.mc.streamotes.emoticon;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.api.IEmoticonLoader;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class EmoticonRegistry {
-	private static final Map<String, Emoticon> namedMap = new HashMap<>();
-	private static final List<Emoticon> disposalList = new ArrayList<>();
+	private static final HashMap<String, Emoticon> namedMap = new HashMap<>();
+	private static final ArrayList<Emoticon> disposalList = new ArrayList<>();
+	private static final ArrayList<Emoticon> tempList = new ArrayList<>();
 	private static final Object loadingLock = new Object();
 	private static final AtomicInteger loading = new AtomicInteger(0);
 
@@ -30,7 +34,11 @@ public class EmoticonRegistry {
 	}
 
 	public static Collection<Emoticon> getEmotes() {
-		return namedMap.values();
+		tempList.clear();
+		synchronized (loadingLock) {
+			tempList.addAll(namedMap.values());
+		}
+		return tempList;
 	}
 
 	public static Emoticon registerEmoticon(String source, String name, int priority, IEmoticonLoader loader) {
