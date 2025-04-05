@@ -175,6 +175,7 @@ public class Emoticon implements Closeable {
 			texture.upload("Emote " + code, loadBuffer);
 			loadBuffer.close();
 			loadBuffer = null;
+			loadRequested = false;
 		}
 		return texture;
 	}
