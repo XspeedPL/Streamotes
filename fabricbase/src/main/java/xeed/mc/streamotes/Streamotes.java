@@ -1,6 +1,5 @@
 package xeed.mc.streamotes;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -29,7 +28,6 @@ public class Streamotes implements ClientModInitializer {
 	private static final SystemToast.Type STREAMOTES_TOAST = Compat.makeToastType();
 
 	public static Streamotes INSTANCE;
-	public static int MAX_TEXTURE_SIZE = 256;
 
 	private ModConfigModel ovConfig = null;
 
@@ -68,8 +66,6 @@ public class Streamotes implements ClientModInitializer {
 		ImageIO.scanForPlugins();
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-			MAX_TEXTURE_SIZE = RenderSystem.maxSupportedTextureSize();
-
 			TwitchEmotesAPI.initialize(client.runDirectory);
 		});
 
@@ -143,7 +139,7 @@ public class Streamotes implements ClientModInitializer {
 			while (EmoticonRegistry.isLoading()) sleepSweetPrince(10);
 
 			EmoticonRegistry.reloadEmoticons();
-			RenderSystem.recordRenderCall(EmoticonRegistry::runDisposal);
+			MinecraftClient.getInstance().execute(EmoticonRegistry::runDisposal);
 
 			final var cfg = getConfig();
 			final var channelList = new ArrayList<>(cfg.emoteChannels);
