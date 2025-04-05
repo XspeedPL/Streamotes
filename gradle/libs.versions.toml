@@ -38,12 +38,6 @@ fabric_api1201 = "0.92.5+1.20.1"
 modmenu1201 = "7.2.2"
 yacl1201 = "3.5.0+1.20.1-fabric"
 
-minecraft1194 = "1.19.4"
-fabric_mappings1194 = "1.19.4+build.2"
-fabric_api1194 = "0.87.2+1.19.4"
-modmenu1194 = "6.3.1"
-yacl1194 = "3.1.1+1.19.4"
-
 paper_api = "1.20.1-R0.1-SNAPSHOT"
 netty_buffer = "4.1.112.Final"
 
@@ -85,12 +79,6 @@ fabric_mappings1201 = { module = "net.fabricmc:yarn", version.ref = "fabric_mapp
 fabric_api1201 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1201" }
 modmenu1201 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1201" }
 yacl1201 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1201" }
-
-minecraft1194 = { module = "com.mojang:minecraft", version.ref = "minecraft1194" }
-fabric_mappings1194 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1194" }
-fabric_api1194 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1194" }
-modmenu1194 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1194" }
-yacl1194 = { module = "dev.isxander.yacl:yet-another-config-lib-fabric", version.ref = "yacl1194" }
 
 paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
