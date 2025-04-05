@@ -6,5 +6,11 @@ pluginManagement {
 	}
 }
 
-include ":fabric1214", ":fabric1213", ":fabric121", ":fabric1206", ":fabric1201", ":fabric1194", ":paper"
+include ":fabric1215"
+include ":fabric1214"
+include ":fabric1213"
+include ":fabric121"
+include ":fabric1206"
+include ":fabric1201"
+include ":paper"
 rootProject.name = "Streamotes"

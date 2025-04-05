@@ -1,0 +1,55 @@
+plugins {
+	alias libs.plugins.fabric.loom
+}
+
+base {
+	archivesName = project.archives_base_name
+}
+
+version = "${project.version}+${libs.versions.minecraft1215.get()}"
+group = project.maven_group
+
+repositories {
+	maven { url "https://maven.isxander.dev/releases" }
+	maven { url "https://maven.terraformersmc.com" }
+}
+
+dependencies {
+	minecraft libs.minecraft1215
+	mappings variantOf(libs.fabric.mappings1215) { classifier 'v2' }
+
+	modImplementation libs.fabric.loader
+	modImplementation libs.fabric.api1215
+	modImplementation libs.modmenu1215
+	modImplementation libs.yacl1215
+}
+
+processResources {
+	filesMatching("fabric.mod.json") {
+		expand "mod_version": version,
+			"minecraft_version": ">=1.21.5",
+			"loader_version": ">=" + libs.versions.fabric.loader.get()
+	}
+	filesMatching("streamotes.mixins.json") {
+		expand "java_version": "JAVA_21"
+	}
+}
+
+sourceSets.main {
+	java {
+		srcDirs "src/main/java", "../fabricbase/src/main/java"
+	}
+	resources {
+		srcDir "../fabricbase/src/main/resources"
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release.set(21)
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+	toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
