@@ -4,8 +4,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.TextCollector;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xeed.mc.streamotes.ActivationOption;
+import xeed.mc.streamotes.Compat;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
@@ -70,8 +69,7 @@ public class MixinChatMessages {
 
 			var code = string.substring(startIx + Streamotes.CHAT_TRIGGER.length(), endIx);
 			var icon = EmoticonRegistry.fromName(code);
-			var custom = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, icon.getName()))
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, icon.getTooltip()));
+			var custom = Compat.makeEmoteStyle(icon);
 
 			textCollector.add(StringVisitable.styled(string.substring(startIx, endIx + Streamotes.CHAT_SEPARATOR.length()), style.withParent(custom)));
 

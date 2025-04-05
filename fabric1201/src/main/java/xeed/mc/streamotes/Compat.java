@@ -10,9 +10,15 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
+import xeed.mc.streamotes.emoticon.Emoticon;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class Compat {
 	public static void onInitializeServer() {
@@ -38,10 +44,9 @@ public class Compat {
 		return SystemToast.Type.PERIODIC_NOTIFICATION;
 	}
 
-	public static BufferBuilder makeBufferBuilder() {
-		var buf = Tessellator.getInstance().getBuffer();
-		buf.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-		return buf;
+	public static Style makeEmoteStyle(Emoticon icon) {
+		return Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, icon.getName()))
+			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, icon.getTooltip()));
 	}
 
 	public static void nextVertex(VertexConsumer builder) {
