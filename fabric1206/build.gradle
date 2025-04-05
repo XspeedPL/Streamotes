@@ -24,6 +24,10 @@ dependencies {
 	modImplementation libs.yacl1206
 }
 
+loom {
+	accessWidenerPath = file("../fabricbase/src/main/resources/streamotes.accesswidener")
+}
+
 processResources {
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,

@@ -20,6 +20,13 @@ import xeed.mc.streamotes.emoticon.Emoticon;
 import java.util.function.Function;
 
 public class Compat {
+	private static final RenderPhase.ShaderProgram PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionTexColorProgram);
+
+	public static final Function<Emoticon, RenderLayer> LAYER = Util.memoize(icon ->
+		RenderLayer.of("emote-" + icon.code, VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
+			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::preApply, icon.getTexture()::postApply))
+				.program(PROGRAM).depthTest(RenderPhase.ALWAYS_DEPTH_TEST).build(false)));
+
 	public static void onInitializeServer() {
 		PayloadTypeRegistry.playS2C().register(JsonPayload.PACKET_ID, JsonPayload.PACKET_CODEC);
 	}
@@ -51,14 +58,19 @@ public class Compat {
 	}
 
 	public static class Texture implements AutoCloseable {
-		private int glId;
+		private int glId = -1;
 
 		public boolean isLoaded() {
 			return glId != -1;
 		}
 
-		public void setShaderTexture(int index) {
-			RenderSystem.setShaderTexture(index, glId);
+		public void preApply() {
+			RenderSystem.disableBlend();
+			RenderSystem.setShaderTexture(0, glId);
+		}
+
+		public void postApply() {
+			RenderSystem.enableBlend();
 		}
 
 		public void upload(String label, NativeImage buffer) {

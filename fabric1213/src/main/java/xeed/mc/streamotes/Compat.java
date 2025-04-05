@@ -5,7 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.network.packet.Packet;
@@ -20,6 +23,11 @@ import xeed.mc.streamotes.emoticon.Emoticon;
 import java.util.function.Function;
 
 public class Compat {
+	public static final Function<Emoticon, RenderLayer> LAYER = Util.memoize(icon ->
+		RenderLayer.of("emote-" + icon.code, VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
+			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::preApply, icon.getTexture()::postApply))
+				.program(RenderPhase.POSITION_TEXTURE_COLOR_PROGRAM).depthTest(RenderPhase.ALWAYS_DEPTH_TEST).build(false)));
+
 	public static void onInitializeServer() {
 		PayloadTypeRegistry.playS2C().register(JsonPayload.PACKET_ID, JsonPayload.PACKET_CODEC);
 	}
@@ -48,14 +56,19 @@ public class Compat {
 	}
 
 	public static class Texture implements AutoCloseable {
-		private int glId;
+		private int glId = -1;
 
 		public boolean isLoaded() {
 			return glId != -1;
 		}
 
-		public void setShaderTexture(int index) {
-			RenderSystem.setShaderTexture(index, glId);
+		public void preApply() {
+			RenderSystem.disableBlend();
+			RenderSystem.setShaderTexture(0, glId);
+		}
+
+		public void postApply() {
+			RenderSystem.enableBlend();
 		}
 
 		public void upload(String label, NativeImage buffer) {
