@@ -1,20 +1,17 @@
 package xeed.mc.streamotes;
 
 import com.google.common.util.concurrent.Runnables;
-import com.mojang.blaze3d.buffers.BufferType;
-import com.mojang.blaze3d.buffers.BufferUsage;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.TextureFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.network.packet.Packet;
@@ -26,17 +23,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
-import java.util.OptionalInt;
 import java.util.function.Function;
 
 public class Compat {
-	public static final RenderPipeline PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.POSITION_TEX_COLOR_SNIPPET)
-		.withoutBlend().withLocation(StreamotesCommon.IDENT)
-		.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST).withDepthWrite(false).build());
-
 	public static final Function<Emoticon, RenderLayer> LAYER = Util.memoize(icon ->
-		RenderLayer.of("emote-" + icon.code, 2048, false, false, PIPELINE,
-			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::preApply, Runnables.doNothing()))
+		RenderLayer.of("emote-" + icon.code, 2048, false, false, RenderPipelines.GUI_TEXTURED,
+			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
 				.build(false)));
 
 	public static void onInitializeServer() {
@@ -66,6 +58,9 @@ public class Compat {
 			.withHoverEvent(new HoverEvent.ShowText(icon.getTooltip()));
 	}
 
+	public static void nextVertex(VertexConsumer consumer) {
+	}
+
 	public static class Texture implements AutoCloseable {
 		private GpuTexture texture;
 
@@ -73,7 +68,7 @@ public class Compat {
 			return texture != null && !texture.isClosed();
 		}
 
-		public void preApply() {
+		public void onApply() {
 			RenderSystem.setShaderTexture(0, texture);
 		}
 

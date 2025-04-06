@@ -1,5 +1,6 @@
 package xeed.mc.streamotes;
 
+import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -25,8 +26,8 @@ public class Compat {
 
 	public static final Function<Emoticon, RenderLayer> LAYER = Util.memoize(icon ->
 		RenderLayer.of("emote-" + icon.code, VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
-			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::preApply, icon.getTexture()::postApply))
-				.program(PROGRAM).depthTest(RenderPhase.ALWAYS_DEPTH_TEST).build(false)));
+			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
+				.program(PROGRAM).transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY).build(false)));
 
 	public static void onInitializeServer() {
 	}
@@ -52,6 +53,7 @@ public class Compat {
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {
+
 		return Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, icon.getName()))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, icon.getTooltip()));
 	}
@@ -67,13 +69,8 @@ public class Compat {
 			return glId != -1;
 		}
 
-		public void preApply() {
-			RenderSystem.disableBlend();
+		public void onApply() {
 			RenderSystem.setShaderTexture(0, glId);
-		}
-
-		public void postApply() {
-			RenderSystem.enableBlend();
 		}
 
 		public void upload(String label, NativeImage buffer) {

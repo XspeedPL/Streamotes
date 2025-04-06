@@ -1,15 +1,13 @@
 package xeed.mc.streamotes;
 
+import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.network.packet.Packet;
@@ -27,8 +25,8 @@ import java.util.function.Function;
 public class Compat {
 	public static final Function<Emoticon, RenderLayer> LAYER = Util.memoize(icon ->
 		RenderLayer.of("emote-" + icon.code, VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
-			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::preApply, icon.getTexture()::postApply))
-				.program(RenderPhase.POSITION_TEXTURE_COLOR_PROGRAM).depthTest(RenderPhase.ALWAYS_DEPTH_TEST).build(false)));
+			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
+				.program(RenderPhase.POSITION_TEXTURE_COLOR_PROGRAM).transparency(RenderPhase.Transparency.TRANSLUCENT_TRANSPARENCY).build(false)));
 
 	public static void onInitializeServer() {
 		PayloadTypeRegistry.playS2C().register(JsonPayload.PACKET_ID, JsonPayload.PACKET_CODEC);
@@ -57,6 +55,9 @@ public class Compat {
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, icon.getTooltip()));
 	}
 
+	public static void nextVertex(VertexConsumer consumer) {
+	}
+
 	public static class Texture implements AutoCloseable {
 		private int glId = -1;
 
@@ -64,13 +65,8 @@ public class Compat {
 			return glId != -1;
 		}
 
-		public void preApply() {
-			RenderSystem.disableBlend();
+		public void onApply() {
 			RenderSystem.setShaderTexture(0, glId);
-		}
-
-		public void postApply() {
-			RenderSystem.enableBlend();
 		}
 
 		public void upload(String label, NativeImage buffer) {
