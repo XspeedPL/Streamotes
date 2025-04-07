@@ -5,6 +5,7 @@
   "mixins": [
     "MixinChatMessages",
     "MixinCommandSuggestor",
+    "MixinStyle",
     "MixinTextRenderer",
     "MixinTextRendererDrawer"
   ],
