@@ -17,6 +17,7 @@ import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 @SuppressWarnings("unused")
 @Mixin(ChatMessages.class)
@@ -37,7 +38,7 @@ public class MixinChatMessages {
 				emoticon = EmoticonRegistry.fromName(name);
 			}
 			if (emoticon != null) Streamotes.log("Emote found: " + emoticon.getName());
-			return emoticon != null ? Streamotes.CHAT_TRIGGER + emoticon.code + Streamotes.CHAT_SEPARATOR : name;
+			return Matcher.quoteReplacement(emoticon != null ? Streamotes.CHAT_TRIGGER + emoticon.code + Streamotes.CHAT_SEPARATOR : name);
 		}));
 	}
 
