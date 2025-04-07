@@ -20,8 +20,6 @@ import java.util.regex.Pattern;
 
 public class Streamotes implements ClientModInitializer {
 	public static final Pattern EMOTE_PATTERN = Pattern.compile("[^\\s:]{2,}|:?[^\\s:]+:?", Pattern.UNICODE_CHARACTER_CLASS);
-	public static final String CHAT_TRIGGER = "\u2060";
-	public static final String CHAT_SEPARATOR = "\u2061";
 	public static final ThreadLocal<LinkedList<EmoteRenderInfo>> RENDER_QUEUE = ThreadLocal.withInitial(LinkedList::new);
 
 	private static final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);

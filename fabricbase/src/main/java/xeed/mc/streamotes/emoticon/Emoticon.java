@@ -107,10 +107,9 @@ public class Emoticon implements Closeable {
 	}
 
 	public void setTooltip(String extraInfo) {
-		tooltip = Text.literal(code + "\n")
-			.append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
-		preview = Text.literal(Streamotes.CHAT_TRIGGER + code + Streamotes.CHAT_SEPARATOR + " ")
-			.append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
+		tooltip = Text.literal(code + "\n").append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
+		preview = Text.literal(code).setStyle(Style.EMPTY.withEmote(this))
+			.append(" " + Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
 	}
 
 	public IEmoticonLoader getLoader() {
@@ -267,5 +266,15 @@ public class Emoticon implements Closeable {
 
 	public int getSheetHeight() {
 		return spriteSheetHeight;
+	}
+
+	@Override
+	public int hashCode() {
+		return code.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Emoticon other && code.equals(other.code);
 	}
 }

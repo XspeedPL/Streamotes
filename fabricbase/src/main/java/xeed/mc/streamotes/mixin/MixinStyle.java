@@ -8,30 +8,20 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xeed.mc.streamotes.EmotedStyle;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
 import java.util.Objects;
 
-@SuppressWarnings("unused")
 @Mixin(Style.class)
 public abstract class MixinStyle implements EmotedStyle {
 	@Unique
 	private Emoticon emote;
 
-	@Unique
-	private Emoticon lastEmote;
-
-	@Inject(method = "<init>*", at = @At("TAIL"))
-	private void atCtorEnd(CallbackInfo ci) {
-		setEmote(lastEmote);
-	}
-
 	@Inject(method = "*", at = @At("TAIL"))
 	private void atAnyEnd(CallbackInfoReturnable<?> callback) {
-		if (callback.getReturnValue() instanceof Style style) {
+		if (!Objects.equals(callback.getId(), "withEmote") && callback.getReturnValue() instanceof Style style) {
 			style.setEmote(emote);
 		}
 	}

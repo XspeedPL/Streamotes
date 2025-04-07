@@ -53,7 +53,6 @@ public class Compat {
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {
-
 		return Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, icon.getName()))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, icon.getTooltip()));
 	}
