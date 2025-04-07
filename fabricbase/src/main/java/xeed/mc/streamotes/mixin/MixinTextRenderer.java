@@ -18,7 +18,7 @@ import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.WrapTextHandler;
 
 @Mixin(TextRenderer.class)
-public abstract class MixinTextRenderer {
+public class MixinTextRenderer {
 	@SuppressWarnings("unused")
 	@Redirect(method = "<init>", at = @At(value = "NEW", target = "(Lnet/minecraft/client/font/TextHandler$WidthRetriever;)Lnet/minecraft/client/font/TextHandler;"))
 	private TextHandler maybeTextHandler(TextHandler.WidthRetriever widthRetriever) {
@@ -36,7 +36,7 @@ public abstract class MixinTextRenderer {
 			float height = client.textRenderer.fontHeight + lineSpacing * 2;
 
 			while (!queue.isEmpty()) {
-				var info = queue.removeFirst();
+				var info = queue.removeLast();
 				var icon = info.icon();
 
 				if (icon.isAnimated()) icon.updateAnimation();
