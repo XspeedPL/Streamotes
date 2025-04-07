@@ -1,12 +1,12 @@
 package xeed.mc.streamotes.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
-import net.minecraft.command.CommandSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import xeed.mc.streamotes.ActivationOption;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
@@ -15,10 +15,9 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(ChatInputSuggestor.class)
-public abstract class MixinCommandSuggestor {
-	@SuppressWarnings("unused")
-	@Redirect(method = "refresh", at = @At(value = "INVOKE", target = "Lnet/minecraft/command/CommandSource;suggestMatching(Ljava/lang/Iterable;Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;)Ljava/util/concurrent/CompletableFuture;"))
-	private CompletableFuture<Suggestions> atRefreshSuggestMatching(Iterable<String> iterable, SuggestionsBuilder builder) {
+public class MixinCommandSuggestor {
+	@WrapOperation(method = "refresh", at = @At(value = "INVOKE", target = "Lnet/minecraft/command/CommandSource;suggestMatching(Ljava/lang/Iterable;Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;)Ljava/util/concurrent/CompletableFuture;"))
+	private CompletableFuture<Suggestions> atRefreshSuggestMatching(Iterable<String> candidates, SuggestionsBuilder builder, Operation<CompletableFuture<Suggestions>> original) {
 		var text = builder.getRemaining().toLowerCase(Locale.ROOT);
 		var mode = Streamotes.INSTANCE.getConfig().activationMode;
 
@@ -33,6 +32,6 @@ public abstract class MixinCommandSuggestor {
 			}
 		}
 
-		return CommandSource.suggestMatching(iterable, builder);
+		return original.call(candidates, builder);
 	}
 }
