@@ -9,6 +9,7 @@
   "text.config.streamotes.option.ffzChannelEmotes": "FrankerFaceZ channel emotes",
   "text.config.streamotes.option.x7tvEmotes": "7tv.app global emotes",
   "text.config.streamotes.option.x7tvChannelEmotes": "7tv.app channel emotes",
+  "text.config.streamotes.option.colorEmotes": "Apply text color to emotes",
   "text.config.streamotes.option.activationMode": "Process colons surrounding emotes",
   "text.config.streamotes.option.errorReporting": "Mod status reporting method",
   "text.config.streamotes.value.activation.required": "Required",

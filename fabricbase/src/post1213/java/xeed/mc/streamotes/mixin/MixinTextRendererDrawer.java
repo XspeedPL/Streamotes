@@ -26,6 +26,10 @@ public abstract class MixinTextRendererDrawer {
 
 	@Final
 	@Shadow
+	private boolean shadow;
+
+	@Final
+	@Shadow
 	private Matrix4f matrix;
 
 	@Shadow
@@ -51,7 +55,7 @@ public abstract class MixinTextRendererDrawer {
 	@ModifyVariable(method = "accept", at = @At(value = "STORE"))
 	private BakedGlyph atGetGlyph(BakedGlyph glyph) {
 		int c = getRenderColor(state.style.getColor());
-		return DrawerCommons.atDrawGlyph(state, false, x, y, matrix, c) ? EmptyBakedGlyph.INSTANCE : glyph;
+		return DrawerCommons.atDrawGlyph(state, shadow, x, y, matrix, c) ? EmptyBakedGlyph.INSTANCE : glyph;
 	}
 
 	@WrapOperation(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/Glyph;getAdvance(Z)F"))
