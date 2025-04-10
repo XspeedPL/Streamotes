@@ -86,6 +86,7 @@ public class Streamotes implements ClientModInitializer {
 				msg("Force cache clear requested, clearing cache");
 				TwitchEmotesAPI.clearFileCache();
 				TwitchEmotesAPI.clearJsonCache();
+				cfg.forceClearCache = false;
 			}
 			reloadEmoticons();
 		}
