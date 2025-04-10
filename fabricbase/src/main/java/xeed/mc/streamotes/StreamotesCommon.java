@@ -40,7 +40,9 @@ public class StreamotesCommon implements ModInitializer {
 	public static ModConfigModel configFromJson(String json) {
 		var gson = new Gson();
 		try {
-			return gson.fromJson(json, ModConfigModel.class);
+			var result = gson.fromJson(json, ModConfigModel.class);
+			result.errorReporting = getOwnConfig().errorReporting;
+			return result;
 		}
 		catch (JsonSyntaxException ex) {
 			return null;
