@@ -76,11 +76,14 @@ public class ModConfigModel {
 	@SerialEntry
 	public boolean x7tvChannelEmotes = true;
 
-	public boolean forceClearCache = false;
+	@SerialEntry
+	public boolean colorEmotes = true;
 
 	@SerialEntry
 	public ActivationOption activationMode = ActivationOption.Optional;
 
 	@SerialEntry
 	public ReportOption errorReporting = ReportOption.Toast;
+
+	public boolean forceClearCache = false;
 }

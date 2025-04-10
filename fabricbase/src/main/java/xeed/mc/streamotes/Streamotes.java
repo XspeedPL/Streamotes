@@ -63,10 +63,7 @@ public class Streamotes implements ClientModInitializer {
 
 		ImageIO.scanForPlugins();
 
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-			TwitchEmotesAPI.initialize(client.runDirectory);
-		});
-
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> TwitchEmotesAPI.initialize(client.runDirectory));
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> reloadEmoticons());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ovConfig = null);
 
