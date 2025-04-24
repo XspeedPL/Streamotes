@@ -17,6 +17,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import xeed.mc.streamotes.emoticon.Emoticon;
+import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 import java.util.function.Function;
 
@@ -51,6 +52,13 @@ public class Compat {
 	public static Style makeEmoteStyle(Emoticon icon) {
 		return Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, icon.getName()))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, icon.getTooltip()));
+	}
+
+	public static Emoticon getEmote(Style style) {
+		var ev = style.getClickEvent();
+		return ev != null && ev.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD
+			? EmoticonRegistry.fromName(ev.getValue())
+			: null;
 	}
 
 	public static void nextVertex(VertexConsumer consumer) {

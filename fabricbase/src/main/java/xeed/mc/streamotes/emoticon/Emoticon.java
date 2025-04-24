@@ -108,7 +108,7 @@ public class Emoticon implements Closeable {
 
 	public void setTooltip(String extraInfo) {
 		tooltip = Text.literal(code + "\n").append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
-		preview = Text.literal(code).setStyle(Style.EMPTY.withEmote(this))
+		preview = Text.literal(code).setStyle(Compat.makeEmoteStyle(this))
 			.append(" " + Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
 	}
 

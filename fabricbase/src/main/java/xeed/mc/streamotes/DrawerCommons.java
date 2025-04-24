@@ -10,7 +10,7 @@ public class DrawerCommons {
 	}
 
 	public static void beforeAccept(State state, int codePoint) {
-		if (state.style.getEmote() != null) {
+		if (Compat.getEmote(state.style) != null) {
 			if (Character.isBmpCodePoint(codePoint)) {
 				++state.length;
 			}
@@ -21,7 +21,7 @@ public class DrawerCommons {
 	}
 
 	public static void afterAccept(State state) {
-		var emote = state.style.getEmote();
+		var emote = Compat.getEmote(state.style);
 		if (emote == null || state.length >= emote.code.length()) state.length = 0;
 	}
 
@@ -29,7 +29,7 @@ public class DrawerCommons {
 		if (state.length == 0) return false;
 
 		if (!shadow) {
-			var icon = state.style.getEmote();
+			var icon = Compat.getEmote(state.style);
 			if (icon == null) return true;
 
 			if (icon.getTexture().isLoaded()) {
@@ -45,7 +45,7 @@ public class DrawerCommons {
 	public static Float atGetAdvance(State state) {
 		if (state.length == 0) return null;
 
-		var icon = state.style.getEmote();
+		var icon = Compat.getEmote(state.style);
 		if (icon == null) return null;
 
 		return state.length >= icon.code.length() ? icon.getChatRenderWidth() : 0f;

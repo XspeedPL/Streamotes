@@ -57,9 +57,7 @@ public class MixinChatMessages {
 					textCollector.add(StringVisitable.styled(string.substring(lastEnd, start), style));
 				}
 
-				var custom = Compat.makeEmoteStyle(emoticon);
-				custom.setEmote(emoticon);
-				textCollector.add(StringVisitable.styled(emoticon.code, style.withParent(custom)));
+				textCollector.add(StringVisitable.styled(emoticon.code, Compat.makeEmoteStyle(emoticon).withParent(style)));
 
 				lastEnd = matcher.end();
 			}

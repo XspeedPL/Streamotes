@@ -27,7 +27,7 @@ public class MixinTextRenderer {
 
 			@Override
 			public float getWidth(int codePoint, Style style) {
-				var icon = style.getEmote();
+				var icon = Compat.getEmote(style);
 				if (icon == null) {
 					currentLength = 0;
 					return widthRetriever.getWidth(codePoint, style);
