@@ -67,13 +67,13 @@ public class StreamotesCommon implements ModInitializer {
 		ModConfigModel.reload();
 		CommandRegistrationCallback.EVENT.register(this::registerCommands);
 		ServerPlayConnectionEvents.JOIN.register(this::onPlayerJoin);
-		Compat.onInitializeServer();
+		CompatServer.onInitializeServer();
 	}
 
 	private static Packet<?> createConfigPacket(boolean forceClear) {
 		var cfg = getOwnConfig();
 		cfg.forceClearCache = forceClear;
-		return Compat.createConfigPacket(configToJson(cfg));
+		return CompatServer.createConfigPacket(configToJson(cfg));
 	}
 
 	private void onPlayerJoin(ServerPlayNetworkHandler serverPlayNetworkHandler, PacketSender packetSender, MinecraftServer minecraftServer) {
@@ -97,7 +97,7 @@ public class StreamotesCommon implements ModInitializer {
 					return Command.SINGLE_SUCCESS;
 				}))
 			.executes(context -> {
-				Compat.sendFeedback(context.getSource(), Text.literal("Usage: /" + NAME + " [" + RELOAD + "|" + FORCE_RELOAD + "]"), false);
+				CompatServer.sendFeedback(context.getSource(), Text.literal("Usage: /" + NAME + " [" + RELOAD + "|" + FORCE_RELOAD + "]"), false);
 				return Command.SINGLE_SUCCESS;
 			})
 		);
