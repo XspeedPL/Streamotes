@@ -14,12 +14,12 @@ tasks.register("assembleAll", Copy) {
 	from "fabric1215/build/libs",
 		"fabric1214/build/libs",
 		"fabric1213/build/libs",
-		"fabric121/build/libs",
+		"fabric1210/build/libs",
 		"fabric1206/build/libs",
 		"fabric1201/build/libs",
 		"paper/build/libs"
 	into "build/libs"
 	include "*.jar"
-	dependsOn ":fabric1215:assemble", ":fabric1214:assemble", ":fabric1213:assemble", ":fabric121:assemble", ":fabric1206:assemble", ":fabric1201:assemble", ":paper:assemble"
+	dependsOn ":fabric1215:assemble", ":fabric1214:assemble", ":fabric1213:assemble", ":fabric1210:assemble", ":fabric1206:assemble", ":fabric1201:assemble", ":paper:assemble"
 	duplicatesStrategy DuplicatesStrategy.INCLUDE
 }

@@ -20,11 +20,11 @@ fabric_api1213 = "0.114.0+1.21.3"
 modmenu1213 = "11.0.1"
 yacl1213 = "3.6.1+1.21.2-fabric"
 
-minecraft121 = "1.21"
-fabric_mappings121 = "1.21+build.9"
-fabric_api121 = "0.102.0+1.21"
-modmenu121 = "11.0.1"
-yacl121 = "3.5.0+1.21-fabric"
+minecraft1210 = "1.21"
+fabric_mappings1210 = "1.21+build.9"
+fabric_api1210 = "0.102.0+1.21"
+modmenu1210 = "11.0.1"
+yacl1210 = "3.5.0+1.21-fabric"
 
 minecraft1206 = "1.20.6"
 fabric_mappings1206 = "1.20.6+build.3"
@@ -62,11 +62,11 @@ fabric_api1213 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = 
 modmenu1213 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1213" }
 yacl1213 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1213" }
 
-minecraft121 = { module = "com.mojang:minecraft", version.ref = "minecraft121" }
-fabric_mappings121 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings121" }
-fabric_api121 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api121" }
-modmenu121 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu121" }
-yacl121 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl121" }
+minecraft1210 = { module = "com.mojang:minecraft", version.ref = "minecraft1210" }
+fabric_mappings1210 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1210" }
+fabric_api1210 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1210" }
+modmenu1210 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1210" }
+yacl1210 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1210" }
 
 minecraft1206 = { module = "com.mojang:minecraft", version.ref = "minecraft1206" }
 fabric_mappings1206 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1206" }
