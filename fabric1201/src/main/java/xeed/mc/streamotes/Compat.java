@@ -4,22 +4,16 @@ import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 public class Compat {
@@ -30,23 +24,10 @@ public class Compat {
 			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
 				.program(PROGRAM).transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY).build(false)));
 
-	public static void onInitializeServer() {
-	}
-
 	public static void onInitializeClient(Streamotes.StringAction handler) {
 		ClientPlayNetworking.registerGlobalReceiver(StreamotesCommon.IDENT, (c, h, buf, rs) -> {
 			handler.apply(buf.readString());
 		});
-	}
-
-	public static void sendFeedback(ServerCommandSource source, Text message, boolean broadcastToOps) {
-		source.sendFeedback(() -> message, broadcastToOps);
-	}
-
-	public static Packet<?> createConfigPacket(String json) {
-		var buf = PacketByteBufs.create();
-		buf.writeString(json);
-		return ServerPlayNetworking.createS2CPacket(Objects.requireNonNull(StreamotesCommon.IDENT), buf);
 	}
 
 	public static SystemToast.Type makeToastType() {
