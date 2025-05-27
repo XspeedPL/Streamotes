@@ -28,9 +28,7 @@ public class StreamotesCommon implements ModInitializer {
 	private static final String FORCE_RELOAD = "force-reload";
 
 	public static final Identifier IDENT = Objects.requireNonNull(Identifier.of("xeed", NAME));
-
 	public static final Pattern VALID_CHANNEL_PATTERN = Pattern.compile("[_a-zA-Z]\\w+");
-
 	private static final Logger LOGGER = LogManager.getLogger(NAME);
 
 	public static ModConfigModel getOwnConfig() {

@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xeed.mc.streamotes.Compat;
+import xeed.mc.streamotes.DrawerCommons;
 import xeed.mc.streamotes.Streamotes;
 
 @Mixin(TextRenderer.class)
@@ -36,7 +37,7 @@ public class MixinTextRenderer {
 				if (Character.isBmpCodePoint(codePoint)) ++currentLength;
 				else if (Character.isValidCodePoint(codePoint)) currentLength += 2;
 
-				if (currentLength >= icon.code.length()) {
+				if (currentLength >= icon.getName().length()) {
 					currentLength = 0;
 					return icon.getChatRenderWidth();
 				}

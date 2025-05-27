@@ -44,10 +44,10 @@ public class Emoticon implements Closeable {
 		}
 	}
 
-	public final IEmoticonLoader loader;
+	private final IEmoticonLoader loader;
 	public final int priority;
-	public final String code, codeLower, source;
-	public final boolean zeroWidth;
+	private final String code, codeLower, source;
+	private final boolean zeroWidth;
 	private final Compat.Texture texture;
 
 	private Object identifier;

@@ -36,7 +36,7 @@ public class DrawerCommons {
 
 	public static void afterAccept(State state) {
 		var emote = Compat.getEmote(state.style);
-		if (emote == null || state.length >= emote.code.length()) state.length = 0;
+		if (emote == null || state.length >= emote.getName().length()) state.length = 0;
 	}
 
 	public static boolean atDrawGlyph(State state, boolean shadow, float x, float y, Matrix4f matrix, int color) {
@@ -62,6 +62,6 @@ public class DrawerCommons {
 		var icon = Compat.getEmote(state.style);
 		if (icon == null) return null;
 
-		return state.length >= icon.code.length() ? icon.getChatRenderWidth() : 0f;
+		return state.length >= icon.getName().length() ? icon.getChatRenderWidth() : 0f;
 	}
 }

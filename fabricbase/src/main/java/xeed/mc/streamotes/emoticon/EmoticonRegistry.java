@@ -53,7 +53,7 @@ public class EmoticonRegistry {
 			if (emoticon != null && emoticon.priority < priority) return null;
 
 			emoticon = new Emoticon(source, name, zeroWidth, priority, loader);
-			namedMap.put(emoticon.code, emoticon);
+			namedMap.put(name, emoticon);
 			return emoticon;
 		}
 	}
