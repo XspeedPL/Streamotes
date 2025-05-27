@@ -1,12 +1,26 @@
 package xeed.mc.streamotes;
 
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Style;
 import org.joml.Matrix4f;
+import xeed.mc.streamotes.emoticon.Emoticon;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DrawerCommons {
 	public static class State {
 		public int length;
 		public Style style;
+	}
+
+	private static final ConcurrentHashMap<Emoticon, RenderLayer> LAYER_CACHE = new ConcurrentHashMap<>();
+
+	public static RenderLayer getLayer(Emoticon emote) {
+		return LAYER_CACHE.computeIfAbsent(emote, Compat::layerFunc);
+	}
+
+	public static void clearLayerCache() {
+		LAYER_CACHE.clear();
 	}
 
 	public static void beforeAccept(State state, int codePoint) {

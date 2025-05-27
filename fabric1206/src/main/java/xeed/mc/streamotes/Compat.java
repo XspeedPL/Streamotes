@@ -10,19 +10,17 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
-import net.minecraft.util.Util;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
-
-import java.util.function.Function;
 
 public class Compat {
 	private static final RenderPhase.ShaderProgram PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionTexColorProgram);
 
-	public static final Function<Emoticon, RenderLayer> LAYER = Util.memoize(icon ->
-		RenderLayer.of("emote-" + icon.code, VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
+	public static RenderLayer layerFunc(Emoticon icon) {
+		return RenderLayer.of("emote-" + icon.getName(), VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
 			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
-				.program(PROGRAM).transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY).build(false)));
+				.program(PROGRAM).transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY).build(false));
+	}
 
 	public static void onInitializeClient(Streamotes.StringAction handler) {
 		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, (packet, context) -> {
@@ -58,7 +56,7 @@ public class Compat {
 		}
 
 		public void onApply() {
-			RenderSystem.setShaderTexture(0, glId);
+			if (glId != -1) RenderSystem.setShaderTexture(0, glId);
 		}
 
 		public void upload(String label, NativeImage buffer) {

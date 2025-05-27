@@ -61,7 +61,7 @@ public class MixinTextRenderer {
 
 				if (icon.isAnimated()) icon.updateAnimation();
 
-				var consumer = vertexConsumers.getBuffer(Compat.LAYER.apply(icon));
+				var consumer = vertexConsumers.getBuffer(DrawerCommons.getLayer(icon));
 
 				drawQuad(consumer, matrix, info.x(), info.y() - lineSpacing - 1F, info.z(),
 					icon.getRenderWidth(height), height,

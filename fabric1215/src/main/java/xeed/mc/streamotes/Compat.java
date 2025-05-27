@@ -15,17 +15,15 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
-import net.minecraft.util.Util;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
-import java.util.function.Function;
-
 public class Compat {
-	public static final Function<Emoticon, RenderLayer> LAYER = Util.memoize(icon ->
-		RenderLayer.of("emote-" + icon.code, 2048, false, false, RenderPipelines.GUI_TEXTURED,
+	public static RenderLayer layerFunc(Emoticon icon) {
+		return RenderLayer.of("emote-" + icon.getName(), 2048, false, false, RenderPipelines.GUI_TEXTURED,
 			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
-				.build(false)));
+				.build(false));
+	}
 
 	public static void onInitializeClient(Streamotes.StringAction handler) {
 		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, (packet, context) -> {
@@ -59,7 +57,7 @@ public class Compat {
 		}
 
 		public void onApply() {
-			RenderSystem.setShaderTexture(0, texture);
+			if (texture != null) RenderSystem.setShaderTexture(0, texture);
 		}
 
 		public void upload(String label, NativeImage buffer) {

@@ -135,6 +135,7 @@ public class Streamotes implements ClientModInitializer {
 			while (EmoticonRegistry.isLoading()) sleepSweetPrince(10);
 
 			EmoticonRegistry.reloadEmoticons();
+			DrawerCommons.clearLayerCache();
 			MinecraftClient.getInstance().execute(EmoticonRegistry::runDisposal);
 
 			final var cfg = getConfig();
