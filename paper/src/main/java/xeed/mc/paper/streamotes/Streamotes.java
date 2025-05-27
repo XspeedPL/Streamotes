@@ -30,7 +30,10 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	private static final String RELOAD = "reload";
 	private static final String FORCE_RELOAD = "force-reload";
 
+	private static final int SCHEMA_VERSION = 1;
+
 	private ModConfigModel config = new ModConfigModel();
+	private String version = "0.0.0";
 
 	private String getConfigPath() {
 		return getServer().getPluginsFolder().toPath().resolve("../config/streamotes.json5").toString();
@@ -43,6 +46,23 @@ public final class Streamotes extends JavaPlugin implements Listener {
 				event.getPlayer().sendPluginMessage(this, CHANNEL, createConfigPacket(false));
 				getLogger().info("Sent config packet to " + event.getPlayer().getName());
 			}, 5);
+		}
+	}
+
+	@SuppressWarnings({ "UnstableApiUsage", "deprecation", "ConstantValue" })
+	private String getSelfVersion() {
+		try {
+			var desc = getDescription();
+			if (desc != null) return desc.getVersion();
+		}
+		catch (Throwable ignored) {
+		}
+
+		try {
+			return getPluginMeta().getVersion();
+		}
+		catch (Throwable ignored) {
+			return "0.0.0";
 		}
 	}
 
@@ -66,6 +86,7 @@ public final class Streamotes extends JavaPlugin implements Listener {
 		catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Config reload failed", e);
 		}
+		version = getSelfVersion();
 	}
 
 	private void saveModConfig() {
@@ -103,6 +124,8 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	private byte[] createConfigPacket(boolean forceClear) {
 		var buf = Unpooled.buffer();
 		config.forceClearCache = forceClear;
+		config.versionName = version;
+		config.versionCode = SCHEMA_VERSION;
 		var json = new Gson().toJson(config, ModConfigModel.class);
 		return json.getBytes(StandardCharsets.UTF_8);
 	}

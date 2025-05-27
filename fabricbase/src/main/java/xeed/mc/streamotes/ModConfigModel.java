@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 
 public class ModConfigModel {
+	private static final int SCHEMA_VERSION = 1;
+
 	private static final ConfigClassHandler<ModConfigModel> HANDLER = ConfigClassHandler.createBuilder(ModConfigModel.class)
 		.id(StreamotesCommon.IDENT)
 		.serializer(config -> GsonConfigSerializerBuilder.create(config)
@@ -35,6 +37,13 @@ public class ModConfigModel {
 		}
 	}
 
+	private static void setSelfVersion(ModConfigModel model) {
+		var version = FabricLoader.getInstance().getModContainer(StreamotesCommon.NAME).orElseThrow().getMetadata().getVersion().getFriendlyString();
+		int ix = version.indexOf('+');
+		model.versionName = ix != -1 ? version.substring(0, ix) : version;
+		model.versionCode = SCHEMA_VERSION;
+	}
+
 	public static ModConfigModel getInstance() {
 		return HANDLER.instance();
 	}
@@ -45,7 +54,9 @@ public class ModConfigModel {
 
 	public static void reload() {
 		HANDLER.load();
-		verifyChannels(getInstance());
+		var inst = getInstance();
+		setSelfVersion(inst);
+		verifyChannels(inst);
 	}
 
 	public static void save() {
@@ -85,5 +96,7 @@ public class ModConfigModel {
 	@SerialEntry
 	public ReportOption errorReporting = ReportOption.Toast;
 
+	public String versionName = "<=1.2.11";
+	public int versionCode = 0;
 	public boolean forceClearCache = false;
 }

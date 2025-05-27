@@ -39,7 +39,9 @@ public class ModConfigModel {
 
 	public boolean colorEmotes = true;
 
-	public boolean forceClearCache = false;
-
 	public ActivationOption activationMode = ActivationOption.Optional;
+
+	public String versionName = "<=1.2.11";
+	public int versionCode = 0;
+	public boolean forceClearCache = false;
 }

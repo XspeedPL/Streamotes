@@ -85,6 +85,9 @@ public class Streamotes implements ClientModInitializer {
 				TwitchEmotesAPI.clearJsonCache();
 				cfg.forceClearCache = false;
 			}
+			if (StreamotesCommon.getOwnConfig().versionCode != cfg.versionCode) {
+				loge("Server reported different mod version: " + cfg.versionName, null);
+			}
 			reloadEmoticons();
 		}
 	}
