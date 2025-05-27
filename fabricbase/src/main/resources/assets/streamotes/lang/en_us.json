@@ -1,5 +1,7 @@
 {
   "text.config.streamotes.title": "Streamotes",
+  "text.config.streamotes.category.main": "Local configuration",
+  "text.config.streamotes.option.notice": "The local configuration is only used when the connected server does not provide one!",
   "text.config.streamotes.option.emoteChannels": "Emote source channels",
   "text.config.streamotes.option.twitchGlobalEmotes": "Twitch global emotes",
   "text.config.streamotes.option.twitchSubscriberEmotes": "Twitch channel emotes",
