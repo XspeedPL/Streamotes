@@ -13,14 +13,12 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class Streamotes implements ClientModInitializer {
 	public static final Pattern EMOTE_PATTERN = Pattern.compile("[^\\s:]{2,}|:?[^\\s:]+:?", Pattern.UNICODE_CHARACTER_CLASS);
-	public static final ThreadLocal<LinkedList<EmoteRenderInfo>> RENDER_QUEUE = ThreadLocal.withInitial(LinkedList::new);
 
 	private static final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);
 	private static final SystemToast.Type STREAMOTES_TOAST = Compat.makeToastType();

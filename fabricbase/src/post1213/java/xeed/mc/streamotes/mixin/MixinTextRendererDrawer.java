@@ -3,12 +3,10 @@ package xeed.mc.streamotes.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.font.BakedGlyph;
-import net.minecraft.client.font.EmptyBakedGlyph;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,16 +16,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xeed.mc.streamotes.DrawerCommons;
+import xeed.mc.streamotes.GlyphCommons;
 import xeed.mc.streamotes.Streamotes;
 
 @Mixin(targets = "net.minecraft.client.font.TextRenderer$Drawer")
 public abstract class MixinTextRendererDrawer {
 	@Unique
 	private final DrawerCommons.State state = new DrawerCommons.State();
-
-	@Final
-	@Shadow
-	private Matrix4f matrix;
 
 	@Final
 	@Shadow
@@ -55,10 +50,10 @@ public abstract class MixinTextRendererDrawer {
 
 	@ModifyVariable(method = "accept", at = @At(value = "STORE"))
 	private BakedGlyph atGetGlyph(BakedGlyph glyph) {
-		int c = Streamotes.INSTANCE.getConfig().colorEmotes
+		state.color = Streamotes.INSTANCE.getConfig().colorEmotes
 			? getRenderColor(state.style.getColor())
 			: (color | 0xffffff);
-		return DrawerCommons.atDrawGlyph(state, false, x, y, matrix, c) ? EmptyBakedGlyph.INSTANCE : glyph;
+		return GlyphCommons.atDrawGlyph(state, false, x, y, glyph);
 	}
 
 	@WrapOperation(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/Glyph;getAdvance(Z)F"))

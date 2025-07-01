@@ -2,7 +2,6 @@ package xeed.mc.streamotes.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.font.EmptyGlyphRenderer;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.text.Style;
@@ -18,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xeed.mc.streamotes.ColorHelper;
 import xeed.mc.streamotes.DrawerCommons;
+import xeed.mc.streamotes.GlyphCommons;
 import xeed.mc.streamotes.Streamotes;
 
 @Mixin(targets = "net.minecraft.client.font.TextRenderer$Drawer")
@@ -28,10 +28,6 @@ public abstract class MixinTextRendererDrawer {
 	@Final
 	@Shadow
 	private boolean shadow;
-
-	@Final
-	@Shadow
-	private Matrix4f matrix;
 
 	@Final
 	@Shadow
@@ -82,10 +78,10 @@ public abstract class MixinTextRendererDrawer {
 
 	@ModifyVariable(method = "accept", at = @At("STORE"))
 	private GlyphRenderer atGetGlyph(GlyphRenderer glyph) {
-		int c = Streamotes.INSTANCE.getConfig().colorEmotes
+		state.color = Streamotes.INSTANCE.getConfig().colorEmotes
 			? getRenderColor(state.style.getColor())
 			: (((int)(alpha * 255) << 24) | 0xffffff);
-		return DrawerCommons.atDrawGlyph(state, shadow, x, y, matrix, c) ? EmptyGlyphRenderer.INSTANCE : glyph;
+		return GlyphCommons.atDrawGlyph(state, shadow, x, y, glyph);
 	}
 
 	@SuppressWarnings("unused")

@@ -4,19 +4,19 @@ fabric_loader = "0.16.11"
 
 minecraft1215 = "1.21.5"
 fabric_mappings1215 = "1.21.5+build.1"
-fabric_api1215 = "0.119.6+1.21.5"
+fabric_api1215 = "0.128.1+1.21.5"
 modmenu1215 = "13.0.3"
-yacl1215 = "3.6.6+1.21.5-fabric"
+yacl1215 = "3.7.1+1.21.5-fabric"
 
 minecraft1214 = "1.21.4"
 fabric_mappings1214 = "1.21.4+build.8"
-fabric_api1214 = "0.119.2+1.21.4"
+fabric_api1214 = "0.119.3+1.21.4"
 modmenu1214 = "13.0.3"
 yacl1214 = "3.6.2+1.21.4-fabric"
 
 minecraft1213 = "1.21.3"
 fabric_mappings1213 = "1.21.3+build.2"
-fabric_api1213 = "0.114.0+1.21.3"
+fabric_api1213 = "0.114.1+1.21.3"
 modmenu1213 = "11.0.1"
 yacl1213 = "3.6.1+1.21.2-fabric"
 
