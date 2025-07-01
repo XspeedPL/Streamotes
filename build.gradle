@@ -11,7 +11,7 @@ allprojects {
 }
 
 tasks.register("assembleAll", Copy) {
-	from "fabric1216/build/libs",
+	from "fabric1217/build/libs",
 		"fabric1215/build/libs",
 		"fabric1214/build/libs",
 		"fabric1213/build/libs",
@@ -21,7 +21,7 @@ tasks.register("assembleAll", Copy) {
 		"paper/build/libs"
 	into "build/libs"
 	include "*.jar"
-	dependsOn ":fabric1216:assemble",
+	dependsOn ":fabric1217:assemble",
 		":fabric1215:assemble",
 		":fabric1214:assemble",
 		":fabric1213:assemble",

@@ -2,11 +2,11 @@
 fabric_loom = "1.10-SNAPSHOT"
 fabric_loader = "0.16.14"
 
-minecraft1216 = "1.21.6"
-fabric_mappings1216 = "1.21.6+build.1"
-fabric_api1216 = "0.128.1+1.21.6"
-modmenu1216 = "13.0.3"
-yacl1216 = "3.7.1+1.21.6-fabric"
+minecraft1217 = "1.21.7"
+fabric_mappings1217 = "1.21.7+build.1"
+fabric_api1217 = "0.128.1+1.21.7"
+modmenu1217 = "13.0.3"
+yacl1217 = "3.7.1+1.21.6-fabric"
 
 minecraft1215 = "1.21.5"
 fabric_mappings1215 = "1.21.5+build.1"
@@ -50,11 +50,11 @@ netty_buffer = "4.1.112.Final"
 [libraries]
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
 
-minecraft1216 = { module = "com.mojang:minecraft", version.ref = "minecraft1216" }
-fabric_mappings1216 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1216" }
-fabric_api1216 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1216" }
-modmenu1216 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1216" }
-yacl1216 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1216" }
+minecraft1217 = { module = "com.mojang:minecraft", version.ref = "minecraft1217" }
+fabric_mappings1217 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1217" }
+fabric_api1217 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1217" }
+modmenu1217 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1217" }
+yacl1217 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1217" }
 
 minecraft1215 = { module = "com.mojang:minecraft", version.ref = "minecraft1215" }
 fabric_mappings1215 = { module = "net.fabricmc:yarn", version.ref = "fabric_mappings1215" }

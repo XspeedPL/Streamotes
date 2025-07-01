@@ -6,7 +6,7 @@ pluginManagement {
 	}
 }
 
-include ":fabric1216"
+include ":fabric1217"
 include ":fabric1215"
 include ":fabric1214"
 include ":fabric1213"
