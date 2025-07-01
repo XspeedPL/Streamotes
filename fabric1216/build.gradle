@@ -6,7 +6,7 @@ base {
 	archivesName = project.archives_base_name
 }
 
-version = "${project.version}+${libs.versions.minecraft1215.get()}"
+version = "${project.version}+${libs.versions.minecraft1216.get()}"
 group = project.maven_group
 
 repositories {
@@ -15,19 +15,19 @@ repositories {
 }
 
 dependencies {
-	minecraft libs.minecraft1215
-	mappings variantOf(libs.fabric.mappings1215) { classifier 'v2' }
+	minecraft libs.minecraft1216
+	mappings variantOf(libs.fabric.mappings1216) { classifier 'v2' }
 
 	modImplementation libs.fabric.loader
-	modImplementation libs.fabric.api1215
-	modImplementation libs.modmenu1215
-	modImplementation libs.yacl1215
+	modImplementation libs.fabric.api1216
+	modImplementation libs.modmenu1216
+	modImplementation libs.yacl1216
 }
 
 processResources {
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,
-			"minecraft_version": "=1.21.5",
+			"minecraft_version": ">=1.21.6",
 			"loader_version": ">=" + libs.versions.fabric.loader.get()
 	}
 	filesMatching("streamotes.mixins.json") {
