@@ -1,11 +1,13 @@
 pluginManagement {
 	repositories {
 		maven { url "https://maven.fabricmc.net/" }
-		mavenCentral()
+		maven { url "https://maven.architectury.dev/" }
+		maven { url "https://maven.minecraftforge.net/" }
 		gradlePluginPortal()
 	}
 }
 
+include ":fabric1_21_10"
 include ":fabric1217"
 include ":fabric1215"
 include ":fabric1214"
