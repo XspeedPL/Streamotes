@@ -34,7 +34,7 @@ dependencies {
 processResources {
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,
-			"minecraft_version": ">=1.21.6",
+			"minecraft_version": ">=1.21.6 <1.21.9",
 			"loader_version": ">=" + libs.versions.fabric.loader.get()
 	}
 	filesMatching("streamotes.mixins.json") {
