@@ -1,9 +1,16 @@
 plugins {
 	alias libs.plugins.fabric.loom
+	alias libs.plugins.architectury
 }
 
 base {
 	archivesName = project.archives_base_name
+}
+
+architectury {
+	minecraft = libs.versions.minecraft1214.get()
+	platformSetupLoomIde()
+	fabric()
 }
 
 version = "${project.version}+${libs.versions.minecraft1214.get()}"
