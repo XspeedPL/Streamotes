@@ -131,18 +131,27 @@ public class TwitchEmotesAPI {
 
 			var data = getJson(conn.getInputStream(), JsonObject.class);
 			try {
-				var user = data.getAsJsonObject("data").getAsJsonArray("users").get(0).getAsJsonObject();
+				var users = data.getAsJsonObject("data").getAsJsonArray("users").asList();
+				boolean nameFound = false;
 
-				if (user.get("username").getAsString().equals("*deleted_user"))
-					throw new IOException("Channel " + name + " has no valid 7tv profile");
+				for (var uelem : users) {
+					var user = uelem.getAsJsonObject();
+					if (!user.get("username").getAsString().equalsIgnoreCase(name)) continue;
 
-				var struct = user.getAsJsonArray("connections").asList().stream().map(JsonElement::getAsJsonObject).filter(x -> x.get("platform").getAsString().equals("TWITCH")).findFirst();
-				if (struct.isEmpty())
-					throw new IOException("7tv profile " + name + " has no associated Twitch channel");
+					nameFound = true;
+					var conns = user.getAsJsonArray("connections").asList();
+					for (var celem : conns) {
+						var cdata = celem.getAsJsonObject();
+						if (!cdata.get("platform").getAsString().equals("TWITCH")) continue;
 
-				var channelId = struct.get().get("id").getAsString();
-				channelIdCache.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + (1000 * 60 * 5)));
-				return channelId;
+						var channelId = cdata.get("id").getAsString();
+						channelIdCache.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + (1000 * 60 * 5)));
+						return channelId;
+					}
+				}
+
+				if (nameFound) throw new IOException("7tv profile " + name + " has no associated Twitch channel");
+				else throw new IOException("Channel " + name + " has no valid 7tv profile");
 			}
 			catch (NullPointerException | IndexOutOfBoundsException e) {
 				throw new IOException("Invalid json trying to get channel ID of " + name + ": " + data.toString(), e);
