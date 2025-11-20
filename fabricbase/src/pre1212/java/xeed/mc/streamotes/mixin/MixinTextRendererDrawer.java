@@ -6,7 +6,6 @@ import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,12 +48,6 @@ public abstract class MixinTextRendererDrawer {
 	@Shadow
 	private float brightnessMultiplier;
 
-	@Shadow
-	float x;
-
-	@Shadow
-	float y;
-
 	@Unique
 	protected int getRenderColor(TextColor override) {
 		int alpha = (int)(this.alpha * 255);
@@ -63,14 +56,12 @@ public abstract class MixinTextRendererDrawer {
 			: ColorHelper.getArgb(alpha, (int)(red * 255), (int)(green * 255), (int)(blue * 255));
 	}
 
-	@SuppressWarnings("unused")
 	@Inject(method = "accept", at = @At("HEAD"))
 	private void beforeAccept(int index, Style style, int codePoint, CallbackInfoReturnable<Boolean> cir) {
 		state.style = style;
 		DrawerCommons.beforeAccept(state, codePoint);
 	}
 
-	@SuppressWarnings("unused")
 	@Inject(method = "accept", at = @At("TAIL"))
 	private void afterAccept(int index, Style style, int codePoint, CallbackInfoReturnable<Boolean> cir) {
 		DrawerCommons.afterAccept(state);
@@ -81,10 +72,9 @@ public abstract class MixinTextRendererDrawer {
 		state.color = Streamotes.INSTANCE.getConfig().colorEmotes
 			? getRenderColor(state.style.getColor())
 			: (((int)(alpha * 255) << 24) | 0xffffff);
-		return GlyphCommons.atDrawGlyph(state, shadow, x, y, glyph);
+		return GlyphCommons.atDrawGlyph(state, shadow, glyph);
 	}
 
-	@SuppressWarnings("unused")
 	@WrapOperation(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/Glyph;getAdvance(Z)F"))
 	private float atGetAdvance(Glyph glyph, boolean bold, Operation<Float> original) {
 		var result = DrawerCommons.atGetAdvance(state);
