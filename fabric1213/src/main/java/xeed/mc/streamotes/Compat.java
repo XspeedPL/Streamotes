@@ -4,7 +4,10 @@ import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.ClickEvent;
@@ -15,9 +18,10 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 public class Compat {
 	public static RenderLayer layerFunc(Emoticon icon) {
-		return RenderLayer.of("emote-" + icon.getName(), VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
+		return RenderLayer.of("emote-" + icon.getName(), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, VertexFormat.DrawMode.QUADS, 2048, false, true,
 			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
-				.program(RenderPhase.POSITION_TEXTURE_COLOR_PROGRAM).transparency(RenderPhase.Transparency.TRANSLUCENT_TRANSPARENCY).build(false));
+				.program(RenderPhase.POSITION_COLOR_TEXTURE_LIGHTMAP_PROGRAM).transparency(RenderPhase.Transparency.TRANSLUCENT_TRANSPARENCY)
+				.lightmap(RenderPhase.ENABLE_LIGHTMAP).build(false));
 	}
 
 	public static void onInitializeClient(Streamotes.StringAction handler) {
@@ -40,9 +44,6 @@ public class Compat {
 		return ev != null && ev.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD
 			? EmoticonRegistry.fromName(ev.getValue())
 			: null;
-	}
-
-	public static void nextVertex(VertexConsumer consumer) {
 	}
 
 	public static class Texture implements AutoCloseable {

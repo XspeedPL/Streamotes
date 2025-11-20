@@ -14,12 +14,11 @@ import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 public class Compat {
-	private static final RenderPhase.ShaderProgram PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionTexColorProgram);
-
 	public static RenderLayer layerFunc(Emoticon icon) {
-		return RenderLayer.of("emote-" + icon.getName(), VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS, 2048, false, false,
+		return RenderLayer.of("emote-" + icon.getName(), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, VertexFormat.DrawMode.QUADS, 2048, false, true,
 			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
-				.program(PROGRAM).transparency(RenderPhase.Transparency.TRANSLUCENT_TRANSPARENCY).build(false));
+				.program(RenderPhase.POSITION_COLOR_TEXTURE_LIGHTMAP_PROGRAM).transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+				.lightmap(RenderPhase.ENABLE_LIGHTMAP).build(false));
 	}
 
 	public static void onInitializeClient(Streamotes.StringAction handler) {

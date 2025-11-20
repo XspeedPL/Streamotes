@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.ClickEvent;
@@ -21,7 +20,7 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 public class Compat {
 	public static RenderLayer layerFunc(Emoticon icon) {
-		return RenderLayer.of("emote-" + icon.getName(), 2048, false, false, RenderPipelines.GUI_TEXTURED,
+		return RenderLayer.of("emote-" + icon.getName(), 2048, false, true, RenderPipelines.RENDERTYPE_TEXT,
 			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
 				.build(false));
 	}
@@ -45,9 +44,6 @@ public class Compat {
 		return style.getClickEvent() instanceof ClickEvent.CopyToClipboard(String value)
 			? EmoticonRegistry.fromName(value)
 			: null;
-	}
-
-	public static void nextVertex(VertexConsumer consumer) {
 	}
 
 	public static class Texture implements AutoCloseable {

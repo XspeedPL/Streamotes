@@ -20,7 +20,7 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 public class Compat {
 	public static RenderLayer layerFunc(Emoticon icon) {
-		return RenderLayer.of("emote-" + icon.getName(), 2048, false, false, RenderPipelines.GUI_TEXTURED,
+		return RenderLayer.of("emote-" + icon.getName(), 2048, false, true, RenderPipelines.RENDERTYPE_TEXT,
 			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
 				.build(false));
 	}
@@ -44,9 +44,6 @@ public class Compat {
 		return style.getClickEvent() instanceof ClickEvent.CopyToClipboard(String value)
 			? EmoticonRegistry.fromName(value)
 			: null;
-	}
-
-	public static void nextVertex(VertexConsumer consumer) {
 	}
 
 	public static class Texture implements AutoCloseable {

@@ -43,10 +43,10 @@ public class EmoticonGlyph extends BakedGlyph {
 		drawQuad(consumer, matrix, x, y, 0f, w, h,
 			icon.getCurrentFrameTexCoordX(), icon.getCurrentFrameTexCoordY(),
 			icon.getWidth(), icon.getHeight(), icon.getSheetWidth(), icon.getSheetHeight(),
-			color);
+			color, light);
 	}
 
-	private static void drawQuad(VertexConsumer consumer, Matrix4f matrix, float x0, float y0, float z, float w, float h, float u, float v, float regionW, float regionH, int texW, int texH, int color) {
+	private static void drawQuad(VertexConsumer consumer, Matrix4f matrix, float x0, float y0, float z, float w, float h, float u, float v, float regionW, float regionH, int texW, int texH, int color, int light) {
 		final float x1 = x0 + w;
 		final float y1 = y0 + h;
 
@@ -56,9 +56,9 @@ public class EmoticonGlyph extends BakedGlyph {
 		final float v0 = v / texH;
 		final float v1 = (v + regionH) / texH;
 
-		consumer.vertex(matrix, x0, y1, z).texture(u0, v1).color(color);
-		consumer.vertex(matrix, x1, y1, z).texture(u1, v1).color(color);
-		consumer.vertex(matrix, x1, y0, z).texture(u1, v0).color(color);
-		consumer.vertex(matrix, x0, y0, z).texture(u0, v0).color(color);
+		consumer.vertex(matrix, x0, y1, z).color(color).texture(u0, v1).light(light);
+		consumer.vertex(matrix, x1, y1, z).color(color).texture(u1, v1).light(light);
+		consumer.vertex(matrix, x1, y0, z).color(color).texture(u1, v0).light(light);
+		consumer.vertex(matrix, x0, y0, z).color(color).texture(u0, v0).light(light);
 	}
 }
