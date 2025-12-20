@@ -1,28 +1,27 @@
 package xeed.mc.streamotes;
 
 import com.google.common.util.concurrent.Runnables;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.TextureFormat;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 public class Compat {
-	public static RenderLayer layerFunc(Emoticon icon) {
-		return RenderLayer.of("emote-" + icon.getName(), 2048, false, true, RenderPipelines.RENDERTYPE_TEXT,
-			RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.TextureBase(icon.getTexture()::onApply, Runnables.doNothing()))
-				.build(false));
+	public static RenderType layerFunc(Emoticon icon) {
+		return RenderType.create("emote-" + icon.getName(), 2048, false, true, RenderPipelines.TEXT,
+			RenderType.CompositeState.builder().setTextureState(new RenderStateShard.EmptyTextureStateShard(icon.getTexture()::onApply, Runnables.doNothing()))
+				.createCompositeState(false));
 	}
 
 	public static void onInitializeClient(Streamotes.StringAction handler) {
@@ -31,8 +30,8 @@ public class Compat {
 		});
 	}
 
-	public static SystemToast.Type makeToastType() {
-		return new SystemToast.Type(4000);
+	public static SystemToast.SystemToastId makeToastType() {
+		return new SystemToast.SystemToastId(4000);
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {

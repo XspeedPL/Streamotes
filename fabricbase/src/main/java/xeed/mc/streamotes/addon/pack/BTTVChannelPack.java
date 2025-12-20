@@ -2,7 +2,7 @@ package xeed.mc.streamotes.addon.pack;
 
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonElement;
-import net.minecraft.util.Pair;
+import net.minecraft.util.Tuple;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.api.EmoteLoaderException;
 import xeed.mc.streamotes.emoticon.Emoticon;
@@ -33,7 +33,7 @@ public class BTTVChannelPack {
 				String code = TwitchEmotesAPI.getJsonString(entry, "code");
 				var emoticon = EmoticonRegistry.registerEmoticon(channelName, code, PRIO, BTTVChannelPack::loadEmoticonImage);
 				if (emoticon != null) {
-					emoticon.setLoadData(new Pair<>(TwitchEmotesAPI.getJsonString(entry, "id"), TwitchEmotesAPI.getJsonString(entry, "imageType")));
+					emoticon.setLoadData(new Tuple<>(TwitchEmotesAPI.getJsonString(entry, "id"), TwitchEmotesAPI.getJsonString(entry, "imageType")));
 					emoticon.setTooltip(channelName + " (BTTV)");
 				}
 			}
@@ -47,9 +47,9 @@ public class BTTVChannelPack {
 
 	private static void loadEmoticonImage(Emoticon emoticon) {
 		@SuppressWarnings("unchecked")
-		var data = (Pair<String, String>)emoticon.getLoadData();
+		var data = (Tuple<String, String>)emoticon.getLoadData();
 		try {
-			TwitchEmotesAPI.loadEmoteImage(emoticon, new URI(URL_TEMPLATE.replace("{{id}}", data.getLeft())), "bttv", data.getLeft());
+			TwitchEmotesAPI.loadEmoteImage(emoticon, new URI(URL_TEMPLATE.replace("{{id}}", data.getA())), "bttv", data.getA());
 		}
 		catch (URISyntaxException e) {
 			throw new EmoteLoaderException(e);

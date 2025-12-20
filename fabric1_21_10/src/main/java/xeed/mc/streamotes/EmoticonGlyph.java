@@ -1,16 +1,16 @@
 package xeed.mc.streamotes;
 
+import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.BakedGlyph;
-import net.minecraft.client.font.GlyphMetrics;
-import net.minecraft.client.font.TextDrawable;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.text.Style;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.TextRenderable;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import xeed.mc.streamotes.emoticon.Emoticon;
@@ -27,9 +27,9 @@ public class EmoticonGlyph implements BakedGlyph {
 	private final EmoticonDrawable drawable;
 
 	public static EmoticonGlyph of(Emoticon icon, float x, float y, int color) {
-		var client = MinecraftClient.getInstance();
-		float lineSpacing = (float)(client.options.getChatLineSpacing().getValue() * 4);
-		float height = client.textRenderer.fontHeight + lineSpacing * 2;
+		var client = Minecraft.getInstance();
+		float lineSpacing = (float)(client.options.chatLineSpacing().get() * 4);
+		float height = client.font.lineHeight + lineSpacing * 2;
 
 		return new EmoticonGlyph(icon, x, y - lineSpacing - 1f, icon.getRenderWidth(height), height, color);
 	}
@@ -46,16 +46,16 @@ public class EmoticonGlyph implements BakedGlyph {
 	}
 
 	@Override
-	public GlyphMetrics getMetrics() {
+	public GlyphInfo info() {
 		return metrics;
 	}
 
 	@Override
-	public @Nullable TextDrawable create(float x, float y, int color, int shadowColor, Style style, float boldOffset, float shadowOffset) {
+	public @Nullable TextRenderable createGlyph(float x, float y, int color, int shadowColor, Style style, float boldOffset, float shadowOffset) {
 		return drawable;
 	}
 
-	private class EmoticonDrawable implements TextDrawable {
+	private class EmoticonDrawable implements TextRenderable {
 		@Override
 		public void render(Matrix4f matrix, VertexConsumer consumer, int light, boolean noDepth) {
 			if (icon.isAnimated()) icon.updateAnimation();
@@ -64,7 +64,7 @@ public class EmoticonGlyph implements BakedGlyph {
 		}
 
 		@Override
-		public RenderLayer getRenderLayer(TextRenderer.TextLayerType type) {
+		public RenderType renderType(Font.DisplayMode type) {
 			return DrawerCommons.getLayer(icon);
 		}
 
@@ -74,32 +74,32 @@ public class EmoticonGlyph implements BakedGlyph {
 		}
 
 		@Override
-		public RenderPipeline getPipeline() {
+		public RenderPipeline guiPipeline() {
 			return RenderPipelines.GUI_TEXTURED;
 		}
 
 		@Override
-		public float getEffectiveMinX() {
+		public float left() {
 			return x;
 		}
 
 		@Override
-		public float getEffectiveMinY() {
+		public float top() {
 			return y;
 		}
 
 		@Override
-		public float getEffectiveMaxX() {
+		public float right() {
 			return x + w;
 		}
 
 		@Override
-		public float getEffectiveMaxY() {
+		public float bottom() {
 			return y + h;
 		}
 	}
 
-	private class EmoticonMetrics implements GlyphMetrics {
+	private class EmoticonMetrics implements GlyphInfo {
 		@Override
 		public float getAdvance() {
 			return icon.getWidth();

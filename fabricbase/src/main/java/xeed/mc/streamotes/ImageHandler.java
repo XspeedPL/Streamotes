@@ -1,7 +1,7 @@
 package xeed.mc.streamotes;
 
 import com.madgag.gif.fmsware.GifDecoder;
-import net.minecraft.util.Pair;
+import net.minecraft.util.Tuple;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -20,7 +20,7 @@ import java.util.List;
 public class ImageHandler {
 	public static final Color TRANSPARENT = new Color(255, 255, 255, 0);
 
-	public static List<Pair<BufferedImage, Integer>> readImages(InputStream source) throws IOException {
+	public static List<Tuple<BufferedImage, Integer>> readImages(InputStream source) throws IOException {
 		IOException lastEx = null;
 
 		var output = new ByteArrayOutputStream() {
@@ -44,10 +44,10 @@ public class ImageHandler {
 				try {
 					reader.setInput(in);
 					var frames = readFrames(reader);
-					var result = new ArrayList<Pair<BufferedImage, Integer>>(frames.size());
+					var result = new ArrayList<Tuple<BufferedImage, Integer>>(frames.size());
 
 					for (var frame : frames) {
-						result.add(new Pair<>(frame.image(), frame.delay()));
+						result.add(new Tuple<>(frame.image(), frame.delay()));
 					}
 
 					return result;
@@ -62,16 +62,16 @@ public class ImageHandler {
 		return Collections.emptyList();
 	}
 
-	private static List<Pair<BufferedImage, Integer>> readGifFrames(InputStream input) {
+	private static List<Tuple<BufferedImage, Integer>> readGifFrames(InputStream input) {
 		var decoder = new GifDecoder();
 		decoder.read(input);
 
 		int count = decoder.getFrameCount();
-		var frames = new ArrayList<Pair<BufferedImage, Integer>>(count);
+		var frames = new ArrayList<Tuple<BufferedImage, Integer>>(count);
 
 		for (int i = 0; i < count; ++i) {
 			int delay = decoder.getDelay(i);
-			frames.add(new Pair<>(decoder.getFrame(i), delay <= 10 ? 100 : delay));
+			frames.add(new Tuple<>(decoder.getFrame(i), delay <= 10 ? 100 : delay));
 		}
 
 		return frames;

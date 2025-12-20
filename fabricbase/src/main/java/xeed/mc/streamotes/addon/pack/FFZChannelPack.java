@@ -1,6 +1,6 @@
 package xeed.mc.streamotes.addon.pack;
 
-import net.minecraft.util.Pair;
+import net.minecraft.util.Tuple;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.api.EmoteLoaderException;
 import xeed.mc.streamotes.emoticon.Emoticon;
@@ -35,7 +35,7 @@ public class FFZChannelPack {
 
 				var emoticon = EmoticonRegistry.registerEmoticon(channelName, code, PRIO, FFZChannelPack::loadEmoticonImage);
 				if (emoticon != null) {
-					emoticon.setLoadData(new Pair<>(id, url));
+					emoticon.setLoadData(new Tuple<>(id, url));
 					emoticon.setTooltip(channelName + " (FFZ)");
 				}
 			}
@@ -49,9 +49,9 @@ public class FFZChannelPack {
 
 	private static void loadEmoticonImage(Emoticon emoticon) {
 		@SuppressWarnings("unchecked")
-		var data = (Pair<String, String>)emoticon.getLoadData();
+		var data = (Tuple<String, String>)emoticon.getLoadData();
 		try {
-			TwitchEmotesAPI.loadEmoteImage(emoticon, new URI(data.getRight()), "ffz", data.getLeft());
+			TwitchEmotesAPI.loadEmoteImage(emoticon, new URI(data.getB()), "ffz", data.getA());
 		}
 		catch (URISyntaxException e) {
 			throw new EmoteLoaderException(e);

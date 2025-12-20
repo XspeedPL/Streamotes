@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
 	minecraft libs.minecraft1201
-	mappings variantOf(libs.fabric.mappings1201) { classifier 'v2' }
+	mappings loom.officialMojangMappings()
 
 	modImplementation libs.fabric.loader
 	modImplementation libs.fabric.api1201

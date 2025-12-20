@@ -1,13 +1,13 @@
 package xeed.mc.streamotes;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.GlyphRenderer;
-import net.minecraft.client.font.TextRenderLayerSet;
-import net.minecraft.client.render.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.font.GlyphRenderTypes;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import org.joml.Matrix4f;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
-public class EmoticonGlyph extends GlyphRenderer {
+public class EmoticonGlyph extends BakedGlyph {
 	private final Emoticon icon;
 	private final float y;
 	private final float w;
@@ -16,16 +16,16 @@ public class EmoticonGlyph extends GlyphRenderer {
 
 	public static EmoticonGlyph of(Emoticon icon, int color) {
 		var layer = DrawerCommons.getLayer(icon);
-		var layerSet = new TextRenderLayerSet(layer, layer, layer);
+		var layerSet = new GlyphRenderTypes(layer, layer, layer);
 
-		var client = MinecraftClient.getInstance();
-		float lineSpacing = (float)(client.options.getChatLineSpacing().getValue() * 4);
-		float height = client.textRenderer.fontHeight + lineSpacing * 2;
+		var client = Minecraft.getInstance();
+		float lineSpacing = (float)(client.options.chatLineSpacing().get() * 4);
+		float height = client.font.lineHeight + lineSpacing * 2;
 
 		return new EmoticonGlyph(layerSet, icon, -lineSpacing - 1f, icon.getRenderWidth(height), height, color);
 	}
 
-	public EmoticonGlyph(TextRenderLayerSet layerSet, Emoticon icon, float y, float w, float h, int color) {
+	public EmoticonGlyph(GlyphRenderTypes layerSet, Emoticon icon, float y, float w, float h, int color) {
 		super(layerSet, 0f, 1f, 0f, 1f, 0f, w, 0f, h);
 		this.icon = icon;
 		this.y = y;
@@ -35,7 +35,7 @@ public class EmoticonGlyph extends GlyphRenderer {
 	}
 
 	@Override
-	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer consumer, float red, float green, float blue, float alpha, int light) {
+	public void render(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer consumer, float red, float green, float blue, float alpha, int light) {
 		if (icon.isAnimated()) icon.updateAnimation();
 
 		drawQuad(consumer, matrix, x, this.y + y, 0f, w, h,
@@ -54,9 +54,11 @@ public class EmoticonGlyph extends GlyphRenderer {
 		final float v0 = v / texH;
 		final float v1 = (v + regionH) / texH;
 
-		Compat.nextVertex(consumer.vertex(matrix, x0, y1, z).color(color).texture(u0, v1).light(light));
-		Compat.nextVertex(consumer.vertex(matrix, x1, y1, z).color(color).texture(u1, v1).light(light));
-		Compat.nextVertex(consumer.vertex(matrix, x1, y0, z).color(color).texture(u1, v0).light(light));
-		Compat.nextVertex(consumer.vertex(matrix, x0, y0, z).color(color).texture(u0, v0).light(light));
+		// TODO: 1.21.0+ addVertex
+
+		Compat.nextVertex(consumer.vertex(matrix, x0, y1, z).color(color).uv(u0, v1).uv2(light));
+		Compat.nextVertex(consumer.vertex(matrix, x1, y1, z).color(color).uv(u1, v1).uv2(light));
+		Compat.nextVertex(consumer.vertex(matrix, x1, y0, z).color(color).uv(u1, v0).uv2(light));
+		Compat.nextVertex(consumer.vertex(matrix, x0, y0, z).color(color).uv(u0, v0).uv2(light));
 	}
 }

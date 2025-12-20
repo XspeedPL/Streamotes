@@ -3,9 +3,9 @@ package xeed.mc.streamotes;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.network.chat.Component;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.addon.pack.*;
 import xeed.mc.streamotes.api.EmoteLoaderException;
@@ -21,7 +21,8 @@ public class Streamotes implements ClientModInitializer {
 	public static final Pattern EMOTE_PATTERN = Pattern.compile("[^\\s:]{2,}|:?[^\\s:]+:?", Pattern.UNICODE_CHARACTER_CLASS);
 
 	private static final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);
-	private static final SystemToast.Type STREAMOTES_TOAST = Compat.makeToastType();
+	// TODO: 1.20.6+ SystemToastId
+	private static final SystemToast.SystemToastIds STREAMOTES_TOAST = Compat.makeToastType();
 
 	public static Streamotes INSTANCE;
 
@@ -37,17 +38,19 @@ public class Streamotes implements ClientModInitializer {
 	}
 
 	public static void msg(String text) {
-		var mc = MinecraftClient.getInstance();
+		var mc = Minecraft.getInstance();
 
 		var mode = StreamotesCommon.getOwnConfig().errorReporting;
 		if (mode == ReportOption.Toast) {
-			var title = Text.literal("Streamotes");
-			var msg = Text.literal(text);
+			var title = Component.literal("Streamotes");
+			var msg = Component.literal(text);
 
-			mc.getToastManager().add(SystemToast.create(mc, STREAMOTES_TOAST, title, msg));
+			mc.getToasts().addToast(SystemToast.multiline(mc, STREAMOTES_TOAST, title, msg));
+			// TODO: >=1.21.3
+			//mc.getToastManager().addToast(SystemToast.multiline(mc, STREAMOTES_TOAST, title, msg));
 		}
 		else if (mode == ReportOption.Chat) {
-			mc.inGameHud.getChatHud().addMessage(Text.literal("Streamotes: " + text));
+			mc.gui.getChat().addMessage(Component.literal("Streamotes: " + text));
 		}
 	}
 
@@ -61,7 +64,7 @@ public class Streamotes implements ClientModInitializer {
 
 		ImageIO.scanForPlugins();
 
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> TwitchEmotesAPI.initialize(client.runDirectory));
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> TwitchEmotesAPI.initialize(client.gameDirectory));
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> reloadEmoticons());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ovConfig = null);
 
@@ -137,7 +140,7 @@ public class Streamotes implements ClientModInitializer {
 
 			EmoticonRegistry.reloadEmoticons();
 			DrawerCommons.clearLayerCache();
-			MinecraftClient.getInstance().execute(EmoticonRegistry::runDisposal);
+			Minecraft.getInstance().execute(EmoticonRegistry::runDisposal);
 
 			final var cfg = getConfig();
 			final var channelList = new ArrayList<>(cfg.emoteChannels);

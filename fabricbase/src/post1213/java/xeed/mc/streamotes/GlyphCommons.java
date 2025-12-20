@@ -1,8 +1,8 @@
 package xeed.mc.streamotes;
 
-import net.minecraft.client.font.BakedGlyph;
-import net.minecraft.client.font.EmptyBakedGlyph;
-import net.minecraft.client.render.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.client.gui.font.glyphs.EmptyGlyph;
 import org.joml.Matrix4f;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
@@ -12,7 +12,7 @@ public class GlyphCommons {
 
 		if (!shadow) {
 			var icon = Compat.getEmote(state.style);
-			if (icon == null) return EmptyBakedGlyph.INSTANCE;
+			if (icon == null) return EmptyGlyph.INSTANCE;
 
 			if (icon.getTexture().isLoaded()) {
 				return EmoticonGlyph.of(icon, x, y, state.color);
@@ -22,7 +22,7 @@ public class GlyphCommons {
 			}
 		}
 
-		return EmptyBakedGlyph.INSTANCE;
+		return EmptyGlyph.INSTANCE;
 	}
 
 	public static void drawEmote(Emoticon icon, Matrix4f matrix, VertexConsumer consumer, float x, float y, float w, float h, int color, int light) {
@@ -44,9 +44,9 @@ public class GlyphCommons {
 		final float v0 = v / texH;
 		final float v1 = (v + regionH) / texH;
 
-		consumer.vertex(matrix, x0, y1, z).color(color).texture(u0, v1).light(light);
-		consumer.vertex(matrix, x1, y1, z).color(color).texture(u1, v1).light(light);
-		consumer.vertex(matrix, x1, y0, z).color(color).texture(u1, v0).light(light);
-		consumer.vertex(matrix, x0, y0, z).color(color).texture(u0, v0).light(light);
+		consumer.addVertex(matrix, x0, y1, z).setColor(color).setUv(u0, v1).setLight(light);
+		consumer.addVertex(matrix, x1, y1, z).setColor(color).setUv(u1, v1).setLight(light);
+		consumer.addVertex(matrix, x1, y0, z).setColor(color).setUv(u1, v0).setLight(light);
+		consumer.addVertex(matrix, x0, y0, z).setColor(color).setUv(u0, v0).setLight(light);
 	}
 }

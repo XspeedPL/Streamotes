@@ -1,10 +1,10 @@
 package xeed.mc.streamotes;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.BakedGlyph;
-import net.minecraft.client.font.TextRenderLayerSet;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.font.GlyphRenderTypes;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.client.renderer.RenderPipelines;
 import org.joml.Matrix4f;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
@@ -18,16 +18,16 @@ public class EmoticonGlyph extends BakedGlyph {
 
 	public static EmoticonGlyph of(Emoticon icon, float x, float y, int color) {
 		var layer = DrawerCommons.getLayer(icon);
-		var layerSet = new TextRenderLayerSet(layer, layer, layer, RenderPipelines.RENDERTYPE_TEXT);
+		var layerSet = new GlyphRenderTypes(layer, layer, layer, RenderPipelines.TEXT);
 
-		var client = MinecraftClient.getInstance();
-		float lineSpacing = (float)(client.options.getChatLineSpacing().getValue() * 4);
-		float height = client.textRenderer.fontHeight + lineSpacing * 2;
+		var client = Minecraft.getInstance();
+		float lineSpacing = (float)(client.options.chatLineSpacing().get() * 4);
+		float height = client.font.lineHeight + lineSpacing * 2;
 
 		return new EmoticonGlyph(layerSet, icon, x, y - lineSpacing - 1f, icon.getRenderWidth(height), height, color);
 	}
 
-	public EmoticonGlyph(TextRenderLayerSet layerSet, Emoticon icon, float x, float y, float w, float h, int color) {
+	public EmoticonGlyph(GlyphRenderTypes layerSet, Emoticon icon, float x, float y, float w, float h, int color) {
 		super(layerSet, icon.getTexture().getView(), 0f, 1f, 0f, 1f, x, x + w, y, y + h);
 		this.icon = icon;
 		this.x = x;
@@ -38,7 +38,7 @@ public class EmoticonGlyph extends BakedGlyph {
 	}
 
 	@Override
-	public void draw(BakedGlyph.DrawnGlyph glyph, Matrix4f matrix, VertexConsumer consumer, int light, boolean fixedZ) {
+	public void renderChar(BakedGlyph.GlyphInstance glyph, Matrix4f matrix, VertexConsumer consumer, int light, boolean fixedZ) {
 		GlyphCommons.drawEmote(icon, matrix, consumer, x, y, w, h, color, light);
 	}
 }

@@ -2,10 +2,10 @@ package xeed.mc.streamotes.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.font.BakedGlyph;
-import net.minecraft.client.font.Glyph;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextColor;
+import com.mojang.blaze3d.font.GlyphInfo;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ import xeed.mc.streamotes.DrawerCommons;
 import xeed.mc.streamotes.GlyphCommons;
 import xeed.mc.streamotes.Streamotes;
 
-@Mixin(targets = "net.minecraft.client.font.TextRenderer$Drawer")
+@Mixin(targets = "net.minecraft.client.gui.Font$PreparedTextBuilder")
 public abstract class MixinTextRendererDrawer {
 	@Unique
 	private final DrawerCommons.State state = new DrawerCommons.State();
@@ -35,7 +35,7 @@ public abstract class MixinTextRendererDrawer {
 	float y;
 
 	@Shadow
-	protected abstract int getRenderColor(@Nullable TextColor override);
+	protected abstract int getTextColor(@Nullable TextColor override);
 
 	@Inject(method = "accept", at = @At("HEAD"))
 	private void beforeAccept(int index, Style style, int codePoint, CallbackInfoReturnable<Boolean> cir) {
@@ -51,13 +51,13 @@ public abstract class MixinTextRendererDrawer {
 	@ModifyVariable(method = "accept", at = @At(value = "STORE"))
 	private BakedGlyph atGetGlyph(BakedGlyph glyph) {
 		state.color = Streamotes.INSTANCE.getConfig().colorEmotes
-			? getRenderColor(state.style.getColor())
+			? getTextColor(state.style.getColor())
 			: (color | 0xffffff);
 		return GlyphCommons.atDrawGlyph(state, false, x, y, glyph);
 	}
 
-	@WrapOperation(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/Glyph;getAdvance(Z)F"))
-	private float atGetAdvance(Glyph glyph, boolean bold, Operation<Float> original) {
+	@WrapOperation(method = "accept", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F"))
+	private float atGetAdvance(GlyphInfo glyph, boolean bold, Operation<Float> original) {
 		var result = DrawerCommons.atGetAdvance(state);
 		return result == null ? original.call(glyph, bold) : result;
 	}

@@ -2,10 +2,10 @@ package xeed.mc.streamotes.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.font.Glyph;
-import net.minecraft.client.font.GlyphRenderer;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextColor;
+import com.mojang.blaze3d.font.GlyphInfo;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,41 +19,41 @@ import xeed.mc.streamotes.DrawerCommons;
 import xeed.mc.streamotes.GlyphCommons;
 import xeed.mc.streamotes.Streamotes;
 
-@Mixin(targets = "net.minecraft.client.font.TextRenderer$Drawer")
+@Mixin(targets = "net.minecraft.client.gui.Font$StringRenderOutput")
 public abstract class MixinTextRendererDrawer {
 	@Unique
 	private final DrawerCommons.State state = new DrawerCommons.State();
 
 	@Final
 	@Shadow
-	private boolean shadow;
+	private boolean dropShadow;
 
 	@Final
 	@Shadow
-	private float red;
+	private float r;
 
 	@Final
 	@Shadow
-	private float green;
+	private float g;
 
 	@Final
 	@Shadow
-	private float blue;
+	private float b;
 
 	@Final
 	@Shadow
-	private float alpha;
+	private float a;
 
 	@Final
 	@Shadow
-	private float brightnessMultiplier;
+	private float dimFactor;
 
 	@Unique
 	protected int getRenderColor(TextColor override) {
-		int alpha = (int)(this.alpha * 255);
+		int alpha = (int)(this.a * 255);
 		return override != null
-			? ColorHelper.withAlpha(alpha, ColorHelper.scaleRgb(override.getRgb(), this.brightnessMultiplier))
-			: ColorHelper.getArgb(alpha, (int)(red * 255), (int)(green * 255), (int)(blue * 255));
+			? ColorHelper.withAlpha(alpha, ColorHelper.scaleRgb(override.getValue(), this.dimFactor))
+			: ColorHelper.getArgb(alpha, (int)(r * 255), (int)(g * 255), (int)(b * 255));
 	}
 
 	@Inject(method = "accept", at = @At("HEAD"))
@@ -68,15 +68,15 @@ public abstract class MixinTextRendererDrawer {
 	}
 
 	@ModifyVariable(method = "accept", at = @At("STORE"))
-	private GlyphRenderer atGetGlyph(GlyphRenderer glyph) {
+	private BakedGlyph atGetGlyph(BakedGlyph glyph) {
 		state.color = Streamotes.INSTANCE.getConfig().colorEmotes
 			? getRenderColor(state.style.getColor())
-			: (((int)(alpha * 255) << 24) | 0xffffff);
-		return GlyphCommons.atDrawGlyph(state, shadow, glyph);
+			: (((int)(a * 255) << 24) | 0xffffff);
+		return GlyphCommons.atDrawGlyph(state, dropShadow, glyph);
 	}
 
-	@WrapOperation(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/Glyph;getAdvance(Z)F"))
-	private float atGetAdvance(Glyph glyph, boolean bold, Operation<Float> original) {
+	@WrapOperation(method = "accept", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F"))
+	private float atGetAdvance(GlyphInfo glyph, boolean bold, Operation<Float> original) {
 		var result = DrawerCommons.atGetAdvance(state);
 		return result == null ? original.call(glyph, bold) : result;
 	}

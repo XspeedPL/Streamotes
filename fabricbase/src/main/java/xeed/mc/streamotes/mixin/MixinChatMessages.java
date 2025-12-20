@@ -2,10 +2,10 @@ package xeed.mc.streamotes.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.util.ChatMessages;
-import net.minecraft.client.util.TextCollector;
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Style;
+import net.minecraft.client.ComponentCollector;
+import net.minecraft.client.gui.components.ComponentRenderUtils;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,23 +17,23 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
-@Mixin(ChatMessages.class)
+@Mixin(ComponentRenderUtils.class)
 public class MixinChatMessages {
-	@WrapOperation(method = "breakRenderedChatMessageLines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/TextCollector;getCombined()Lnet/minecraft/text/StringVisitable;"))
-	private static StringVisitable atGetCombined(TextCollector instance, Operation<StringVisitable> original) {
+	@WrapOperation(method = "wrapComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ComponentCollector;getResultOrEmpty()Lnet/minecraft/network/chat/FormattedText;"))
+	private static FormattedText atGetCombined(ComponentCollector instance, Operation<FormattedText> original) {
 		var message = original.call(instance);
 
-		var textCollector = new TextCollector();
+		var textCollector = new ComponentCollector();
 		message.visit((style, part) -> {
 			maybeStyled(textCollector, part, style);
 			return Optional.empty();
 		}, Style.EMPTY);
 
-		return textCollector.getCombined();
+		return textCollector.getResultOrEmpty();
 	}
 
 	@Unique
-	private static void maybeStyled(TextCollector textCollector, String string, Style style) {
+	private static void maybeStyled(ComponentCollector textCollector, String string, Style style) {
 		var mode = Streamotes.INSTANCE.getConfig().activationMode;
 		var matcher = Streamotes.EMOTE_PATTERN.matcher(string);
 		int lastEnd = 0;
@@ -54,17 +54,17 @@ public class MixinChatMessages {
 
 				int start = matcher.start();
 				if (start > lastEnd) {
-					textCollector.add(StringVisitable.styled(string.substring(lastEnd, start), style));
+					textCollector.append(FormattedText.of(string.substring(lastEnd, start), style));
 				}
 
-				textCollector.add(StringVisitable.styled(emoticon.getName(), Compat.makeEmoteStyle(emoticon).withParent(style)));
+				textCollector.append(FormattedText.of(emoticon.getName(), Compat.makeEmoteStyle(emoticon).applyTo(style)));
 
 				lastEnd = matcher.end();
 			}
 		}
 
 		if (lastEnd < string.length()) {
-			textCollector.add(StringVisitable.styled(string.substring(lastEnd), style));
+			textCollector.append(FormattedText.of(string.substring(lastEnd), style));
 		}
 	}
 }

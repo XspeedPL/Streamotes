@@ -1,7 +1,7 @@
 package xeed.mc.streamotes;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import net.minecraft.client.texture.NativeImage;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
@@ -66,15 +66,15 @@ public class InternalMethods {
 				return false;
 			}
 			else if (frames.size() == 1) {
-				emoticon.setImage(frames.get(0).getLeft());
+				emoticon.setImage(frames.get(0).getA());
 			}
 			else {
 				var images = new BufferedImage[frames.size()];
 				int[] times = new int[images.length];
 
 				for (int i = 0; i < images.length; ++i) {
-					images[i] = frames.get(i).getLeft();
-					times[i] = frames.get(i).getRight();
+					images[i] = frames.get(i).getA();
+					times[i] = frames.get(i).getB();
 				}
 
 				emoticon.setImages(images, times);

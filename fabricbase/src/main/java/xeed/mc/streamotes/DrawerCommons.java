@@ -1,7 +1,7 @@
 package xeed.mc.streamotes;
 
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.text.Style;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Style;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,9 +13,9 @@ public class DrawerCommons {
 		public int color;
 	}
 
-	private static final ConcurrentHashMap<Emoticon, RenderLayer> LAYER_CACHE = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<Emoticon, RenderType> LAYER_CACHE = new ConcurrentHashMap<>();
 
-	public static RenderLayer getLayer(Emoticon emote) {
+	public static RenderType getLayer(Emoticon emote) {
 		return LAYER_CACHE.computeIfAbsent(emote, Compat::layerFunc);
 	}
 

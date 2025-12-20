@@ -1,10 +1,10 @@
 package xeed.mc.streamotes.emoticon;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.Mth;
 import xeed.mc.streamotes.Compat;
 import xeed.mc.streamotes.ImageHandler;
 import xeed.mc.streamotes.InternalMethods;
@@ -51,7 +51,7 @@ public class Emoticon implements Closeable {
 	private final Compat.Texture texture;
 
 	private Object identifier;
-	private Text tooltip, preview;
+	private Component tooltip, preview;
 
 	private boolean loadRequested;
 	private int width;
@@ -78,7 +78,7 @@ public class Emoticon implements Closeable {
 		this.loader = loader;
 
 		codeLower = code.toLowerCase(Locale.ROOT);
-		tooltip = Text.literal(code);
+		tooltip = Component.literal(code);
 		texture = new Compat.Texture();
 	}
 
@@ -90,7 +90,7 @@ public class Emoticon implements Closeable {
 		return code;
 	}
 
-	public Text getPreview() {
+	public Component getPreview() {
 		return preview;
 	}
 
@@ -107,9 +107,9 @@ public class Emoticon implements Closeable {
 	}
 
 	public void setTooltip(String extraInfo) {
-		tooltip = Text.literal(code + "\n").append(Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
-		preview = Text.literal(code).setStyle(Compat.makeEmoteStyle(this))
-			.append(" " + Text.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
+		tooltip = Component.literal(code + "\n").append(Component.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
+		preview = Component.literal(code).setStyle(Compat.makeEmoteStyle(this))
+			.append(" " + Component.literal(extraInfo).setStyle(Style.EMPTY.withItalic(true)));
 	}
 
 	public IEmoticonLoader getLoader() {
@@ -146,8 +146,8 @@ public class Emoticon implements Closeable {
 		this.frameTimes = frameTimes;
 		width = images[0].getWidth();
 		height = images[0].getHeight();
-		int framesPerX = MathHelper.ceil(MathHelper.sqrt(images.length));
-		int framesPerY = MathHelper.ceil(images.length / (float)framesPerX);
+		int framesPerX = Mth.ceil(Mth.sqrt(images.length));
+		int framesPerY = Mth.ceil(images.length / (float)framesPerX);
 		spriteSheetWidth = width * framesPerX;
 		spriteSheetHeight = height * framesPerY;
 		tempBuffer = new BufferedImage(spriteSheetWidth, spriteSheetHeight, BufferedImage.TYPE_INT_ARGB);
@@ -193,8 +193,8 @@ public class Emoticon implements Closeable {
 
 	public float getChatRenderWidth() {
 		if (zeroWidth) return 0;
-		var client = MinecraftClient.getInstance();
-		float height = (float)(client.textRenderer.fontHeight + client.options.getChatLineSpacing().getValue() * 8);
+		var client = Minecraft.getInstance();
+		float height = (float)(client.font.lineHeight + client.options.chatLineSpacing().get() * 8);
 		return getRenderWidth(height);
 	}
 
@@ -218,7 +218,7 @@ public class Emoticon implements Closeable {
 		texture.close();
 	}
 
-	public Text getTooltip() {
+	public Component getTooltip() {
 		return tooltip;
 	}
 

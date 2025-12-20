@@ -8,14 +8,14 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.network.packet.Packet;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +27,7 @@ public class StreamotesCommon implements ModInitializer {
 	private static final String RELOAD = "reload";
 	private static final String FORCE_RELOAD = "force-reload";
 
-	public static final Identifier IDENT = Objects.requireNonNull(Identifier.of("xeed", NAME));
+	public static final ResourceLocation IDENT = Objects.requireNonNull(ResourceLocation.tryBuild("xeed", NAME));
 	public static final Pattern VALID_CHANNEL_PATTERN = Pattern.compile("[_a-zA-Z]\\w+");
 	private static final Logger LOGGER = LogManager.getLogger(NAME);
 
@@ -74,28 +74,28 @@ public class StreamotesCommon implements ModInitializer {
 		return CompatServer.createConfigPacket(configToJson(cfg));
 	}
 
-	private void onPlayerJoin(ServerPlayNetworkHandler serverPlayNetworkHandler, PacketSender packetSender, MinecraftServer minecraftServer) {
-		serverPlayNetworkHandler.sendPacket(createConfigPacket(false));
+	private void onPlayerJoin(ServerGamePacketListenerImpl serverPlayNetworkHandler, PacketSender packetSender, MinecraftServer minecraftServer) {
+		serverPlayNetworkHandler.send(createConfigPacket(false));
 	}
 
-	private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess buildContext, CommandManager.RegistrationEnvironment environment) {
-		dispatcher.register(CommandManager.literal(NAME)
-			.requires(source -> source.hasPermissionLevel(3))
-			.then(CommandManager.literal(RELOAD)
+	private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection environment) {
+		dispatcher.register(Commands.literal(NAME)
+			.requires(source -> source.hasPermission(3))
+			.then(Commands.literal(RELOAD)
 				.executes(context -> {
 					ModConfigModel.reload();
-					context.getSource().getServer().getPlayerManager().sendToAll(createConfigPacket(false));
+					context.getSource().getServer().getPlayerList().broadcastAll(createConfigPacket(false));
 					return Command.SINGLE_SUCCESS;
 				})
 			)
-			.then(CommandManager.literal(FORCE_RELOAD)
+			.then(Commands.literal(FORCE_RELOAD)
 				.executes(context -> {
 					ModConfigModel.reload();
-					context.getSource().getServer().getPlayerManager().sendToAll(createConfigPacket(true));
+					context.getSource().getServer().getPlayerList().broadcastAll(createConfigPacket(true));
 					return Command.SINGLE_SUCCESS;
 				}))
 			.executes(context -> {
-				CompatServer.sendFeedback(context.getSource(), Text.literal("Usage: /" + NAME + " [" + RELOAD + "|" + FORCE_RELOAD + "]"), false);
+				CompatServer.sendFeedback(context.getSource(), Component.literal("Usage: /" + NAME + " [" + RELOAD + "|" + FORCE_RELOAD + "]"), false);
 				return Command.SINGLE_SUCCESS;
 			})
 		);
