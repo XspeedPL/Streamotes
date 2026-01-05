@@ -1,0 +1,3 @@
+classTweaker v1 named
+extendable class net/minecraft/client/renderer/rendertype/RenderSetup
+accessible method net/minecraft/client/renderer/rendertype/RenderSetup <init> (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Ljava/util/Map;ZZLnet/minecraft/client/renderer/rendertype/LayeringTransform;Lnet/minecraft/client/renderer/rendertype/OutputTarget;Lnet/minecraft/client/renderer/rendertype/TextureTransform;Lnet/minecraft/client/renderer/rendertype/RenderSetup$OutlineProperty;ZZI)V
