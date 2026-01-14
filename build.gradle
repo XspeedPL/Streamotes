@@ -13,25 +13,25 @@ allprojects {
 tasks.register("assembleAll", Copy) {
 	from "fabric1_21_11/build/libs",
 		"fabric1_21_10/build/libs",
-		"fabric1217/build/libs",
-		"fabric1215/build/libs",
-		"fabric1214/build/libs",
-		"fabric1213/build/libs",
-		"fabric1210/build/libs",
-		"fabric1206/build/libs",
-		"fabric1201/build/libs",
+		"fabric1_21_7/build/libs",
+		"fabric1_21_5/build/libs",
+		"fabric1_21_4/build/libs",
+		"fabric1_21_3/build/libs",
+		"fabric1_21_0/build/libs",
+		"fabric1_20_6/build/libs",
+		"fabric1_20_1/build/libs",
 		"paper/build/libs"
 	into "build/libs"
 	include "*.jar"
 	dependsOn ":fabric1_21_11:assemble",
 		":fabric1_21_10:assemble",
-		":fabric1217:assemble",
-		":fabric1215:assemble",
-		":fabric1214:assemble",
-		":fabric1213:assemble",
-		":fabric1210:assemble",
-		":fabric1206:assemble",
-		":fabric1201:assemble",
+		":fabric1_21_7:assemble",
+		":fabric1_21_5:assemble",
+		":fabric1_21_4:assemble",
+		":fabric1_21_3:assemble",
+		":fabric1_21_0:assemble",
+		":fabric1_20_6:assemble",
+		":fabric1_20_1:assemble",
 		":paper:assemble"
 	duplicatesStrategy DuplicatesStrategy.INCLUDE
 }

@@ -8,12 +8,12 @@ base {
 }
 
 architectury {
-	minecraft = libs.versions.minecraft1217.get()
+	minecraft = libs.versions.minecraft1.'21'.'3'.get()
 	platformSetupLoomIde()
 	fabric()
 }
 
-version = "${project.version}+${libs.versions.minecraft1217.get()}"
+version = "${project.version}+${libs.versions.minecraft1.'21'.'3'.get()}"
 group = project.maven_group
 
 repositories {
@@ -22,19 +22,19 @@ repositories {
 }
 
 dependencies {
-	minecraft libs.minecraft1217
+	minecraft libs.minecraft1.'21'.'3'
 	mappings loom.officialMojangMappings()
 
 	modImplementation libs.fabric.loader
-	modImplementation libs.fabric.api1217
-	modImplementation libs.modmenu1217
-	modImplementation libs.yacl1217
+	modImplementation libs.fabric.api1.'21'.'3'
+	modImplementation libs.modmenu1.'21'.'3'
+	modImplementation libs.yacl1.'21'.'3'
 }
 
 processResources {
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,
-			"minecraft_version": ">=1.21.6 <1.21.9",
+			"minecraft_version": ">=1.21.2 <1.21.4",
 			"loader_version": ">=" + libs.versions.fabric.loader.get()
 	}
 	filesMatching("streamotes.mixins.json") {
@@ -44,8 +44,7 @@ processResources {
 
 sourceSets.main {
 	java {
-		srcDirs "src/main/java", "../fabricbase/src/main/java",
-			"../fabricbase/src/post1_21_3/java"
+		srcDirs "src/main/java", "../fabricbase/src/main/java"
 	}
 	resources {
 		srcDir "../fabricbase/src/main/resources"

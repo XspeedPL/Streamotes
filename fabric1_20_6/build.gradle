@@ -8,12 +8,12 @@ base {
 }
 
 architectury {
-	minecraft = libs.versions.minecraft1213.get()
+	minecraft = libs.versions.minecraft1.'20'.'6'.get()
 	platformSetupLoomIde()
 	fabric()
 }
 
-version = "${project.version}+${libs.versions.minecraft1213.get()}"
+version = "${project.version}+${libs.versions.minecraft1.'20'.'6'.get()}"
 group = project.maven_group
 
 repositories {
@@ -22,19 +22,24 @@ repositories {
 }
 
 dependencies {
-	minecraft libs.minecraft1213
+	minecraft libs.minecraft1.'20'.'6'
 	mappings loom.officialMojangMappings()
 
 	modImplementation libs.fabric.loader
-	modImplementation libs.fabric.api1213
-	modImplementation libs.modmenu1213
-	modImplementation libs.yacl1213
+	modImplementation libs.fabric.api1.'20'.'6'
+	modImplementation libs.modmenu1.'20'.'6'
+	modImplementation libs.yacl1.'20'.'6'
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/streamotes.classtweaker")
 }
 
 processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,
-			"minecraft_version": ">=1.21.2 <1.21.4",
+			"minecraft_version": ">=1.20.5 <1.21-",
 			"loader_version": ">=" + libs.versions.fabric.loader.get()
 	}
 	filesMatching("streamotes.mixins.json") {
@@ -44,10 +49,11 @@ processResources {
 
 sourceSets.main {
 	java {
-		srcDirs "src/main/java", "../fabricbase/src/main/java"
+		srcDirs "src/main/java", "../fabricbase/src/main/java",
+			"../fabricbase/src/pre1_21_2/java"
 	}
 	resources {
-		srcDir "../fabricbase/src/main/resources"
+		srcDirs "src/main/resources", "../fabricbase/src/main/resources"
 	}
 }
 

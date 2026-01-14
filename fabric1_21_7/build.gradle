@@ -8,12 +8,12 @@ base {
 }
 
 architectury {
-	minecraft = libs.versions.minecraft1214.get()
+	minecraft = libs.versions.minecraft1.'21'.'7'.get()
 	platformSetupLoomIde()
 	fabric()
 }
 
-version = "${project.version}+${libs.versions.minecraft1214.get()}"
+version = "${project.version}+${libs.versions.minecraft1.'21'.'7'.get()}"
 group = project.maven_group
 
 repositories {
@@ -22,19 +22,19 @@ repositories {
 }
 
 dependencies {
-	minecraft libs.minecraft1214
+	minecraft libs.minecraft1.'21'.'7'
 	mappings loom.officialMojangMappings()
 
 	modImplementation libs.fabric.loader
-	modImplementation libs.fabric.api1214
-	modImplementation libs.modmenu1214
-	modImplementation libs.yacl1214
+	modImplementation libs.fabric.api1.'21'.'7'
+	modImplementation libs.modmenu1.'21'.'7'
+	modImplementation libs.yacl1.'21'.'7'
 }
 
 processResources {
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,
-			"minecraft_version": "=1.21.4",
+			"minecraft_version": ">=1.21.6 <1.21.9",
 			"loader_version": ">=" + libs.versions.fabric.loader.get()
 	}
 	filesMatching("streamotes.mixins.json") {
