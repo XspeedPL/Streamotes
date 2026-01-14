@@ -32,10 +32,11 @@ dependencies {
 }
 
 loom {
-	accessWidenerPath = file("../fabricbase/src/main/resources/streamotes.accesswidener")
+	accessWidenerPath = file("src/main/resources/streamotes.classtweaker")
 }
 
 processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,
 			"minecraft_version": ">=1.20.1 <1.20.5-",
