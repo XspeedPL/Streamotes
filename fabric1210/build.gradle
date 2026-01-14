@@ -45,7 +45,7 @@ processResources {
 sourceSets.main {
 	java {
 		srcDirs "src/main/java", "../fabricbase/src/main/java",
-			"../fabricbase/src/pre1212/java"
+			"../fabricbase/src/pre1_21_2/java"
 	}
 	resources {
 		srcDir "../fabricbase/src/main/resources"
