@@ -13,7 +13,7 @@ public class ModConfigModel {
 	private static final int SCHEMA_VERSION = 1;
 
 	private static final ConfigClassHandler<ModConfigModel> HANDLER = ConfigClassHandler.createBuilder(ModConfigModel.class)
-		.id(StreamotesCommon.IDENT)
+		.id(CompatServer.IDENT)
 		.serializer(config -> GsonConfigSerializerBuilder.create(config)
 			.setPath(FabricLoader.getInstance().getConfigDir().resolve(StreamotesCommon.NAME + ".json5"))
 			.setJson5(true)

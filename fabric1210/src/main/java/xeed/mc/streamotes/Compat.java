@@ -8,16 +8,36 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import org.joml.Matrix4f;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Compat {
+	private static final ConcurrentHashMap<Emoticon, RenderType> LAYER_CACHE = new ConcurrentHashMap<>();
+	public static final SystemToast.SystemToastId TOAST_TYPE = new SystemToast.SystemToastId(4000);
+
+	public static ToastComponent getToastManager() {
+		return Minecraft.getInstance().getToasts();
+	}
+
+	public static RenderType getLayer(Emoticon emote) {
+		return LAYER_CACHE.computeIfAbsent(emote, Compat::layerFunc);
+	}
+
+	public static void clearLayerCache() {
+		LAYER_CACHE.clear();
+	}
+
 	public static RenderType layerFunc(Emoticon icon) {
 		return RenderType.create("emote-" + icon.getName(), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 2048, false, true,
 			RenderType.CompositeState.builder().setTextureState(new RenderStateShard.EmptyTextureStateShard(icon.getTexture()::onApply, Runnables.doNothing()))
@@ -29,10 +49,6 @@ public class Compat {
 		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, (packet, context) -> {
 			handler.apply(packet.json());
 		});
-	}
-
-	public static SystemToast.SystemToastId makeToastType() {
-		return new SystemToast.SystemToastId(4000);
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {
@@ -47,7 +63,8 @@ public class Compat {
 			: null;
 	}
 
-	public static void nextVertex(VertexConsumer builder) {
+	public static void addVertex(VertexConsumer builder, Matrix4f matrix, float x, float y, float z, int c, float u, float v, int l) {
+		builder.addVertex(matrix, x, y, z).setColor(c).setUv(u, v).setLight(l);
 	}
 
 	public static class Texture implements AutoCloseable {

@@ -13,13 +13,11 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class StreamotesCommon implements ModInitializer {
@@ -27,7 +25,6 @@ public class StreamotesCommon implements ModInitializer {
 	private static final String RELOAD = "reload";
 	private static final String FORCE_RELOAD = "force-reload";
 
-	public static final ResourceLocation IDENT = Objects.requireNonNull(ResourceLocation.tryBuild("xeed", NAME));
 	public static final Pattern VALID_CHANNEL_PATTERN = Pattern.compile("[_a-zA-Z]\\w+");
 	private static final Logger LOGGER = LogManager.getLogger(NAME);
 
@@ -80,7 +77,7 @@ public class StreamotesCommon implements ModInitializer {
 
 	private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection environment) {
 		dispatcher.register(Commands.literal(NAME)
-			.requires(source -> source.hasPermission(3))
+			.requires(CompatServer::permissionPredicate)
 			.then(Commands.literal(RELOAD)
 				.executes(context -> {
 					ModConfigModel.reload();

@@ -19,11 +19,7 @@ import java.util.regex.Pattern;
 
 public class Streamotes implements ClientModInitializer {
 	public static final Pattern EMOTE_PATTERN = Pattern.compile("[^\\s:]{2,}|:?[^\\s:]+:?", Pattern.UNICODE_CHARACTER_CLASS);
-
 	private static final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);
-	// TODO: 1.20.6+ SystemToastId
-	private static final SystemToast.SystemToastIds STREAMOTES_TOAST = Compat.makeToastType();
-
 	public static Streamotes INSTANCE;
 
 	private ModConfigModel ovConfig = null;
@@ -45,9 +41,7 @@ public class Streamotes implements ClientModInitializer {
 			var title = Component.literal("Streamotes");
 			var msg = Component.literal(text);
 
-			mc.getToasts().addToast(SystemToast.multiline(mc, STREAMOTES_TOAST, title, msg));
-			// TODO: >=1.21.3
-			//mc.getToastManager().addToast(SystemToast.multiline(mc, STREAMOTES_TOAST, title, msg));
+			Compat.getToastManager().addToast(SystemToast.multiline(mc, Compat.TOAST_TYPE, title, msg));
 		}
 		else if (mode == ReportOption.Chat) {
 			mc.gui.getChat().addMessage(Component.literal("Streamotes: " + text));
@@ -139,7 +133,7 @@ public class Streamotes implements ClientModInitializer {
 			while (EmoticonRegistry.isLoading()) sleepSweetPrince(10);
 
 			EmoticonRegistry.reloadEmoticons();
-			DrawerCommons.clearLayerCache();
+			Compat.clearLayerCache();
 			Minecraft.getInstance().execute(EmoticonRegistry::runDisposal);
 
 			final var cfg = getConfig();

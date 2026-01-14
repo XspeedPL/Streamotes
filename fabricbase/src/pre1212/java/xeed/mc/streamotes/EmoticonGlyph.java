@@ -15,7 +15,7 @@ public class EmoticonGlyph extends BakedGlyph {
 	private final int color;
 
 	public static EmoticonGlyph of(Emoticon icon, int color) {
-		var layer = DrawerCommons.getLayer(icon);
+		var layer = Compat.getLayer(icon);
 		var layerSet = new GlyphRenderTypes(layer, layer, layer);
 
 		var client = Minecraft.getInstance();
@@ -53,12 +53,10 @@ public class EmoticonGlyph extends BakedGlyph {
 
 		final float v0 = v / texH;
 		final float v1 = (v + regionH) / texH;
-
-		// TODO: 1.21.0+ addVertex
-
-		Compat.nextVertex(consumer.vertex(matrix, x0, y1, z).color(color).uv(u0, v1).uv2(light));
-		Compat.nextVertex(consumer.vertex(matrix, x1, y1, z).color(color).uv(u1, v1).uv2(light));
-		Compat.nextVertex(consumer.vertex(matrix, x1, y0, z).color(color).uv(u1, v0).uv2(light));
-		Compat.nextVertex(consumer.vertex(matrix, x0, y0, z).color(color).uv(u0, v0).uv2(light));
+		
+		Compat.addVertex(consumer, matrix, x0, y1, z, color, u0, v1, light);
+		Compat.addVertex(consumer, matrix, x1, y1, z, color, u1, v1, light);
+		Compat.addVertex(consumer, matrix, x1, y0, z, color, u1, v0, light);
+		Compat.addVertex(consumer, matrix, x0, y0, z, color, u0, v0, light);
 	}
 }

@@ -16,7 +16,7 @@ public class EmoticonGlyph extends BakedGlyph {
 	private final int color;
 
 	public static EmoticonGlyph of(Emoticon icon, float x, float y, int color) {
-		var layer = DrawerCommons.getLayer(icon);
+		var layer = Compat.getLayer(icon);
 		var layerSet = new GlyphRenderTypes(layer, layer, layer);
 
 		var client = Minecraft.getInstance();

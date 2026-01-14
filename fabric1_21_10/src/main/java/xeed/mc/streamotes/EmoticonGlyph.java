@@ -65,7 +65,7 @@ public class EmoticonGlyph implements BakedGlyph {
 
 		@Override
 		public RenderType renderType(Font.DisplayMode type) {
-			return DrawerCommons.getLayer(icon);
+			return Compat.getLayer(icon);
 		}
 
 		@Override

@@ -4,7 +4,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.*;
 import net.minecraft.network.chat.ClickEvent;
@@ -17,8 +19,24 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Compat {
+	private static final ConcurrentHashMap<Emoticon, RenderType> LAYER_CACHE = new ConcurrentHashMap<>();
+	public static final SystemToast.SystemToastId TOAST_TYPE = new SystemToast.SystemToastId(4000);
+
+	public static ToastManager getToastManager() {
+		return Minecraft.getInstance().getToastManager();
+	}
+
+	public static RenderType getLayer(Emoticon emote) {
+		return LAYER_CACHE.computeIfAbsent(emote, Compat::layerFunc);
+	}
+
+	public static void clearLayerCache() {
+		LAYER_CACHE.clear();
+	}
+
 	public static RenderType layerFunc(Emoticon icon) {
 		return RenderType.create("emote-" + icon.getName(), icon.getTexture().makeSetup());
 	}
@@ -27,10 +45,6 @@ public class Compat {
 		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, (packet, context) -> {
 			handler.apply(packet.json());
 		});
-	}
-
-	public static SystemToast.SystemToastId makeToastType() {
-		return new SystemToast.SystemToastId(4000);
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {
