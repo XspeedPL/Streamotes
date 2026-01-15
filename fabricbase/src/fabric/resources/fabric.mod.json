@@ -15,10 +15,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "xeed.mc.streamotes.StreamotesCommon"
+      "xeed.mc.streamotes.InitCommon"
     ],
     "client": [
-      "xeed.mc.streamotes.Streamotes"
+      "xeed.mc.streamotes.InitClient"
     ],
     "modmenu": [
       "xeed.mc.streamotes.ModConfigScreen"

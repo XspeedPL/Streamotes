@@ -2,7 +2,6 @@
 architectury = "3.4-SNAPSHOT"
 fabric_loom = "1.13-SNAPSHOT"
 fabric_loader = "0.18.3"
-neoforge = "21.7.25-beta"
 
 minecraft1_21_11 = "1.21.11"
 fabric_api1_21_11 = "0.140.0+1.21.11"
@@ -18,6 +17,7 @@ minecraft1_21_7 = "1.21.7"
 fabric_api1_21_7 = "0.129.0+1.21.7"
 modmenu1_21_7 = "15.0.0"
 yacl1_21_7 = "3.7.1+1.21.6-fabric"
+neoforge1_21_7 = "21.7.25-beta"
 yacl1_21_7f = "3.7.1+1.21.6-neoforge"
 
 minecraft1_21_5 = "1.21.5"
@@ -55,7 +55,6 @@ netty_buffer = "4.1.112.Final"
 
 [libraries]
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
-neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 
 minecraft1_21_11 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_11" }
 fabric_api1_21_11 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_11" }
@@ -71,6 +70,7 @@ minecraft1_21_7 = { module = "com.mojang:minecraft", version.ref = "minecraft1_2
 fabric_api1_21_7 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_7" }
 modmenu1_21_7 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_7" }
 yacl1_21_7 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_7" }
+neoforge1_21_7 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_21_7" }
 yacl1_21_7f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_7f" }
 
 minecraft1_21_5 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_5" }

@@ -45,10 +45,9 @@ public class Compat {
 				.setLightmapState(RenderStateShard.LIGHTMAP).createCompositeState(false));
 	}
 
-	public static void onInitializeClient(Streamotes.StringAction handler) {
-		ClientPlayNetworking.registerGlobalReceiver(CompatServer.IDENT, (c, h, buf, rs) -> {
-			handler.apply(buf.readUtf());
-		});
+	public static void onInitializeClient() {
+		ClientPlayNetworking.registerGlobalReceiver(CompatServer.IDENT,
+			(client, listener, buf, sender) -> Streamotes.INSTANCE.onReceiveJsonPacket(buf.readUtf()));
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {

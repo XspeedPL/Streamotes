@@ -3,7 +3,6 @@ package xeed.mc.streamotes;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,7 +14,7 @@ public class ModConfigModel {
 	private static final ConfigClassHandler<ModConfigModel> HANDLER = ConfigClassHandler.createBuilder(ModConfigModel.class)
 		.id(CompatServer.IDENT)
 		.serializer(config -> GsonConfigSerializerBuilder.create(config)
-			.setPath(FabricLoader.getInstance().getConfigDir().resolve(StreamotesCommon.NAME + ".json5"))
+			.setPath(InitCommon.getConfigDir().resolve(StreamotesCommon.NAME + ".json5"))
 			.setJson5(true)
 			.build())
 		.build();
@@ -38,7 +37,7 @@ public class ModConfigModel {
 	}
 
 	private static void setSelfVersion(ModConfigModel model) {
-		var version = FabricLoader.getInstance().getModContainer(StreamotesCommon.NAME).orElseThrow().getMetadata().getVersion().getFriendlyString();
+		var version = InitCommon.getModVersion();
 		int ix = version.indexOf('+');
 		model.versionName = ix != -1 ? version.substring(0, ix) : version;
 		model.versionCode = SCHEMA_VERSION;

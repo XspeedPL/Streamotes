@@ -4,23 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.network.ServerPlayerConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.regex.Pattern;
 
-public class StreamotesCommon implements ModInitializer {
+public class StreamotesCommon {
 	public static final String NAME = "streamotes";
 	private static final String RELOAD = "reload";
 	private static final String FORCE_RELOAD = "force-reload";
@@ -57,12 +52,8 @@ public class StreamotesCommon implements ModInitializer {
 		LOGGER.error(text, t);
 	}
 
-	@Override
-	public void onInitialize() {
+	public static void onInitialize() {
 		ModConfigModel.reload();
-		CommandRegistrationCallback.EVENT.register(this::registerCommands);
-		ServerPlayConnectionEvents.JOIN.register(this::onPlayerJoin);
-		CompatServer.onInitializeServer();
 	}
 
 	private static Packet<?> createConfigPacket(boolean forceClear) {
@@ -71,11 +62,11 @@ public class StreamotesCommon implements ModInitializer {
 		return CompatServer.createConfigPacket(configToJson(cfg));
 	}
 
-	private void onPlayerJoin(ServerGamePacketListenerImpl serverPlayNetworkHandler, PacketSender packetSender, MinecraftServer minecraftServer) {
-		serverPlayNetworkHandler.send(createConfigPacket(false));
+	public static void onPlayerJoin(ServerPlayerConnection connection) {
+		connection.send(createConfigPacket(false));
 	}
 
-	private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection environment) {
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection environment) {
 		dispatcher.register(Commands.literal(NAME)
 			.requires(CompatServer::permissionPredicate)
 			.then(Commands.literal(RELOAD)

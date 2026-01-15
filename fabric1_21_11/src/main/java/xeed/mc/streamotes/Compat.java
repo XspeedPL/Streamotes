@@ -41,10 +41,8 @@ public class Compat {
 		return RenderType.create("emote-" + icon.getName(), icon.getTexture().makeSetup());
 	}
 
-	public static void onInitializeClient(Streamotes.StringAction handler) {
-		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, (packet, context) -> {
-			handler.apply(packet.json());
-		});
+	public static void onInitializeClient() {
+		ClientPlayNetworking.registerGlobalReceiver(JsonPayload.PACKET_ID, (packet, context) -> Streamotes.INSTANCE.onReceiveJsonPacket(packet.json()));
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {

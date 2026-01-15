@@ -1,8 +1,5 @@
 package xeed.mc.streamotes;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
@@ -17,11 +14,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-public class Streamotes implements ClientModInitializer {
+public class Streamotes {
 	public static final Pattern EMOTE_PATTERN = Pattern.compile("[^\\s:]{2,}|:?[^\\s:]+:?", Pattern.UNICODE_CHARACTER_CLASS);
-	private static final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);
 	public static Streamotes INSTANCE;
 
+	private final AtomicInteger LOAD_COUNTER = new AtomicInteger(0);
 	private ModConfigModel ovConfig = null;
 
 	public static void log(String text) {
@@ -52,20 +49,24 @@ public class Streamotes implements ClientModInitializer {
 		return ovConfig != null ? ovConfig : StreamotesCommon.getOwnConfig();
 	}
 
-	@Override
 	public void onInitializeClient() {
 		INSTANCE = this;
-
 		ImageIO.scanForPlugins();
-
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> TwitchEmotesAPI.initialize(client.gameDirectory));
-		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> reloadEmoticons());
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ovConfig = null);
-
-		Compat.onInitializeClient(this::onReceiveJsonPacket);
 	}
 
-	private void onReceiveJsonPacket(String json) {
+	public void onClientStarted(Minecraft client) {
+		TwitchEmotesAPI.initialize(client.gameDirectory);
+	}
+
+	public void onPlayerJoin() {
+		reloadEmoticons();
+	}
+
+	public void onPlayerDisconnect() {
+		ovConfig = null;
+	}
+
+	public void onReceiveJsonPacket(String json) {
 		var cfg = StreamotesCommon.configFromJson(json);
 		if (cfg == null) {
 			log("Received invalid config JSON: " + json);
@@ -191,10 +192,5 @@ public class Streamotes implements ClientModInitializer {
 				}
 			}
 		});
-	}
-
-	@FunctionalInterface
-	public interface StringAction {
-		void apply(String str);
 	}
 }
