@@ -1,0 +1,38 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "streamotes"
+version = "${mod_version}"
+displayName = "Streamotes"
+description = '''
+Adds popular stream emotes to the Minecraft chat.
+Supports Twitch, BTTV, FFZ and 7tv emotes.
+'''
+authors = "Xspeed"
+logoFile = "assets/streamotes/icon.png"
+
+[[dependencies.streamotes]]
+modId = "neoforge"
+type = "required"
+versionRange = "${loader_version}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.streamotes]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.streamotes]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "streamotes.mixins.json"

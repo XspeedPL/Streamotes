@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "xeed.mc.streamotes.mixin",
+  "compatibilityLevel": "${java_version}",
+  "mixins": [
+    "MixinChatMessages",
+    "MixinCommandSuggestor",
+    "MixinTextRenderer",
+    "MixinTextRendererDrawer"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
