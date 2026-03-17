@@ -50,8 +50,8 @@ fabric_api1_20_1 = "0.92.5+1.20.1"
 modmenu1_20_1 = "7.2.2"
 yacl1_20_1 = "3.5.0+1.20.1-fabric"
 
-paper_api = "1.20.1-R0.1-SNAPSHOT"
-netty_buffer = "4.1.112.Final"
+paper_api = "1.21.11-R0.1-SNAPSHOT"
+netty_buffer = "4.2.10.Final"
 
 [libraries]
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }

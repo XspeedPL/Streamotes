@@ -2,7 +2,6 @@ package xeed.mc.paper.streamotes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.netty.buffer.Unpooled;
 import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,15 +12,16 @@ import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("unused")
 public final class Streamotes extends JavaPlugin implements Listener {
 	public static final Pattern VALID_CHANNEL_PATTERN = Pattern.compile("[_a-zA-Z]\\w+");
 
@@ -42,14 +42,14 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerRegisterChannel(PlayerRegisterChannelEvent event) {
 		if (event.getChannel().equals(CHANNEL)) {
-			getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
+			getServer().getAsyncScheduler().runDelayed(this, t -> {
 				event.getPlayer().sendPluginMessage(this, CHANNEL, createConfigPacket(false));
 				getLogger().info("Sent config packet to " + event.getPlayer().getName());
-			}, 5);
+			}, 200, TimeUnit.MILLISECONDS);
 		}
 	}
 
-	@SuppressWarnings({ "UnstableApiUsage", "deprecation", "ConstantValue" })
+	@SuppressWarnings({ "deprecation", "ConstantValue" })
 	private String getSelfVersion() {
 		try {
 			var desc = getDescription();
@@ -122,7 +122,6 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	}
 
 	private byte[] createConfigPacket(boolean forceClear) {
-		var buf = Unpooled.buffer();
 		config.forceClearCache = forceClear;
 		config.versionName = version;
 		config.versionCode = SCHEMA_VERSION;
@@ -131,7 +130,7 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	}
 
 	@Override
-	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+	public @Nullable List<String> onTabComplete(@NonNull CommandSender sender, Command command, @NonNull String alias, String @NonNull [] args) {
 		if (command.getName().equals(COMMAND) && args.length > 0) {
 			if (args[0].isEmpty()) {
 				return List.of(FORCE_RELOAD, RELOAD);
@@ -148,7 +147,7 @@ public final class Streamotes extends JavaPlugin implements Listener {
 	}
 
 	@Override
-	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String @NonNull [] args) {
 		if (command.getName().equals(COMMAND)) {
 			if (args.length > 0 && (args[0].equals(RELOAD) || args[0].equals(FORCE_RELOAD))) {
 				if (!sender.hasPermission("xeed.mc.streamotes") && !sender.isOp()) {
