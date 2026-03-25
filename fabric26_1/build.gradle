@@ -1,0 +1,63 @@
+plugins {
+	alias libs.plugins.fabric.loom26.'1'
+	alias libs.plugins.architectury
+}
+
+base {
+	archivesName = project.archives_base_name
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/streamotes.classtweaker")
+}
+
+version = "${project.version}+${libs.versions.minecraft26.'1'.get()}"
+group = project.maven_group
+
+repositories {
+	maven { url "https://maven.isxander.dev/releases" }
+	maven { url "https://maven.terraformersmc.com" }
+	maven { url "https://maven.nucleoid.xyz" }
+}
+
+dependencies {
+	minecraft libs.minecraft26.'1'
+
+	implementation libs.fabric.loader
+	implementation libs.fabric.api26.'1'
+	implementation libs.modmenu26.'1'
+	implementation libs.yacl26.'1'
+}
+
+processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	filesMatching("fabric.mod.json") {
+		expand "mod_version": version,
+			"minecraft_version": ">=26.1",
+			"loader_version": ">=" + libs.versions.fabric.loader.get()
+	}
+	filesMatching("streamotes.mixins.json") {
+		expand "java_version": "JAVA_25"
+	}
+}
+
+sourceSets.main {
+	java {
+		srcDirs "src/main/java", "../fabricbase/src/fabric/java",
+			"../fabricbase/src/main/java", "../fabricbase/src/post1_21_8/java"
+	}
+	resources {
+		srcDirs "src/main/resources", "../fabricbase/src/main/resources",
+			"../fabricbase/src/fabric/resources"
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release.set(25)
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+	toolchain.languageVersion = JavaLanguageVersion.of(25)
+}

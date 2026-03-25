@@ -1,7 +1,13 @@
 [versions]
 architectury = "3.4-SNAPSHOT"
 fabric_loom = "1.13-SNAPSHOT"
-fabric_loader = "0.18.3"
+fabric_loom26_1 = "1.15-SNAPSHOT"
+fabric_loader = "0.18.4"
+
+minecraft26_1 = "26.1"
+fabric_api26_1 = "0.144.0+26.1"
+modmenu26_1 = "18.0.0-alpha.7"
+yacl26_1 = "3.9.0+26.1-fabric"
 
 minecraft1_21_11 = "1.21.11"
 fabric_api1_21_11 = "0.140.0+1.21.11"
@@ -56,6 +62,11 @@ netty_buffer = "4.2.10.Final"
 [libraries]
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
 
+minecraft26_1 = { module = "com.mojang:minecraft", version.ref = "minecraft26_1" }
+fabric_api26_1 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api26_1" }
+modmenu26_1 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu26_1" }
+yacl26_1 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl26_1" }
+
 minecraft1_21_11 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_11" }
 fabric_api1_21_11 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_11" }
 modmenu1_21_11 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_11" }
@@ -107,5 +118,6 @@ paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
 
 [plugins]
+fabric_loom26_1 = { id = "net.fabricmc.fabric-loom", version.ref = "fabric_loom26_1" }
 fabric_loom = { id = "dev.architectury.loom", version.ref = "fabric_loom" }
 architectury = { id = "architectury-plugin", version.ref = "architectury" }

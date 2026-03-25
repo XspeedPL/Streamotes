@@ -9,6 +9,7 @@ pluginManagement {
 
 include ":forge1_21_7"
 
+include ":fabric26_1"
 include ":fabric1_21_11"
 include ":fabric1_21_10"
 include ":fabric1_21_7"
