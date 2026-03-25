@@ -1,7 +1,6 @@
 package xeed.mc.streamotes;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
 import xeed.mc.streamotes.addon.TwitchEmotesAPI;
 import xeed.mc.streamotes.addon.pack.*;
@@ -37,11 +36,10 @@ public class Streamotes {
 		if (mode == ReportOption.Toast) {
 			var title = Component.literal("Streamotes");
 			var msg = Component.literal(text);
-
-			Compat.getToastManager().addToast(SystemToast.multiline(mc, Compat.TOAST_TYPE, title, msg));
+			Compat.sendToastMessage(title, msg);
 		}
 		else if (mode == ReportOption.Chat) {
-			mc.gui.getChat().addMessage(Component.literal("Streamotes: " + text));
+			Compat.sendClientMessage(Component.literal("Streamotes: " + text));
 		}
 	}
 

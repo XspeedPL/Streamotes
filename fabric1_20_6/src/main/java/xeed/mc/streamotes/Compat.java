@@ -10,10 +10,10 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import org.joml.Matrix4f;
@@ -24,10 +24,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Compat {
 	private static final ConcurrentHashMap<Emoticon, RenderType> LAYER_CACHE = new ConcurrentHashMap<>();
-	public static final SystemToast.SystemToastId TOAST_TYPE = new SystemToast.SystemToastId(4000);
+	private static final SystemToast.SystemToastId TOAST_TYPE = new SystemToast.SystemToastId(4000);
 
-	public static ToastComponent getToastManager() {
-		return Minecraft.getInstance().getToasts();
+	public static void sendClientMessage(Component text) {
+		Minecraft.getInstance().gui.getChat().addMessage(text);
+	}
+
+	public static void sendToastMessage(Component title, Component text) {
+		var mc = Minecraft.getInstance();
+		mc.execute(() -> mc.getToasts().addToast(SystemToast.multiline(mc, Compat.TOAST_TYPE, title, text)));
 	}
 
 	public static RenderType getLayer(Emoticon emote) {

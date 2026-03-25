@@ -32,12 +32,12 @@ dependencies {
 }
 
 processResources {
-	filesMatching("neoforge.mods.toml") {
+	filesMatching("META-INF/neoforge.mods.toml") {
 		expand "mod_version": version,
 			"minecraft_version": ">=1.21.6",
 			"loader_version": ">=" + libs.versions.neoforge1.'21'.'7'.get()
 	}
-	filesMatching("streamotes.mixins.json") {
+	filesMatching("META-INF/streamotes.mixins.json") {
 		expand "java_version": "JAVA_21"
 	}
 }

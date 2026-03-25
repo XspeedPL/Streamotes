@@ -32,6 +32,7 @@ dependencies {
 }
 
 processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	filesMatching("fabric.mod.json") {
 		expand "mod_version": version,
 			"minecraft_version": "=1.21.4",
