@@ -26,7 +26,7 @@ public class EmoticonRegistry {
 	}
 
 	public static boolean isLoading() {
-		return loading.get() > 1;
+		return loading.get() > 0;
 	}
 
 	public static List<String> getEmoteNames() {

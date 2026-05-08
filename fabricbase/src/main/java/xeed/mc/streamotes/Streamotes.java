@@ -86,14 +86,14 @@ public class Streamotes {
 		}
 	}
 
-	private void startLoadingDaemon(String name, Runnable action) {
+	private void startLoadingDaemon(String name, int loadId, Runnable action) {
 		EmoticonRegistry.startLoading();
 		var thread = new Thread(() -> {
 			try {
 				action.run();
 			}
 			finally {
-				if (EmoticonRegistry.endLoading()) {
+				if (EmoticonRegistry.endLoading() && LOAD_COUNTER.get() == loadId) {
 					var emotes = EmoticonRegistry.getEmoteNames();
 					msg("Finished loading, " + emotes.size() + " emotes from " + getConfig().emoteChannels.size() + " channels");
 				}
@@ -128,8 +128,12 @@ public class Streamotes {
 	private void reloadEmoticons() {
 		final int loadId = LOAD_COUNTER.incrementAndGet();
 
-		startLoadingDaemon("Emote Load Manager", () -> {
-			while (EmoticonRegistry.isLoading()) sleepSweetPrince(10);
+		var thread = new Thread(() -> {
+			while (EmoticonRegistry.isLoading()) {
+				if (LOAD_COUNTER.get() != loadId) return;
+				sleepSweetPrince(10);
+			}
+			if (LOAD_COUNTER.get() != loadId) return;
 
 			EmoticonRegistry.reloadEmoticons();
 			Compat.clearLayerCache();
@@ -161,11 +165,13 @@ public class Streamotes {
 					cfg.twitchGlobalEmotes ? TwitchGlobalPack::loadMetadata : null,
 					cfg.twitchSubscriberEmotes ? TwitchSubscriberPack::loadMetadata : null);
 			}
-		});
+		}, "Emote Load Manager");
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	public void processPacks(String sourceName, int loadId, ArrayList<String> channelList, Runnable globLoader, Consumer<String> subLoader) {
-		startLoadingDaemon(sourceName + " Emote Loader", () -> {
+		startLoadingDaemon(sourceName + " Emote Loader", loadId, () -> {
 			if (globLoader != null) {
 				try {
 					if (LOAD_COUNTER.get() != loadId) return;

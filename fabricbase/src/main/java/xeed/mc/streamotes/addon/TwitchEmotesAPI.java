@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.zip.GZIPInputStream;
 
 public class TwitchEmotesAPI {
 	private static final int CACHE_LIFETIME_IMAGE = 604800000; // 7 days
@@ -67,8 +68,12 @@ public class TwitchEmotesAPI {
 
 	public static InputStream openStream(URL url) throws IOException {
 		var conn = url.openConnection();
+		conn.setConnectTimeout(10000);
+		conn.setReadTimeout(15000);
 		conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0");
-		return conn.getInputStream();
+		conn.setRequestProperty("Accept-Encoding", "gzip");
+		var stream = conn.getInputStream();
+		return "gzip".equalsIgnoreCase(conn.getContentEncoding()) ? new GZIPInputStream(stream) : stream;
 	}
 
 	private static <T> T getJson(InputStream stream, Class<T> cls) throws IOException {
@@ -78,14 +83,17 @@ public class TwitchEmotesAPI {
 	}
 
 	public static <T extends JsonElement> JsonElement getJson(URL url, Class<T> cls) throws IOException {
+		var key = url.toString();
 		synchronized (jsonCache) {
-			var entry = jsonCache.get(url.toString());
-			if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
-
-			var json = getJson(openStream(url), cls);
-			jsonCache.put(url.toString(), new CacheEntry<>(json, System.currentTimeMillis() + (1000 * 60)));
-			return json;
+			var entry = jsonCache.get(key);
+			if (entry != null && entry.expTime() > System.currentTimeMillis()) return entry.item();
 		}
+
+		var json = getJson(openStream(url), cls);
+		synchronized (jsonCache) {
+			jsonCache.put(key, new CacheEntry<>(json, System.currentTimeMillis() + (1000 * 60)));
+		}
+		return json;
 	}
 
 	public static JsonObject getJsonObj(URL url) throws IOException {
@@ -100,6 +108,8 @@ public class TwitchEmotesAPI {
 		var apiURL = getURL("https://7tv.io/v3/gql");
 
 		var conn = (HttpURLConnection)apiURL.openConnection();
+		conn.setConnectTimeout(10000);
+		conn.setReadTimeout(15000);
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Content-Type", "application/json");
 		conn.setRequestProperty("User-Agent", "insomnia/9.3.3");
@@ -120,42 +130,44 @@ public class TwitchEmotesAPI {
 	public static String getChannelId(String name) throws IOException {
 		synchronized (channelIdCache) {
 			var entry = channelIdCache.get(name);
-			if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
+			if (entry != null && entry.expTime() > System.currentTimeMillis()) return entry.item();
+		}
 
-			var conn = makeGQL(name);
-			int code = conn.getResponseCode();
-			if (code / 100 != 2) {
-				String info = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
-				throw new IOException("Channel ID request for name " + name + " returned " + code + ": " + info);
-			}
+		var conn = makeGQL(name);
+		int code = conn.getResponseCode();
+		if (code / 100 != 2) {
+			String info = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
+			throw new IOException("Channel ID request for name " + name + " returned " + code + ": " + info);
+		}
 
-			var data = getJson(conn.getInputStream(), JsonObject.class);
-			try {
-				var users = data.getAsJsonObject("data").getAsJsonArray("users").asList();
-				boolean nameFound = false;
+		var data = getJson(conn.getInputStream(), JsonObject.class);
+		try {
+			var users = data.getAsJsonObject("data").getAsJsonArray("users").asList();
+			boolean nameFound = false;
 
-				for (var uelem : users) {
-					var user = uelem.getAsJsonObject();
-					if (!user.get("username").getAsString().equalsIgnoreCase(name)) continue;
+			for (var uelem : users) {
+				var user = uelem.getAsJsonObject();
+				if (!user.get("username").getAsString().equalsIgnoreCase(name)) continue;
 
-					nameFound = true;
-					var conns = user.getAsJsonArray("connections").asList();
-					for (var celem : conns) {
-						var cdata = celem.getAsJsonObject();
-						if (!cdata.get("platform").getAsString().equals("TWITCH")) continue;
+				nameFound = true;
+				var conns = user.getAsJsonArray("connections").asList();
+				for (var celem : conns) {
+					var cdata = celem.getAsJsonObject();
+					if (!cdata.get("platform").getAsString().equals("TWITCH")) continue;
 
-						var channelId = cdata.get("id").getAsString();
+					var channelId = cdata.get("id").getAsString();
+					synchronized (channelIdCache) {
 						channelIdCache.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + (1000 * 60 * 5)));
-						return channelId;
 					}
+					return channelId;
 				}
+			}
 
-				if (nameFound) throw new IOException("7tv profile " + name + " has no associated Twitch channel");
-				else throw new IOException("Channel " + name + " has no valid 7tv profile");
-			}
-			catch (NullPointerException | IndexOutOfBoundsException e) {
-				throw new IOException("Invalid json trying to get channel ID of " + name + ": " + data.toString(), e);
-			}
+			if (nameFound) throw new IOException("7tv profile " + name + " has no associated Twitch channel");
+			else throw new IOException("Channel " + name + " has no valid 7tv profile");
+		}
+		catch (NullPointerException | IndexOutOfBoundsException e) {
+			throw new IOException("Invalid json trying to get channel ID of " + name + ": " + data.toString(), e);
 		}
 	}
 
