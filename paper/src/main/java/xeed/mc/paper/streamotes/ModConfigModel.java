@@ -23,7 +23,7 @@ public class ModConfigModel {
 		}
 	}
 
-	public List<String> emoteChannels = List.of("Spookie_Rose", "fifigoesree", "Mifuyu");
+	public List<String> emoteChannels = List.of("SpookieRuna", "fifigoesree", "Mifuyu");
 
 	public boolean twitchGlobalEmotes = true;
 	public boolean twitchSubscriberEmotes = true;
