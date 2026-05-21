@@ -1,8 +1,8 @@
 [versions]
-architectury = "3.4-SNAPSHOT"
-fabric_loom = "1.13-SNAPSHOT"
-fabric_loom26_1 = "1.15-SNAPSHOT"
-fabric_loader = "0.18.4"
+architectury = "3.5-SNAPSHOT"
+fabric_loom = "1.14-SNAPSHOT"
+fabric_loom26_1 = "1.16-SNAPSHOT"
+fabric_loader = "0.19.2"
 
 minecraft26_1 = "26.1"
 fabric_api26_1 = "0.144.0+26.1"
