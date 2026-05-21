@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 public class TwitchEmotesAPI {
 	private static final int CACHE_LIFETIME_IMAGE = 604_800_000; // 7 days
@@ -73,7 +75,12 @@ public class TwitchEmotesAPI {
 	}
 
 	private static InputStream getInputStream(HttpResponse<InputStream> resp) throws IOException {
-		return resp.body();
+		var stream = resp.body();
+		return switch (resp.headers().firstValue("Content-Encoding").orElse("").toLowerCase()) {
+			case "gzip" -> new GZIPInputStream(stream);
+			case "deflate" -> new InflaterInputStream(stream);
+			default -> stream;
+		};
 	}
 
 	public static InputStream openStream(URI uri) {
@@ -81,6 +88,7 @@ public class TwitchEmotesAPI {
 			var req = HttpRequest.newBuilder(uri)
 				.timeout(Duration.ofSeconds(15))
 				.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0")
+				.header("Accept-Encoding", "gzip, deflate")
 				.GET()
 				.build();
 
@@ -126,6 +134,7 @@ public class TwitchEmotesAPI {
 			.timeout(Duration.ofSeconds(15))
 			.header("Content-Type", "application/json; charset=utf-8")
 			.header("User-Agent", "insomnia/9.3.3")
+			.header("Accept-Encoding", "gzip, deflate")
 			.POST(HttpRequest.BodyPublishers.ofString(body))
 			.build();
 
