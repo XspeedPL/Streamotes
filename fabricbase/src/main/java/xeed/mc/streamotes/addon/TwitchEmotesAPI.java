@@ -14,20 +14,24 @@ import xeed.mc.streamotes.emoticon.Emoticon;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class TwitchEmotesAPI {
-	private static final int CACHE_LIFETIME_IMAGE = 604800000; // 7 days
+	private static final int CACHE_LIFETIME_IMAGE = 604_800_000; // 7 days
+	private static final int CACHE_LIFETIME_JSON = 60_000; // 1 minute
+	private static final int CACHE_LIFETIME_CHANNEL_ID = 300_000; // 5 minutes
 	private static final boolean CACHE_EMOTES = true;
 
-	private static final HashMap<String, CacheEntry<JsonElement>> jsonCache = new HashMap<>();
-	private static final HashMap<String, CacheEntry<String>> channelIdCache = new HashMap<>();
+	private static final ConcurrentHashMap<URI, CacheEntry<JsonElement>> jsonCache = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String, CacheEntry<String>> channelIdCache = new ConcurrentHashMap<>();
 	private static final Gson gson = new Gson();
 
 	private static File cacheDir;
@@ -65,34 +69,41 @@ public class TwitchEmotesAPI {
 		}
 	}
 
-	public static InputStream openStream(URL url) throws IOException {
-		var conn = url.openConnection();
-		conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0");
-		return conn.getInputStream();
-	}
-
-	private static <T> T getJson(InputStream stream, Class<T> cls) throws IOException {
-		try (var reader = new InputStreamReader(stream)) {
-			return gson.fromJson(reader, cls);
+	public static URI getURI(URL url) {
+		try {
+			return url.toURI();
+		}
+		catch (URISyntaxException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	public static <T extends JsonElement> JsonElement getJson(URL url, Class<T> cls) throws IOException {
-		synchronized (jsonCache) {
-			var entry = jsonCache.get(url.toString());
-			if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
-
-			var json = getJson(openStream(url), cls);
-			jsonCache.put(url.toString(), new CacheEntry<>(json, System.currentTimeMillis() + (1000 * 60)));
-			return json;
+	public static InputStreamReader openStream(URL url) {
+		try {
+			var conn = url.openConnection();
+			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0");
+			return new InputStreamReader(conn.getInputStream());
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
 		}
 	}
 
-	public static JsonObject getJsonObj(URL url) throws IOException {
+	private static <T> T getJson(InputStreamReader reader, Class<T> cls) {
+		return gson.fromJson(reader, cls);
+	}
+
+	public static <T extends JsonElement> JsonElement getJson(URL url, Class<T> cls) {
+		return jsonCache.compute(getURI(url), (key, entry) -> entry == null || entry.expTime() < System.currentTimeMillis()
+			? new CacheEntry<>(getJson(openStream(url), cls), System.currentTimeMillis() + CACHE_LIFETIME_JSON)
+			: entry).item;
+	}
+
+	public static JsonObject getJsonObj(URL url) {
 		return getJson(url, JsonObject.class).getAsJsonObject();
 	}
 
-	public static JsonArray getJsonArr(URL url) throws IOException {
+	public static JsonArray getJsonArr(URL url) {
 		return getJson(url, JsonArray.class).getAsJsonArray();
 	}
 
@@ -117,19 +128,27 @@ public class TwitchEmotesAPI {
 		return conn;
 	}
 
-	public static String getChannelId(String name) throws IOException {
-		synchronized (channelIdCache) {
-			var entry = channelIdCache.get(name);
-			if (entry != null && entry.expTime() <= System.currentTimeMillis()) return entry.item();
-
+	private static JsonObject getChannelDataObject(String name) {
+		try {
 			var conn = makeGQL(name);
 			int code = conn.getResponseCode();
 			if (code / 100 != 2) {
 				String info = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
-				throw new IOException("Channel ID request for name " + name + " returned " + code + ": " + info);
+				throw new RuntimeException("Channel ID request for name " + name + " returned " + code + ": " + info);
 			}
 
-			var data = getJson(conn.getInputStream(), JsonObject.class);
+			return getJson(new InputStreamReader(conn.getInputStream()), JsonObject.class);
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
+	public static String getChannelId(String name) {
+		return Objects.requireNonNull(channelIdCache.compute(name, (key, entry) -> {
+			if (entry != null && entry.expTime() > System.currentTimeMillis()) return entry;
+
+			var data = getChannelDataObject(name);
 			try {
 				var users = data.getAsJsonObject("data").getAsJsonArray("users").asList();
 				boolean nameFound = false;
@@ -145,18 +164,17 @@ public class TwitchEmotesAPI {
 						if (!cdata.get("platform").getAsString().equals("TWITCH")) continue;
 
 						var channelId = cdata.get("id").getAsString();
-						channelIdCache.put(name, new CacheEntry<>(channelId, System.currentTimeMillis() + (1000 * 60 * 5)));
-						return channelId;
+						return new CacheEntry<>(channelId, System.currentTimeMillis() + CACHE_LIFETIME_CHANNEL_ID);
 					}
 				}
 
-				if (nameFound) throw new IOException("7tv profile " + name + " has no associated Twitch channel");
-				else throw new IOException("Channel " + name + " has no valid 7tv profile");
+				if (nameFound) throw new RuntimeException("7tv profile " + name + " has no associated Twitch channel");
+				else throw new RuntimeException("Channel " + name + " has no valid 7tv profile");
 			}
 			catch (NullPointerException | IndexOutOfBoundsException e) {
-				throw new IOException("Invalid json trying to get channel ID of " + name + ": " + data.toString(), e);
+				throw new RuntimeException("Invalid json trying to get channel ID of " + name + ": " + data.toString(), e);
 			}
-		}
+		})).item;
 	}
 
 	private static boolean shouldUseCacheFileImage(File file) {
@@ -202,9 +220,7 @@ public class TwitchEmotesAPI {
 	}
 
 	public static void clearJsonCache() {
-		synchronized (jsonCache) {
-			jsonCache.clear();
-		}
+		jsonCache.clear();
 	}
 
 	public static String getJsonString(JsonObject object, String name) {
