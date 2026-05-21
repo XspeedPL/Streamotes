@@ -15,9 +15,9 @@ public class FFZPack {
 
 	public static void loadMetadata() {
 		try {
-			var apiURL = TwitchEmotesAPI.getURL("https://api.frankerfacez.com/v1/set/global");
+			var apiURI = TwitchEmotesAPI.getURI("https://api.frankerfacez.com/v1/set/global");
 
-			var root = TwitchEmotesAPI.getJsonObj(apiURL);
+			var root = TwitchEmotesAPI.getJsonObj(apiURI);
 			if (root == null) {
 				throw new EmoteLoaderException("Failed to grab FrankerFaceZ emotes");
 			}
@@ -44,10 +44,10 @@ public class FFZPack {
 				}
 			}
 		}
-		catch (FileNotFoundException ignored) {
-		}
 		catch (Exception e) {
-			throw new EmoteLoaderException("Unhandled exception", e);
+			if (!(e.getCause() instanceof FileNotFoundException)) {
+				throw new EmoteLoaderException("Unhandled exception", e);
+			}
 		}
 	}
 

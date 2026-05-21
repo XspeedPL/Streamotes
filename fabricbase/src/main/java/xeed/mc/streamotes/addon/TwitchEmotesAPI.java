@@ -12,12 +12,14 @@ import xeed.mc.streamotes.api.EmoteLoaderException;
 import xeed.mc.streamotes.emoticon.Emoticon;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -33,6 +35,7 @@ public class TwitchEmotesAPI {
 	private static final ConcurrentHashMap<URI, CacheEntry<JsonElement>> jsonCache = new ConcurrentHashMap<>();
 	private static final ConcurrentHashMap<String, CacheEntry<String>> channelIdCache = new ConcurrentHashMap<>();
 	private static final Gson gson = new Gson();
+	private static final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
 
 	private static File cacheDir;
 	private static File cachedEmotes;
@@ -60,32 +63,37 @@ public class TwitchEmotesAPI {
 		}
 	}
 
-	public static URL getURL(String url) {
+	public static URI getURI(String url) {
 		try {
-			return new URI(url).toURL();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static URI getURI(URL url) {
-		try {
-			return url.toURI();
+			return new URI(url);
 		}
 		catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static InputStreamReader openStream(URL url) {
+	private static InputStream getInputStream(HttpResponse<InputStream> resp) throws IOException {
+		return resp.body();
+	}
+
+	public static InputStream openStream(URI uri) {
 		try {
-			var conn = url.openConnection();
-			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0");
-			return new InputStreamReader(conn.getInputStream());
+			var req = HttpRequest.newBuilder(uri)
+				.timeout(Duration.ofSeconds(15))
+				.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0")
+				.GET()
+				.build();
+
+			var resp = client.send(req, HttpResponse.BodyHandlers.ofInputStream());
+			if (resp.statusCode() == 404) throw new FileNotFoundException();
+
+			return getInputStream(resp);
 		}
 		catch (IOException e) {
 			throw new UncheckedIOException(e);
+		}
+		catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -93,51 +101,56 @@ public class TwitchEmotesAPI {
 		return gson.fromJson(reader, cls);
 	}
 
-	public static <T extends JsonElement> JsonElement getJson(URL url, Class<T> cls) {
-		return jsonCache.compute(getURI(url), (key, entry) -> entry == null || entry.expTime() < System.currentTimeMillis()
-			? new CacheEntry<>(getJson(openStream(url), cls), System.currentTimeMillis() + CACHE_LIFETIME_JSON)
+	public static <T extends JsonElement> JsonElement getJson(URI uri, Class<T> cls) {
+		return jsonCache.compute(uri, (key, entry) -> entry == null || entry.expTime() < System.currentTimeMillis()
+			? new CacheEntry<>(getJson(new InputStreamReader(openStream(key)), cls), System.currentTimeMillis() + CACHE_LIFETIME_JSON)
 			: entry).item;
 	}
 
-	public static JsonObject getJsonObj(URL url) {
-		return getJson(url, JsonObject.class).getAsJsonObject();
+	public static JsonObject getJsonObj(URI uri) {
+		return getJson(uri, JsonObject.class).getAsJsonObject();
 	}
 
-	public static JsonArray getJsonArr(URL url) {
-		return getJson(url, JsonArray.class).getAsJsonArray();
+	public static JsonArray getJsonArr(URI uri) {
+		return getJson(uri, JsonArray.class).getAsJsonArray();
 	}
 
-	private static HttpURLConnection makeGQL(String name) throws IOException {
-		var apiURL = getURL("https://7tv.io/v3/gql");
-
-		var conn = (HttpURLConnection)apiURL.openConnection();
-		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Content-Type", "application/json");
-		conn.setRequestProperty("User-Agent", "insomnia/9.3.3");
-		conn.setDoOutput(true);
+	private static HttpResponse<InputStream> makeGQL(String name) {
+		var apiURI = getURI("https://7tv.io/v3/gql");
 
 		var query = "query FindUser($name: String!) { users(query: $name) { id username connections { id platform display_name } } }";
 		var vars = "{ \"name\": \"" + name + "\" }";
 		var body = "{\"query\": \"" + query + "\",\"operationName\": \"FindUser\",\"variables\": " + vars + "}";
 
-		try (var writer = new DataOutputStream(conn.getOutputStream())) {
-			writer.writeBytes(body);
-			writer.flush();
-		}
+		var req = HttpRequest.newBuilder(apiURI)
+			.timeout(Duration.ofSeconds(15))
+			.header("Content-Type", "application/json; charset=utf-8")
+			.header("User-Agent", "insomnia/9.3.3")
+			.POST(HttpRequest.BodyPublishers.ofString(body))
+			.build();
 
-		return conn;
+		try {
+			return client.send(req, HttpResponse.BodyHandlers.ofInputStream());
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private static JsonObject getChannelDataObject(String name) {
 		try {
 			var conn = makeGQL(name);
-			int code = conn.getResponseCode();
+			int code = conn.statusCode();
 			if (code / 100 != 2) {
-				String info = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
+				String info = IOUtils.toString(conn.body(), StandardCharsets.UTF_8);
 				throw new RuntimeException("Channel ID request for name " + name + " returned " + code + ": " + info);
 			}
 
-			return getJson(new InputStreamReader(conn.getInputStream()), JsonObject.class);
+			var reader = new InputStreamReader(getInputStream(conn));
+			return getJson(reader, JsonObject.class);
 		}
 		catch (IOException e) {
 			throw new UncheckedIOException(e);

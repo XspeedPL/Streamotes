@@ -17,9 +17,9 @@ public class X7tvChannelPack {
 		try {
 			String channelId = TwitchEmotesAPI.getChannelId(channelName);
 
-			var apiURL = TwitchEmotesAPI.getURL("https://7tv.io/v3/users/twitch/" + channelId);
+			var apiURI = TwitchEmotesAPI.getURI("https://7tv.io/v3/users/twitch/" + channelId);
 
-			var obj = TwitchEmotesAPI.getJsonObj(apiURL);
+			var obj = TwitchEmotesAPI.getJsonObj(apiURI);
 			if (obj == null) return;
 			var elem = obj.get("emote_set");
 			if (elem == null) return;
@@ -42,10 +42,10 @@ public class X7tvChannelPack {
 				}
 			}
 		}
-		catch (FileNotFoundException ignored) {
-		}
 		catch (Exception e) {
-			throw new EmoteLoaderException("Unhandled exception", e);
+			if (!(e.getCause() instanceof FileNotFoundException)) {
+				throw new EmoteLoaderException("Unhandled exception", e);
+			}
 		}
 	}
 

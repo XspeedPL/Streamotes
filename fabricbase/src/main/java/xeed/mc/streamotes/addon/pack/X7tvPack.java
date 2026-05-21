@@ -20,9 +20,9 @@ public class X7tvPack {
 
 	public static void loadMetadata() {
 		try {
-			var apiURL = TwitchEmotesAPI.getURL("https://7tv.io/v3/emote-sets/global");
+			var apiURI = TwitchEmotesAPI.getURI("https://7tv.io/v3/emote-sets/global");
 
-			var emotes = TwitchEmotesAPI.getJsonObj(apiURL).get("emotes").getAsJsonArray();
+			var emotes = TwitchEmotesAPI.getJsonObj(apiURI).get("emotes").getAsJsonArray();
 			for (int i = 0; i < emotes.size(); i++) {
 				var entry = emotes.get(i).getAsJsonObject();
 				var code = TwitchEmotesAPI.getJsonString(entry, "name");
@@ -37,10 +37,10 @@ public class X7tvPack {
 				}
 			}
 		}
-		catch (FileNotFoundException ignored) {
-		}
 		catch (Exception e) {
-			throw new EmoteLoaderException("Unhandled exception", e);
+			if (!(e.getCause() instanceof FileNotFoundException)) {
+				throw new EmoteLoaderException("Unhandled exception", e);
+			}
 		}
 	}
 

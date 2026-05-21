@@ -18,9 +18,9 @@ public class BTTVChannelPack {
 
 	public static void loadMetadata(String channelName) {
 		try {
-			var apiURL = TwitchEmotesAPI.getURL("https://api.betterttv.net/3/cached/users/twitch/" + TwitchEmotesAPI.getChannelId(channelName));
+			var apiURI = TwitchEmotesAPI.getURI("https://api.betterttv.net/3/cached/users/twitch/" + TwitchEmotesAPI.getChannelId(channelName));
 
-			var root = TwitchEmotesAPI.getJsonObj(apiURL);
+			var root = TwitchEmotesAPI.getJsonObj(apiURI);
 			if (root == null || !root.has("channelEmotes")) {
 				throw new EmoteLoaderException("Failed to grab BTTV channel emotes (unexpected status)");
 			}
@@ -38,10 +38,10 @@ public class BTTVChannelPack {
 				}
 			}
 		}
-		catch (FileNotFoundException ignored) {
-		}
 		catch (Exception e) {
-			throw new EmoteLoaderException("Unhandled exception", e);
+			if (!(e.getCause() instanceof FileNotFoundException)) {
+				throw new EmoteLoaderException("Unhandled exception", e);
+			}
 		}
 	}
 

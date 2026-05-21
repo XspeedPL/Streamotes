@@ -16,9 +16,9 @@ public class BTTVPack {
 
 	public static void loadMetadata() {
 		try {
-			var apiURL = TwitchEmotesAPI.getURL("https://api.betterttv.net/3/cached/emotes/global");
+			var apiURI = TwitchEmotesAPI.getURI("https://api.betterttv.net/3/cached/emotes/global");
 
-			var emotes = TwitchEmotesAPI.getJsonArr(apiURL);
+			var emotes = TwitchEmotesAPI.getJsonArr(apiURI);
 			for (int i = 0; i < emotes.size(); i++) {
 				var entry = emotes.get(i).getAsJsonObject();
 				String code = TwitchEmotesAPI.getJsonString(entry, "code");
@@ -29,10 +29,10 @@ public class BTTVPack {
 				}
 			}
 		}
-		catch (FileNotFoundException ignored) {
-		}
 		catch (Exception e) {
-			throw new EmoteLoaderException("Unhandled exception", e);
+			if (!(e.getCause() instanceof FileNotFoundException)) {
+				throw new EmoteLoaderException("Unhandled exception", e);
+			}
 		}
 	}
 

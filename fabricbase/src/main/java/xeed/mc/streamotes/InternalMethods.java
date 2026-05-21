@@ -14,11 +14,11 @@ import java.util.Arrays;
 
 public class InternalMethods {
 	public static boolean loadImage(Emoticon emoticon, URI uri) {
-		try (var in = TwitchEmotesAPI.openStream(uri.toURL())) {
+		try (var in = TwitchEmotesAPI.openStream(uri)) {
 			Streamotes.log("Loading from " + uri);
 			return loadImage(emoticon, in);
 		}
-		catch (IOException e) {
+		catch (IOException | UncheckedIOException e) {
 			Streamotes.loge("Emote " + emoticon.getName() + " load failed", e);
 			return false;
 		}

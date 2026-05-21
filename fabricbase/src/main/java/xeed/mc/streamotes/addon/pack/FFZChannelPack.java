@@ -15,9 +15,9 @@ public class FFZChannelPack {
 
 	public static void loadMetadata(String channelName) {
 		try {
-			var apiURL = TwitchEmotesAPI.getURL("https://api.frankerfacez.com/v1/room/" + channelName.toLowerCase());
+			var apiURI = TwitchEmotesAPI.getURI("https://api.frankerfacez.com/v1/room/" + channelName.toLowerCase());
 
-			var root = TwitchEmotesAPI.getJsonObj(apiURL);
+			var root = TwitchEmotesAPI.getJsonObj(apiURI);
 			if (root == null) {
 				throw new EmoteLoaderException("Failed to grab FrankerFaceZ channel emotes for " + channelName);
 			}
@@ -40,10 +40,10 @@ public class FFZChannelPack {
 				}
 			}
 		}
-		catch (FileNotFoundException ignored) {
-		}
 		catch (Exception e) {
-			throw new EmoteLoaderException("Unhandled exception", e);
+			if (!(e.getCause() instanceof FileNotFoundException)) {
+				throw new EmoteLoaderException("Unhandled exception", e);
+			}
 		}
 	}
 

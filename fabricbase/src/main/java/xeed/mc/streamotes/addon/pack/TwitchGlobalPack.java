@@ -7,6 +7,7 @@ import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -15,8 +16,8 @@ public class TwitchGlobalPack {
 	private static final int PRIO = 1;
 
 	private static void loadSource1() throws IOException {
-		var apiURL = TwitchEmotesAPI.getURL("https://twitchemotes.com/");
-		try (var reader = new BufferedReader(TwitchEmotesAPI.openStream(apiURL))) {
+		var apiURI = TwitchEmotesAPI.getURI("https://twitchemotes.com/");
+		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURI)))) {
 			TwitchEmotesAPI.concentrateLines(reader, line -> {
 				int beginAt = 0;
 				while (beginAt < line.length()) {
@@ -51,8 +52,8 @@ public class TwitchGlobalPack {
 	}
 
 	private static void loadSource2() throws IOException {
-		var apiURL = TwitchEmotesAPI.getURL("https://www.twitchmetrics.net/emotes/");
-		try (var reader = new BufferedReader(TwitchEmotesAPI.openStream(apiURL))) {
+		var apiURI = TwitchEmotesAPI.getURI("https://www.twitchmetrics.net/emotes/");
+		try (var reader = new BufferedReader(new InputStreamReader(TwitchEmotesAPI.openStream(apiURI)))) {
 			TwitchEmotesAPI.concentrateLines(reader, line -> {
 				int beginAt = 0;
 				while (beginAt < line.length()) {
