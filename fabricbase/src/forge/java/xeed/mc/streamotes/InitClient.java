@@ -1,5 +1,6 @@
 package xeed.mc.streamotes;
 
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
@@ -9,7 +10,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@Mod(StreamotesCommon.NAME)
+@Mod(value = StreamotesCommon.NAME, dist = Dist.CLIENT)
 public class InitClient {
 	public InitClient(IEventBus bus) {
 		Streamotes.INSTANCE = new Streamotes();
@@ -22,10 +23,12 @@ public class InitClient {
 	}
 
 	private static void onClientSetup(FMLClientSetupEvent event) {
-		Streamotes.INSTANCE.onInitializeClient();
+		event.enqueueWork(() -> {
+			Streamotes.INSTANCE.onInitializeClient();
 
-		ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
-			() -> (client, parent) -> ConfigScreenBuilder.createConfigScreen(parent));
+			ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
+				() -> (client, parent) -> ConfigScreenBuilder.createConfigScreen(parent));
+		});
 	}
 
 	private static void onClientStarted(ClientStartedEvent event) {

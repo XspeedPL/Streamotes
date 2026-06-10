@@ -15,9 +15,10 @@ import java.nio.file.Path;
 @Mod(StreamotesCommon.NAME)
 public class InitCommon {
 	public InitCommon(IEventBus bus) {
-		bus.addListener(InitCommon::onCommonSetup);
 		bus.addListener(InitCommon::onRegisterCommands);
 		bus.addListener(InitCommon::onPlayerLogin);
+
+		bus.addListener(InitCommon::onCommonSetup);
 		bus.addListener(InitCommon::onRegisterPayloads);
 	}
 
