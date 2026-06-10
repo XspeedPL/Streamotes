@@ -3,50 +3,62 @@ package xeed.mc.streamotes.emoticon;
 import xeed.mc.streamotes.Streamotes;
 import xeed.mc.streamotes.StreamotesCommon;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 
 public class AsyncEmoticonLoader implements Runnable {
 	public static final AsyncEmoticonLoader instance = new AsyncEmoticonLoader();
 
-	private final LinkedList<Emoticon> loadQueue;
+	private final ArrayDeque<Emoticon> loadQueue;
 	private final Object sync;
+	private Thread thread;
 
 	public AsyncEmoticonLoader() {
-		loadQueue = new LinkedList<>();
+		loadQueue = new ArrayDeque<>();
 		sync = new Object();
-		var thread = new Thread(this, "StreamotesLoader");
+		setupThread();
+	}
+
+	private synchronized void setupThread() {
+		if (thread != null && thread.isAlive()) return;
+
+		thread = new Thread(this, "StreamotesLoader");
 		thread.setDaemon(true);
 		thread.start();
 	}
 
 	public void loadAsync(Emoticon emoticon) {
+		setupThread();
+
 		synchronized (sync) {
-			loadQueue.push(emoticon);
+			loadQueue.addLast(emoticon);
 			sync.notify();
 		}
 	}
 
-	@SuppressWarnings("InfiniteLoopStatement")
 	@Override
 	public void run() {
 		while (true) {
-			try {
-				synchronized (sync) {
-					while (!loadQueue.isEmpty()) {
-						var emoticon = loadQueue.pop();
-						try {
-							emoticon.getLoader().loadEmoticonImage(emoticon);
+			Emoticon emoticon;
 
-							Streamotes.log("Loaded emote " + emoticon.getName() + ": W" + emoticon.getWidth() + ", H" + emoticon.getHeight());
-						}
-						catch (Exception e) {
-							StreamotesCommon.loge("Emote " + emoticon.getName() + " load failed", e);
-						}
+			synchronized (sync) {
+				while (loadQueue.isEmpty()) {
+					try {
+						sync.wait();
 					}
-					sync.wait();
+					catch (InterruptedException ignored) {
+						return;
+					}
 				}
+				emoticon = loadQueue.pop();
 			}
-			catch (InterruptedException ignored) {
+
+			try {
+				emoticon.getLoader().loadEmoticonImage(emoticon);
+
+				Streamotes.log("Loaded emote " + emoticon.getName() + ": W" + emoticon.getWidth() + ", H" + emoticon.getHeight());
+			}
+			catch (Exception e) {
+				StreamotesCommon.loge("Emote " + emoticon.getName() + " load failed", e);
 			}
 		}
 	}
