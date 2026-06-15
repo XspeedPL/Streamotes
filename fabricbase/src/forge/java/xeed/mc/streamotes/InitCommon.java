@@ -6,6 +6,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -15,11 +16,11 @@ import java.nio.file.Path;
 @Mod(StreamotesCommon.NAME)
 public class InitCommon {
 	public InitCommon(IEventBus bus) {
-		bus.addListener(InitCommon::onRegisterCommands);
-		bus.addListener(InitCommon::onPlayerLogin);
-
 		bus.addListener(InitCommon::onCommonSetup);
 		bus.addListener(InitCommon::onRegisterPayloads);
+
+		NeoForge.EVENT_BUS.addListener(InitCommon::onPlayerLogin);
+		NeoForge.EVENT_BUS.addListener(InitCommon::onRegisterCommands);
 	}
 
 	private static void onCommonSetup(FMLCommonSetupEvent event) {

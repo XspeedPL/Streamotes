@@ -8,6 +8,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @Mod(value = StreamotesCommon.NAME, dist = Dist.CLIENT)
@@ -16,10 +17,11 @@ public class InitClient {
 		Streamotes.INSTANCE = new Streamotes();
 
 		bus.addListener(InitClient::onClientSetup);
-		bus.addListener(InitClient::onClientStarted);
-		bus.addListener(InitClient::onPlayerJoin);
-		bus.addListener(InitClient::onPlayerDisconnect);
 		bus.addListener(InitClient::onRegisterPayloads);
+
+		NeoForge.EVENT_BUS.addListener(InitClient::onClientStarted);
+		NeoForge.EVENT_BUS.addListener(InitClient::onPlayerJoin);
+		NeoForge.EVENT_BUS.addListener(InitClient::onPlayerDisconnect);
 	}
 
 	private static void onClientSetup(FMLClientSetupEvent event) {

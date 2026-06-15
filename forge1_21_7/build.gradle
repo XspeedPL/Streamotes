@@ -37,7 +37,7 @@ processResources {
 			"minecraft_version": ">=1.21.6",
 			"loader_version": ">=" + libs.versions.neoforge1.'21'.'7'.get()
 	}
-	filesMatching("META-INF/streamotes.mixins.json") {
+	filesMatching("streamotes.mixins.json") {
 		expand "java_version": "JAVA_21"
 	}
 }
