@@ -7,16 +7,22 @@ minecraft26_1 = "26.1"
 fabric_api26_1 = "0.151.0+26.1.2"
 modmenu26_1 = "18.0.0-beta.1"
 yacl26_1 = "3.9.4+26.1-fabric"
+neoforge26_1 = "26.1.0.19-beta"
+yacl26_1f = "3.9.4+26.1-neoforge"
 
 minecraft1_21_11 = "1.21.11"
 fabric_api1_21_11 = "0.141.4+1.21.11"
 modmenu1_21_11 = "17.0.0"
 yacl1_21_11 = "3.8.2+1.21.11-fabric"
+neoforge1_21_11 = "21.11.42"
+yacl1_21_11f = "3.8.2+1.21.11-neoforge"
 
 minecraft1_21_10 = "1.21.10"
 fabric_api1_21_10 = "0.138.4+1.21.10"
 modmenu1_21_10 = "16.0.1"
 yacl1_21_10 = "3.8.2+1.21.10-fabric"
+neoforge1_21_10 = "21.10.64"
+yacl1_21_10f = "3.8.2+1.21.10-neoforge"
 
 minecraft1_21_7 = "1.21.7"
 fabric_api1_21_7 = "0.129.0+1.21.7"
@@ -29,31 +35,36 @@ minecraft1_21_5 = "1.21.5"
 fabric_api1_21_5 = "0.128.1+1.21.5"
 modmenu1_21_5 = "14.0.2"
 yacl1_21_5 = "3.8.2+1.21.5-fabric"
+neoforge1_21_5 = "21.5.97"
+yacl1_21_5f = "3.8.2+1.21.5-neoforge"
 
 minecraft1_21_4 = "1.21.4"
 fabric_api1_21_4 = "0.119.3+1.21.4"
 modmenu1_21_4 = "13.0.4"
 yacl1_21_4 = "3.8.2+1.21.4-fabric"
+neoforge1_21_4 = "21.4.157"
+yacl1_21_4f = "3.8.2+1.21.4-neoforge"
 
 minecraft1_21_3 = "1.21.3"
 fabric_api1_21_3 = "0.114.1+1.21.3"
 modmenu1_21_3 = "12.0.1"
 yacl1_21_3 = "3.8.2+1.21.3-fabric"
+neoforge1_21_3 = "21.3.96"
+yacl1_21_3f = "3.8.2+1.21.3-neoforge"
 
 minecraft1_21_0 = "1.21"
 fabric_api1_21_0 = "0.102.0+1.21"
 modmenu1_21_0 = "11.0.4"
 yacl1_21_0 = "3.8.2+1.21.1-fabric"
+neoforge1_21_0 = "21.0.167"
+yacl1_21_0f = "3.8.2+1.21.1-neoforge"
 
 minecraft1_20_6 = "1.20.6"
 fabric_api1_20_6 = "0.100.8+1.20.6"
 modmenu1_20_6 = "10.0.0"
 yacl1_20_6 = "3.6.6+1.20.6-fabric"
-
-minecraft1_20_1 = "1.20.1"
-fabric_api1_20_1 = "0.92.5+1.20.1"
-modmenu1_20_1 = "7.2.2"
-yacl1_20_1 = "3.6.6+1.20.1-fabric"
+neoforge1_20_6 = "20.6.139"
+yacl1_20_6f = "3.6.6+1.20.6-neoforge"
 
 paper_api = "1.21.11-R0.1-SNAPSHOT"
 netty_buffer = "4.2.10.Final"
@@ -65,16 +76,22 @@ minecraft26_1 = { module = "com.mojang:minecraft", version.ref = "minecraft26_1"
 fabric_api26_1 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api26_1" }
 modmenu26_1 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu26_1" }
 yacl26_1 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl26_1" }
+neoforge26_1 = { module = "net.neoforged:neoforge", version.ref = "neoforge26_1" }
+yacl26_1f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl26_1f" }
 
 minecraft1_21_11 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_11" }
 fabric_api1_21_11 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_11" }
 modmenu1_21_11 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_11" }
 yacl1_21_11 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_11" }
+neoforge1_21_11 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_21_11" }
+yacl1_21_11f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_11f" }
 
 minecraft1_21_10 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_10" }
 fabric_api1_21_10 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_10" }
 modmenu1_21_10 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_10" }
 yacl1_21_10 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_10" }
+neoforge1_21_10 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_21_10" }
+yacl1_21_10f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_10f" }
 
 minecraft1_21_7 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_7" }
 fabric_api1_21_7 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_7" }
@@ -87,31 +104,36 @@ minecraft1_21_5 = { module = "com.mojang:minecraft", version.ref = "minecraft1_2
 fabric_api1_21_5 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_5" }
 modmenu1_21_5 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_5" }
 yacl1_21_5 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_5" }
+neoforge1_21_5 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_21_5" }
+yacl1_21_5f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_5f" }
 
 minecraft1_21_4 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_4" }
 fabric_api1_21_4 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_4" }
 modmenu1_21_4 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_4" }
 yacl1_21_4 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_4" }
+neoforge1_21_4 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_21_4" }
+yacl1_21_4f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_4f" }
 
 minecraft1_21_3 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_3" }
 fabric_api1_21_3 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_3" }
 modmenu1_21_3 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_3" }
 yacl1_21_3 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_3" }
+neoforge1_21_3 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_21_3" }
+yacl1_21_3f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_3f" }
 
 minecraft1_21_0 = { module = "com.mojang:minecraft", version.ref = "minecraft1_21_0" }
 fabric_api1_21_0 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_21_0" }
 modmenu1_21_0 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_21_0" }
 yacl1_21_0 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_0" }
+neoforge1_21_0 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_21_0" }
+yacl1_21_0f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_21_0f" }
 
 minecraft1_20_6 = { module = "com.mojang:minecraft", version.ref = "minecraft1_20_6" }
 fabric_api1_20_6 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_20_6" }
 modmenu1_20_6 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_20_6" }
 yacl1_20_6 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_20_6" }
-
-minecraft1_20_1 = { module = "com.mojang:minecraft", version.ref = "minecraft1_20_1" }
-fabric_api1_20_1 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api1_20_1" }
-modmenu1_20_1 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu1_20_1" }
-yacl1_20_1 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_20_1" }
+neoforge1_20_6 = { module = "net.neoforged:neoforge", version.ref = "neoforge1_20_6" }
+yacl1_20_6f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl1_20_6f" }
 
 paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
