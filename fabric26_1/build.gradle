@@ -1,10 +1,16 @@
 plugins {
-	alias libs.plugins.fabric.loom26.'1'
+	alias libs.plugins.fabric.loom.nr
 	alias libs.plugins.architectury
 }
 
 base {
-	archivesName = project.archives_base_name
+	archivesName = project.archives_base_name + "-" + loom.platform.get()
+}
+
+architectury {
+	minecraft = libs.versions.minecraft26.'1'.get()
+	platformSetupLoomIde()
+	fabric()
 }
 
 loom {
@@ -17,7 +23,6 @@ group = project.maven_group
 repositories {
 	maven { url "https://maven.isxander.dev/releases" }
 	maven { url "https://maven.terraformersmc.com" }
-	maven { url "https://maven.nucleoid.xyz" }
 }
 
 dependencies {

@@ -1,6 +1,5 @@
 [versions]
 architectury = "3.5-SNAPSHOT"
-fabric_loom26_1 = "1.17-SNAPSHOT"
 fabric_loom = "1.17-SNAPSHOT"
 fabric_loader = "0.19.3"
 
@@ -118,6 +117,6 @@ paper_api = { module = "io.papermc.paper:paper-api", version.ref = "paper_api" }
 netty_buffer = { module = "io.netty:netty-buffer", version.ref = "netty_buffer" }
 
 [plugins]
-fabric_loom26_1 = { id = "net.fabricmc.fabric-loom", version.ref = "fabric_loom26_1" }
+fabric_loom_nr = { id = "dev.architectury.loom-no-remap", version.ref = "fabric_loom" }
 fabric_loom = { id = "dev.architectury.loom", version.ref = "fabric_loom" }
 architectury = { id = "architectury-plugin", version.ref = "architectury" }
