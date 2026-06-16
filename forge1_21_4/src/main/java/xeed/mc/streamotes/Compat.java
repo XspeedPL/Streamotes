@@ -1,22 +1,22 @@
 package xeed.mc.streamotes;
 
 import com.google.common.util.concurrent.Runnables;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.textures.TextureFormat;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import org.lwjgl.opengl.GL11;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
@@ -44,64 +44,54 @@ public class Compat {
 	}
 
 	public static RenderType layerFunc(Emoticon icon) {
-		return RenderType.create("emote-" + icon.getName(), 2048, false, true, RenderPipelines.TEXT,
+		return RenderType.create("emote-" + icon.getName(), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 2048, false, true,
 			RenderType.CompositeState.builder().setTextureState(new RenderStateShard.EmptyTextureStateShard(icon.getTexture()::onApply, Runnables.doNothing()))
-				.createCompositeState(false));
+				.setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER).setTransparencyState(RenderStateShard.TransparencyStateShard.TRANSLUCENT_TRANSPARENCY)
+				.setLightmapState(RenderStateShard.LIGHTMAP).createCompositeState(false));
 	}
 
-	public static void onRegisterPayloads(RegisterClientPayloadHandlersEvent event) {
-		event.register(JsonPayload.PACKET_ID, (packet, context) -> Streamotes.INSTANCE.onReceiveJsonPacket(packet.json()));
+	public static void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {
-		return Style.EMPTY.withClickEvent(new ClickEvent.CopyToClipboard(icon.getName()))
-			.withHoverEvent(new HoverEvent.ShowText(icon.getTooltip()));
+		return Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, icon.getName()))
+			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, icon.getTooltip()));
 	}
 
 	public static Emoticon getEmote(Style style) {
-		return style.getClickEvent() instanceof ClickEvent.CopyToClipboard(String value)
-			? EmoticonRegistry.fromName(value)
+		var ev = style.getClickEvent();
+		return ev != null && ev.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD
+			? EmoticonRegistry.fromName(ev.getValue())
 			: null;
 	}
 
 	public static class Texture implements AutoCloseable {
-		private GpuTexture texture;
-		private GpuTextureView view;
+		private int glId = -1;
 
 		public boolean isLoaded() {
-			return view != null && !view.isClosed();
-		}
-
-		public GpuTextureView getView() {
-			return view;
+			return glId != -1;
 		}
 
 		public void onApply() {
-			if (texture != null) RenderSystem.setShaderTexture(0, view);
+			if (glId != -1) RenderSystem.setShaderTexture(0, glId);
 		}
 
 		public void upload(String label, NativeImage buffer) {
-			var dev = RenderSystem.getDevice();
+			if (glId == -1) glId = TextureUtil.generateTextureId();
+			TextureUtil.prepareImage(glId, 0, buffer.getWidth(), buffer.getHeight());
 
-			if (texture == null) {
-				texture = dev.createTexture(label, GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_TEXTURE_BINDING, TextureFormat.RGBA8, buffer.getWidth(), buffer.getHeight(), 1, 1);
-				texture.setTextureFilter(FilterMode.LINEAR, FilterMode.NEAREST, true);
-			}
-			if (view == null) {
-				view = dev.createTextureView(texture);
-			}
+			// enable mipmap
+			GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+			// disable blur
+			GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
-			RenderSystem.getDevice().createCommandEncoder().writeToTexture(texture, buffer);
+			buffer.upload(0, 0, 0, 0, 0, buffer.getWidth(), buffer.getHeight(), true);
 		}
 
 		public void close() {
-			if (view != null && !view.isClosed()) {
-				view.close();
-				view = null;
-			}
-			if (texture != null && !texture.isClosed()) {
-				texture.close();
-				texture = null;
+			if (glId != -1) {
+				TextureUtil.releaseTextureId(glId);
+				glId = -1;
 			}
 		}
 	}

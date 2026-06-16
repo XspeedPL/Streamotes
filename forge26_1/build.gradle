@@ -1,5 +1,5 @@
 plugins {
-	alias libs.plugins.fabric.loom
+	alias libs.plugins.fabric.loom.nr
 	alias libs.plugins.architectury
 }
 
@@ -8,12 +8,12 @@ base {
 }
 
 architectury {
-	minecraft = libs.versions.minecraft1.'21'.'7'.get()
+	minecraft = libs.versions.minecraft26.'1'.get()
 	platformSetupLoomIde()
 	neoForge()
 }
 
-version = "${project.version}+${libs.versions.minecraft1.'21'.'7'.get()}"
+version = "${project.version}+${libs.versions.minecraft26.'1'.get()}"
 group = project.maven_group
 
 repositories {
@@ -24,29 +24,28 @@ repositories {
 }
 
 dependencies {
-	minecraft libs.minecraft1.'21'.'7'
-	mappings loom.officialMojangMappings()
+	minecraft libs.minecraft26.'1'
 
-	neoForge libs.neoforge1.'21'.'7'
-	modImplementation libs.yacl1.'21'.'7f'
+	neoForge libs.neoforge26.'1'
+	implementation libs.yacl26.'1f'
 }
 
 processResources {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	filesMatching("META-INF/neoforge.mods.toml") {
 		expand "mod_version": version,
-			"minecraft_version": ">=1.21.7 <1.21.9",
-			"loader_version": ">=" + libs.versions.neoforge1.'21'.'7'.get()
+			"minecraft_version": ">=26.1",
+			"loader_version": ">=" + libs.versions.neoforge26.'1'.get()
 	}
 	filesMatching("streamotes.mixins.json") {
-		expand "java_version": "JAVA_21"
+		expand "java_version": "JAVA_25"
 	}
 }
 
 sourceSets.main {
 	java {
 		srcDirs "src/main/java", "../fabricbase/src/forge/java",
-			"../fabricbase/src/main/java", "../fabricbase/src/post1_21_3/java"
+			"../fabricbase/src/main/java", "../fabricbase/src/post1_21_8/java"
 	}
 	resources {
 		srcDirs "src/main/resources", "../fabricbase/src/main/resources",
@@ -55,11 +54,11 @@ sourceSets.main {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	options.release.set(21)
+	options.release.set(25)
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
-	toolchain.languageVersion = JavaLanguageVersion.of(21)
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+	toolchain.languageVersion = JavaLanguageVersion.of(25)
 }

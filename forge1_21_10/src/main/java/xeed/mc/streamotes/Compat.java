@@ -43,7 +43,7 @@ public class Compat {
 		LAYER_CACHE.clear();
 	}
 
-	public static RenderType layerFunc(Emoticon icon) {
+	private static RenderType layerFunc(Emoticon icon) {
 		return RenderType.create("emote-" + icon.getName(), 2048, false, true, RenderPipelines.TEXT,
 			RenderType.CompositeState.builder().setTextureState(new RenderStateShard.EmptyTextureStateShard(icon.getTexture()::onApply, Runnables.doNothing()))
 				.createCompositeState(false));

@@ -1,25 +1,24 @@
 package xeed.mc.streamotes;
 
-import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.textures.TextureFormat;
+import com.mojang.blaze3d.textures.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.*;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import org.jspecify.annotations.NonNull;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Compat {
@@ -27,7 +26,7 @@ public class Compat {
 	private static final SystemToast.SystemToastId TOAST_TYPE = new SystemToast.SystemToastId(4000);
 
 	public static void sendClientMessage(Component text) {
-		Minecraft.getInstance().gui.getChat().addMessage(text);
+		Minecraft.getInstance().gui.getChat().addClientSystemMessage(text);
 	}
 
 	public static void sendToastMessage(Component title, Component text) {
@@ -44,13 +43,11 @@ public class Compat {
 	}
 
 	public static RenderType layerFunc(Emoticon icon) {
-		return RenderType.create("emote-" + icon.getName(), 2048, false, true, RenderPipelines.TEXT,
-			RenderType.CompositeState.builder().setTextureState(new RenderStateShard.EmptyTextureStateShard(icon.getTexture()::onApply, Runnables.doNothing()))
-				.createCompositeState(false));
+		return RenderType.create("emote-" + icon.getName(), icon.getTexture().makeSetup());
 	}
 
 	public static void onRegisterPayloads(RegisterClientPayloadHandlersEvent event) {
-		event.register(JsonPayload.PACKET_ID, (packet, context) -> Streamotes.INSTANCE.onReceiveJsonPacket(packet.json()));
+		event.register(JsonPayload.PACKET_ID, (packet, _) -> Streamotes.INSTANCE.onReceiveJsonPacket(packet.json()));
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {
@@ -76,16 +73,12 @@ public class Compat {
 			return view;
 		}
 
-		public void onApply() {
-			if (texture != null) RenderSystem.setShaderTexture(0, view);
-		}
-
 		public void upload(String label, NativeImage buffer) {
 			var dev = RenderSystem.getDevice();
 
 			if (texture == null) {
 				texture = dev.createTexture(label, GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_TEXTURE_BINDING, TextureFormat.RGBA8, buffer.getWidth(), buffer.getHeight(), 1, 1);
-				texture.setTextureFilter(FilterMode.LINEAR, FilterMode.NEAREST, true);
+				//texture.setTextureFilter(FilterMode.LINEAR, FilterMode.NEAREST, true);
 			}
 			if (view == null) {
 				view = dev.createTextureView(texture);
@@ -102,6 +95,25 @@ public class Compat {
 			if (texture != null && !texture.isClosed()) {
 				texture.close();
 				texture = null;
+			}
+		}
+
+		public RenderSetup makeSetup() {
+			return new CustomSetup();
+		}
+
+		public class CustomSetup extends RenderSetup {
+			public CustomSetup() {
+				super(RenderPipelines.TEXT, Collections.emptyMap(), true, false, LayeringTransform.NO_LAYERING,
+					OutputTarget.MAIN_TARGET, TextureTransform.DEFAULT_TEXTURING, OutlineProperty.NONE, false, false, 2048);
+			}
+
+			@Override
+			@NonNull
+			public Map<String, TextureAndSampler> getTextures() {
+				var map = new HashMap<String, TextureAndSampler>();
+				map.put("Sampler0", new TextureAndSampler(view, RenderSystem.getSamplerCache().getSampler(AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, FilterMode.LINEAR, FilterMode.LINEAR, false)));
+				return map;
 			}
 		}
 	}

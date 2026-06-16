@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.textures.TextureFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -16,7 +15,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
 
@@ -49,8 +48,7 @@ public class Compat {
 				.createCompositeState(false));
 	}
 
-	public static void onRegisterPayloads(RegisterClientPayloadHandlersEvent event) {
-		event.register(JsonPayload.PACKET_ID, (packet, context) -> Streamotes.INSTANCE.onReceiveJsonPacket(packet.json()));
+	public static void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
 	}
 
 	public static Style makeEmoteStyle(Emoticon icon) {
@@ -66,39 +64,27 @@ public class Compat {
 
 	public static class Texture implements AutoCloseable {
 		private GpuTexture texture;
-		private GpuTextureView view;
 
 		public boolean isLoaded() {
-			return view != null && !view.isClosed();
-		}
-
-		public GpuTextureView getView() {
-			return view;
+			return texture != null && !texture.isClosed();
 		}
 
 		public void onApply() {
-			if (texture != null) RenderSystem.setShaderTexture(0, view);
+			if (texture != null) RenderSystem.setShaderTexture(0, texture);
 		}
 
 		public void upload(String label, NativeImage buffer) {
 			var dev = RenderSystem.getDevice();
 
 			if (texture == null) {
-				texture = dev.createTexture(label, GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_TEXTURE_BINDING, TextureFormat.RGBA8, buffer.getWidth(), buffer.getHeight(), 1, 1);
+				texture = dev.createTexture(label, TextureFormat.RGBA8, buffer.getWidth(), buffer.getHeight(), 1);
 				texture.setTextureFilter(FilterMode.LINEAR, FilterMode.NEAREST, true);
-			}
-			if (view == null) {
-				view = dev.createTextureView(texture);
 			}
 
 			RenderSystem.getDevice().createCommandEncoder().writeToTexture(texture, buffer);
 		}
 
 		public void close() {
-			if (view != null && !view.isClosed()) {
-				view.close();
-				view = null;
-			}
 			if (texture != null && !texture.isClosed()) {
 				texture.close();
 				texture = null;

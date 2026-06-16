@@ -7,7 +7,15 @@ pluginManagement {
 	}
 }
 
+include ":forge26_1"
+include ":forge1_21_11"
+include ":forge1_21_10"
 include ":forge1_21_7"
+include ":forge1_21_5"
+include ":forge1_21_4"
+include ":forge1_21_3"
+include ":forge1_21_0"
+include ":forge1_20_6"
 
 include ":fabric26_1"
 include ":fabric1_21_11"

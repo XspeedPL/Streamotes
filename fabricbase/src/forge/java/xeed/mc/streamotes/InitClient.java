@@ -1,13 +1,12 @@
 package xeed.mc.streamotes;
 
+import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -17,9 +16,8 @@ public class InitClient {
 		Streamotes.INSTANCE = new Streamotes();
 
 		bus.addListener(InitClient::onClientSetup);
-		bus.addListener(InitClient::onRegisterPayloads);
+		bus.addListener(Compat::onRegisterPayloads);
 
-		NeoForge.EVENT_BUS.addListener(InitClient::onClientStarted);
 		NeoForge.EVENT_BUS.addListener(InitClient::onPlayerJoin);
 		NeoForge.EVENT_BUS.addListener(InitClient::onPlayerDisconnect);
 	}
@@ -30,11 +28,9 @@ public class InitClient {
 
 			ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
 				() -> (client, parent) -> ConfigScreenBuilder.createConfigScreen(parent));
-		});
-	}
 
-	private static void onClientStarted(ClientStartedEvent event) {
-		Streamotes.INSTANCE.onClientStarted(event.getClient());
+			Streamotes.INSTANCE.onClientStarted(Minecraft.getInstance());
+		});
 	}
 
 	private static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
@@ -43,9 +39,5 @@ public class InitClient {
 
 	private static void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
 		Streamotes.INSTANCE.onPlayerDisconnect();
-	}
-
-	private static void onRegisterPayloads(RegisterClientPayloadHandlersEvent event) {
-		Compat.onInitializeClient(event);
 	}
 }

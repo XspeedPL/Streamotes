@@ -10,7 +10,7 @@ allprojects {
 	}
 }
 
-tasks.register("assembleAll", Copy) {
+tasks.register("assembleFabric", Copy) {
 	from "fabric26_1/build/libs",
 		"fabric1_21_11/build/libs",
 		"fabric1_21_10/build/libs",
@@ -19,10 +19,7 @@ tasks.register("assembleAll", Copy) {
 		"fabric1_21_4/build/libs",
 		"fabric1_21_3/build/libs",
 		"fabric1_21_0/build/libs",
-		"fabric1_20_6/build/libs",
-		"fabric1_20_1/build/libs",
-		"forge1_21_7/build/libs",
-		"paper/build/libs"
+		"fabric1_20_6/build/libs"
 	into "build/libs"
 	include "*.jar"
 	dependsOn ":fabric26_1:assemble",
@@ -33,9 +30,40 @@ tasks.register("assembleAll", Copy) {
 		":fabric1_21_4:assemble",
 		":fabric1_21_3:assemble",
 		":fabric1_21_0:assemble",
-		":fabric1_20_6:assemble",
-		":fabric1_20_1:assemble",
+		":fabric1_20_6:assemble"
+	duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+tasks.register("assembleForge", Copy) {
+	from "forge26_1/build/libs",
+		"forge1_21_11/build/libs",
+		"forge1_21_10/build/libs",
+		"forge1_21_7/build/libs",
+		"forge1_21_5/build/libs",
+		"forge1_21_4/build/libs",
+		"forge1_21_3/build/libs",
+		"forge1_21_0/build/libs",
+		"forge1_20_6/build/libs"
+	into "build/libs"
+	include "*.jar"
+	dependsOn ":forge26_1:assemble",
+		":forge1_21_11:assemble",
+		":forge1_21_10:assemble",
 		":forge1_21_7:assemble",
+		":forge1_21_5:assemble",
+		":forge1_21_4:assemble",
+		":forge1_21_3:assemble",
+		":forge1_21_0:assemble",
+		":forge1_20_6:assemble"
+	duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+tasks.register("assembleAll", Copy) {
+	from "paper/build/libs"
+	into "build/libs"
+	include "*.jar"
+	dependsOn ":assembleFabric",
+		":assembleForge",
 		":paper:assemble"
 	duplicatesStrategy DuplicatesStrategy.INCLUDE
 }

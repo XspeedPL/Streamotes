@@ -8,12 +8,12 @@ base {
 }
 
 architectury {
-	minecraft = libs.versions.minecraft1.'21'.'7'.get()
+	minecraft = libs.versions.minecraft1.'21'.'3'.get()
 	platformSetupLoomIde()
 	neoForge()
 }
 
-version = "${project.version}+${libs.versions.minecraft1.'21'.'7'.get()}"
+version = "${project.version}+${libs.versions.minecraft1.'21'.'3'.get()}"
 group = project.maven_group
 
 repositories {
@@ -24,19 +24,19 @@ repositories {
 }
 
 dependencies {
-	minecraft libs.minecraft1.'21'.'7'
+	minecraft libs.minecraft1.'21'.'3'
 	mappings loom.officialMojangMappings()
 
-	neoForge libs.neoforge1.'21'.'7'
-	modImplementation libs.yacl1.'21'.'7f'
+	neoForge libs.neoforge1.'21'.'3'
+	modImplementation libs.yacl1.'21'.'3f'
 }
 
 processResources {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	filesMatching("META-INF/neoforge.mods.toml") {
 		expand "mod_version": version,
-			"minecraft_version": ">=1.21.7 <1.21.9",
-			"loader_version": ">=" + libs.versions.neoforge1.'21'.'7'.get()
+			"minecraft_version": ">=1.21.2 <1.21.4",
+			"loader_version": ">=" + libs.versions.neoforge1.'21'.'3'.get()
 	}
 	filesMatching("streamotes.mixins.json") {
 		expand "java_version": "JAVA_21"
@@ -46,7 +46,7 @@ processResources {
 sourceSets.main {
 	java {
 		srcDirs "src/main/java", "../fabricbase/src/forge/java",
-			"../fabricbase/src/main/java", "../fabricbase/src/post1_21_3/java"
+			"../fabricbase/src/main/java"
 	}
 	resources {
 		srcDirs "src/main/resources", "../fabricbase/src/main/resources",
