@@ -11,7 +11,8 @@ allprojects {
 }
 
 tasks.register("assembleFabric", Copy) {
-	from "fabric26_1/build/libs",
+	from "fabric26_2/build/libs",
+		"fabric26_1/build/libs",
 		"fabric1_21_11/build/libs",
 		"fabric1_21_10/build/libs",
 		"fabric1_21_7/build/libs",
@@ -22,7 +23,8 @@ tasks.register("assembleFabric", Copy) {
 		"fabric1_20_6/build/libs"
 	into "build/libs"
 	include "*.jar"
-	dependsOn ":fabric26_1:assemble",
+	dependsOn ":fabric26_2:assemble",
+		":fabric26_1:assemble",
 		":fabric1_21_11:assemble",
 		":fabric1_21_10:assemble",
 		":fabric1_21_7:assemble",
@@ -35,7 +37,8 @@ tasks.register("assembleFabric", Copy) {
 }
 
 tasks.register("assembleForge", Copy) {
-	from "forge26_1/build/libs",
+	from "forge26_2/build/libs",
+		"forge26_1/build/libs",
 		"forge1_21_11/build/libs",
 		"forge1_21_10/build/libs",
 		"forge1_21_7/build/libs",
@@ -46,7 +49,8 @@ tasks.register("assembleForge", Copy) {
 		"forge1_20_6/build/libs"
 	into "build/libs"
 	include "*.jar"
-	dependsOn ":forge26_1:assemble",
+	dependsOn ":forge26_2:assemble",
+		":forge26_1:assemble",
 		":forge1_21_11:assemble",
 		":forge1_21_10:assemble",
 		":forge1_21_7:assemble",
