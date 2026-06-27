@@ -66,15 +66,15 @@ public class InternalMethods {
 				return false;
 			}
 			else if (frames.size() == 1) {
-				emoticon.setImage(frames.get(0).getA());
+				emoticon.setImage(frames.get(0).getFirst());
 			}
 			else {
 				var images = new BufferedImage[frames.size()];
 				int[] times = new int[images.length];
 
 				for (int i = 0; i < images.length; ++i) {
-					images[i] = frames.get(i).getA();
-					times[i] = frames.get(i).getB();
+					images[i] = frames.get(i).getFirst();
+					times[i] = frames.get(i).getSecond();
 				}
 
 				emoticon.setImages(images, times);
