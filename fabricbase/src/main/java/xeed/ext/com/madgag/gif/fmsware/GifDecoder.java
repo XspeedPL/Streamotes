@@ -1,8 +1,6 @@
-package com.madgag.gif.fmsware;
+package xeed.ext.com.madgag.gif.fmsware;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;

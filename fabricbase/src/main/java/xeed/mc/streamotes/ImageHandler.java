@@ -1,7 +1,7 @@
 package xeed.mc.streamotes;
 
-import com.madgag.gif.fmsware.GifDecoder;
 import com.mojang.datafixers.util.Pair;
+import xeed.ext.com.madgag.gif.fmsware.GifDecoder;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
