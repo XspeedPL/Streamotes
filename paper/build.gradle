@@ -16,6 +16,11 @@ dependencies {
 	compileOnly libs.netty.buffer
 }
 
+// Paper 26.3 requires JDK 25; retain Java 21 bytecode for older servers.
+configurations.compileClasspath {
+	attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+}
+
 processResources {
 	filesMatching("plugin.yml") {
 		expand "version": version
@@ -29,5 +34,5 @@ tasks.withType(JavaCompile).configureEach {
 java {
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
-	toolchain.languageVersion = JavaLanguageVersion.of(21)
+	toolchain.languageVersion = JavaLanguageVersion.of(25)
 }

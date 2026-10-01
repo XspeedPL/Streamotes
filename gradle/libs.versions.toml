@@ -2,6 +2,14 @@
 architectury = "3.5-SNAPSHOT"
 fabric_loom = "1.17-SNAPSHOT"
 fabric_loader = "0.19.3"
+fabric_loader26_3 = "0.19.5"
+
+minecraft26_3 = "26.3"
+fabric_api26_3 = "0.161.0+26.3"
+modmenu26_3 = "21.0.0"
+yacl26_3 = "3.9.7+26.3-fabric"
+neoforge26_3 = "26.3.0.39-beta"
+yacl26_3f = "3.9.7+26.3-neoforge"
 
 minecraft26_2 = "26.2"
 fabric_api26_2 = "0.153.0+26.2"
@@ -73,11 +81,19 @@ yacl1_20_6 = "3.6.6+1.20.6-fabric"
 neoforge1_20_6 = "20.6.139"
 yacl1_20_6f = "3.6.6+1.20.6-neoforge"
 
-paper_api = "1.21.11-R0.1-SNAPSHOT"
+paper_api = "26.3.build.140-beta"
 netty_buffer = "4.2.10.Final"
 
 [libraries]
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+fabric_loader26_3 = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader26_3" }
+
+minecraft26_3 = { module = "com.mojang:minecraft", version.ref = "minecraft26_3" }
+fabric_api26_3 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api26_3" }
+modmenu26_3 = { module = "com.terraformersmc:modmenu", version.ref = "modmenu26_3" }
+yacl26_3 = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl26_3" }
+neoforge26_3 = { module = "net.neoforged:neoforge", version.ref = "neoforge26_3" }
+yacl26_3f = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl26_3f" }
 
 minecraft26_2 = { module = "com.mojang:minecraft", version.ref = "minecraft26_2" }
 fabric_api26_2 = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api26_2" }

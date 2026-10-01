@@ -1,0 +1,64 @@
+plugins {
+	alias libs.plugins.fabric.loom.nr
+	alias libs.plugins.architectury
+}
+
+base {
+	archivesName = project.archives_base_name + "-" + loom.platform.get()
+}
+
+architectury {
+	minecraft = libs.versions.minecraft26.'3'.get()
+	platformSetupLoomIde()
+	neoForge()
+}
+
+version = "${project.version}+${libs.versions.minecraft26.'3'.get()}"
+group = project.maven_group
+
+repositories {
+	maven { url "https://maven.isxander.dev/releases" }
+	maven { url "https://maven.terraformersmc.com" }
+	maven { url "https://maven.neoforged.net/releases" }
+	maven { url "https://thedarkcolour.github.io/KotlinForForge/" }
+}
+
+dependencies {
+	minecraft libs.minecraft26.'3'
+
+	neoForge libs.neoforge26.'3'
+	implementation libs.yacl26.'3f'
+}
+
+processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	filesMatching("META-INF/neoforge.mods.toml") {
+		expand "mod_version": version,
+			"minecraft_version": "[26.3,26.4)",
+			"loader_version": "[" + libs.versions.neoforge26.'3'.get() + ",)"
+	}
+	filesMatching("streamotes.mixins.json") {
+		expand "java_version": "JAVA_25"
+	}
+}
+
+sourceSets.main {
+	java {
+		srcDirs "src/main/java", "../common/src/forge/java",
+			"../common/src/main/java", "../common/src/post1_21_8/java"
+	}
+	resources {
+		srcDirs "src/main/resources", "../common/src/main/resources",
+			"../common/src/forge/resources"
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release.set(25)
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+	toolchain.languageVersion = JavaLanguageVersion.of(25)
+}
