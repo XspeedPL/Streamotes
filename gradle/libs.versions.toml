@@ -73,7 +73,7 @@ yacl1_20_6 = "3.6.6+1.20.6-fabric"
 neoforge1_20_6 = "20.6.139"
 yacl1_20_6f = "3.6.6+1.20.6-neoforge"
 
-paper_api = "1.21.11-R0.1-SNAPSHOT"
+paper_api = "26.1.2.build.+"
 netty_buffer = "4.2.10.Final"
 
 [libraries]
