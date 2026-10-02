@@ -13,10 +13,7 @@ import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.*;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import org.jspecify.annotations.NonNull;
 import xeed.mc.streamotes.emoticon.Emoticon;
@@ -29,6 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Compat {
 	private static final ConcurrentHashMap<Emoticon, RenderType> LAYER_CACHE = new ConcurrentHashMap<>();
 	private static final SystemToast.SystemToastId TOAST_TYPE = new SystemToast.SystemToastId(4000);
+
+	public static FontDescription getDefaultFont() {
+		return FontDescription.DEFAULT;
+	}
 
 	public static void sendClientMessage(Component text) {
 		Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(text);

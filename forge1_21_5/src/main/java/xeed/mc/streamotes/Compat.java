@@ -15,6 +15,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import xeed.mc.streamotes.emoticon.Emoticon;
 import xeed.mc.streamotes.emoticon.EmoticonRegistry;
@@ -24,6 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Compat {
 	private static final ConcurrentHashMap<Emoticon, RenderType> LAYER_CACHE = new ConcurrentHashMap<>();
 	private static final SystemToast.SystemToastId TOAST_TYPE = new SystemToast.SystemToastId(4000);
+
+	public static ResourceLocation getDefaultFont() {
+		return Style.DEFAULT_FONT;
+	}
 
 	public static void sendClientMessage(Component text) {
 		Minecraft.getInstance().gui.getChat().addMessage(text);

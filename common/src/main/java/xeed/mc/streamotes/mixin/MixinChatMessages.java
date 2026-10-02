@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.ComponentCollector;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
-import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +25,7 @@ public class MixinChatMessages {
 
 		var textCollector = new ComponentCollector();
 		message.visit((style, part) -> {
-			if (style.getFont() == FontDescription.DEFAULT) {
+			if (style.getFont() == Compat.getDefaultFont()) {
 				maybeStyled(textCollector, part, style);
 			}
 			else {
